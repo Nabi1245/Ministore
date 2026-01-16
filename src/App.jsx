@@ -21,6 +21,12 @@ import MobileBrandDashboard from "./admin/pages/mobileBrand/mobileBrandDashboard
 import MobileModelDashboard from "./admin/pages/mobileModel/MobileModelDashboard.Jsx";
 import AddMobileModel from "./admin/pages/mobileModel/AddMobileModel";
 
+import ProductsDashboard from "./admin/pages/products/ProductsDashboard";
+import AddProduct from "./admin/pages/products/AddProducts";
+import MobileCase from "./admin/pages/caseDetails/MobileCase";
+import AddMobileCase from "./admin/pages/caseDetails/AddMobileCase";
+
+
 function App() {
   useEffect(() => {
     // Initialize Bootstrap tooltips and dropdowns if needed
@@ -136,6 +142,40 @@ function App() {
                   </AdminProtectedRoute>
                 }
               />
+              <Route
+                path="/admin/products"
+                element={
+                  <AdminProtectedRoute>
+                    <ProductsDashboard/>
+                  </AdminProtectedRoute>
+                }
+              />
+             
+              <Route
+                path="/admin/products/add"
+                element={
+                  <AdminProtectedRoute>
+                    <AddProduct/>
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/mobile-case"
+                element={
+                  <AdminProtectedRoute>
+                    <MobileCase/>
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/mobile-case/add"
+                element={
+                  <AdminProtectedRoute>
+                    <AddMobileCase/>
+                  </AdminProtectedRoute>
+                }
+              />
+              
 
             </Routes>
           </SearchPopupProvider>
