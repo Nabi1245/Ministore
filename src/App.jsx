@@ -27,6 +27,7 @@ import MobileCase from "./admin/pages/caseDetails/MobileCase";
 import AddMobileCase from "./admin/pages/caseDetails/AddMobileCase";
 
 
+
 function App() {
   useEffect(() => {
     // Initialize Bootstrap tooltips and dropdowns if needed
