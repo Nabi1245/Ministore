@@ -52,6 +52,22 @@ const Sidebar = () => {
             Mobile Model
           </Link>
         </li>
+         <li className="nav-item">
+          <Link
+            to={"/admin/products"}
+            className="btn btn-light text-start w-100"
+          >
+            Products
+          </Link>
+        </li>
+         <li className="nav-item">
+          <Link
+            to={"/admin/mobile-case"}
+            className="btn btn-light text-start w-100"
+          >
+            Mobile Case
+          </Link>
+        </li>
 
         {/* <li className="nav-item">
           <button className="btn btn-light text-start w-100">Users</button>
