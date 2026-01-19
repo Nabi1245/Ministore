@@ -108,26 +108,77 @@ export const CartProvider = ({ children }) => {
       
       if (isLoggedIn()) {
         // Load user cart
-        const cartData = await userCartAPI.get()
-        if (cartData && cartData.products) {
-          setCart(cartData)
-          setCartItems(cartData.products.map(p => {
-            const imagePath = p.images?.[0]?.imageUrl || p.thumbnailImage
-            return {
-              id: p.id,
-              title: p.title,
-              price: parseFloat(p.price),
-              discountPrice: p.discountPrice ? parseFloat(p.discountPrice) : null,
-              thumbnailImage: p.thumbnailImage,
-              image: getImageUrl(imagePath),
-              quantity: p.cartItem.quantity,
-              category: p.category?.name || '',
-              caseDetails: p.caseDetails || null,
+        try {
+          const cartData = await userCartAPI.get()
+          if (cartData && cartData.products) {
+            setCart(cartData)
+            setCartItems(cartData.products.map(p => {
+              const imagePath = p.images?.[0]?.imageUrl || p.thumbnailImage
+              return {
+                id: p.id,
+                title: p.title,
+                price: parseFloat(p.price),
+                discountPrice: p.discountPrice ? parseFloat(p.discountPrice) : null,
+                thumbnailImage: p.thumbnailImage,
+                image: getImageUrl(imagePath),
+                quantity: p.cartItem.quantity,
+                category: p.category?.name || '',
+                caseDetails: p.caseDetails || null,
+              }
+            }))
+          } else {
+            setCartItems([])
+            setCart(null)
+          }
+        } catch (error) {
+          // If token is invalid/expired, fall back to guest cart
+          if (error.isTokenError || (error.message && error.message.includes('Invalid or expired token'))) {
+            console.warn('Token expired or invalid, falling back to guest cart')
+            // Token already cleared in api.js, update login state
+            setWasLoggedIn(false)
+            // Now load guest cart
+            const guestCartId = getGuestCartId()
+            try {
+              const cartData = await guestCartAPI.get(guestCartId)
+              if (cartData && cartData.products) {
+                setCart(cartData)
+                setCartItems(cartData.products.map(p => {
+                  const imagePath = p.images?.[0]?.imageUrl || p.thumbnailImage
+                  return {
+                    id: p.id,
+                    title: p.title,
+                    price: parseFloat(p.price),
+                    discountPrice: p.discountPrice ? parseFloat(p.discountPrice) : null,
+                    thumbnailImage: p.thumbnailImage,
+                    image: getImageUrl(imagePath),
+                    quantity: p.cartItem.quantity,
+                    category: p.category?.name || '',
+                    caseDetails: p.caseDetails || null,
+                  }
+                }))
+              } else {
+                await guestCartAPI.create(guestCartId)
+                setCartItems([])
+                setCart(null)
+              }
+            } catch (guestError) {
+              // Create guest cart if not found
+              try {
+                await guestCartAPI.create(guestCartId)
+                setCartItems([])
+                setCart(null)
+              } catch (e) {
+                console.error('Error creating guest cart:', e)
+                setCartItems([])
+                setCart(null)
+              }
             }
-          }))
-        } else {
-          setCartItems([])
-          setCart(null)
+          } else {
+            // Other errors, just log and set empty cart
+            console.error('Error loading user cart:', error)
+            setCartItems([])
+            setCart(null)
+          }
         }
       } else {
         // Load guest cart

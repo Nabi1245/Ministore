@@ -14,18 +14,18 @@ const Layout = () => {
   };
 
   return (
-    <div className="container-fluid vh-100 overflow-hidden">
-      <div className="row h-100 g-0">
+    <div className="container-fluid">
+      <div className="row g-0">
         {/* ===== LEFT SIDEBAR (FIXED, NO SCROLL) ===== */}
-        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+        {/* <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} /> */}
 
         {/* ===== RIGHT CONTENT (SCROLLABLE) ===== */}
-        <main
+        {/* <main
           className="col-12 col-md-9 col-lg-10 bg-light p-3 p-md-4 overflow-auto ms-md-auto"
           style={{ 
             height: "100vh"
           }}
-        >
+        > */}
           {/* Mobile Menu Button */}
           <button
             className="btn btn-outline-secondary d-md-none mb-3"
@@ -37,7 +37,7 @@ const Layout = () => {
 
           {/* Cards Section */}
           <Outlet />
-        </main>
+        {/* </main> */}
       </div>
     </div>
   )
