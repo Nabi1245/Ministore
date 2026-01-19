@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import SVGSymbols from "../components/SVGSymbols";
 import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
 import "./auth.css";
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,9 +11,12 @@ const Login = ({ setIsLoggedIn }) => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate();
+  const { mergeGuestCart } = useCart();
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
+      setError("");
       const res = await fetch(
         "https://artiststation.co.in/foxecom/api/auth/user/signin",
         {
@@ -23,32 +25,40 @@ const Login = ({ setIsLoggedIn }) => {
           body: JSON.stringify({ email, password }),
         }
       );
-      console.log(res);
 
       const data = await res.json();
-      console.log(data);
 
       if (res.status === 200) {
-        console.log("nabi status 200");
         localStorage.setItem("token", data.token); // browser memory
-        setIsLoggedIn(true); // react state
-        navigate("/");
+        
+        // Dispatch event to sync login state across components
+        window.dispatchEvent(new Event("loginStatusChanged"));
+        
+        // Merge guest cart into user cart after successful login
+        try {
+          await mergeGuestCart();
+        } catch (mergeError) {
+          console.error('Error merging cart:', mergeError);
+          // Don't block login if merge fails, just log it
+        }
+        
+        // Redirect to intended destination or home
+        const redirectTo = localStorage.getItem('redirectAfterLogin') || '/'
+        localStorage.removeItem('redirectAfterLogin')
+        navigate(redirectTo);
       } else {
-        //alert(data.message || "Invalid login");
         setError(data.message || "Invalid login");
       }
     } catch (error) {
-      //alert("Server error");
-      console.log(error, "errormil gaya");
+      console.error("Login error:", error);
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <SVGSymbols />
-      <Header />
-
-      <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
         <div className="row w-100 justify-content-center">
           <div className="col-11 col-sm-8 col-md-6 col-lg-4">
             <div className="card shadow border-0">
@@ -129,11 +139,11 @@ const Login = ({ setIsLoggedIn }) => {
                   >
                     {isSignup
                       ? "Already have an account? Sign In"
-
-                      : 
-                      <Link to={"/sign-up"}>
-                        "New user? Sign Up"
-                      </Link>
+                      : (
+                        <Link to={"/sign-up"} className="text-decoration-none">
+                          New user? Sign Up
+                        </Link>
+                      )
                     }
                     
                   </button>
@@ -144,7 +154,7 @@ const Login = ({ setIsLoggedIn }) => {
           </div>
         </div>
       </div>
-    </>
+   
   );
 };
 

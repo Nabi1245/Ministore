@@ -1,78 +1,127 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const Sidebar = () => {
-  // ✅ Hook must be here (top-level of component)
+const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-
   const handleLogout = () => {
     // 1️⃣ Clear auth data
     localStorage.removeItem("adminToken");
     localStorage.removeItem("isAdmin");
-
     // 2️⃣ Redirect to login
     navigate("/admin/login", { replace: true });
   };
 
+  // Navigation items
+  const navItems = [
+    { path: "/admin/dashboard", label: "Dashboard" },
+    { path: "/admin/categories", label: "Categories" },
+    { path: "/admin/mobile-brand", label: "Mobile Brand" },
+    { path: "/admin/mobile-model", label: "Mobile Model" },
+    { path: "/admin/products", label: "Products" },
+    { path: "/admin/mobile-case", label: "Mobile Case" },
+  ];
+
+  const handleLinkClick = () => {
+    // Close sidebar on mobile when link is clicked
+    if (window.innerWidth < 768) {
+      onClose();
+    }
+  };
+
   return (
-    <aside
-      className="col-12 col-md-3 col-lg-2 bg-white border-end d-flex flex-column p-3"
-      style={{ height: "100vh" }}
-    >
-      {/* Logo */}
-      <div className="mb-4 fw-bold fs-5 text-primary">
-        Admin Panel
-      </div>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+          style={{ zIndex: 1039 }}
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside
+        className="col-12 col-md-3 col-lg-2 bg-white border-end d-none d-md-flex flex-column p-3"
+        style={{ 
+          height: "100vh",
+          position: 'static'
+        }}
+      >
+        {/* Logo */}
+        <div className="mb-3 mb-md-4 fw-bold fs-5 text-primary">Admin Panel</div>
 
-      {/* Navigation */}
-      <ul className="nav nav-pills flex-column gap-2">
-        <li className="nav-item">
-          <Link to="/admin/dashboard" className="btn btn-light text-start w-100">
-            Dashboard
-          </Link>
-        </li>
+        {/* Navigation */}
+        <ul className="nav nav-pills flex-column gap-2" style={{ overflowY: 'auto', flex: 1 }}>
+          {navItems.map((item) => (
+            <li key={item.path} className="nav-item">
+              <Link
+                to={item.path}
+                className="btn btn-light text-start w-100"
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-        <li className="nav-item">
-          <Link to="/admin/categories" className="btn btn-light text-start w-100">
-            Categories
-          </Link>
-        </li>
+        {/* Logout */}
+        <div className="mt-auto pt-3 border-top">
+          <button className="btn btn-danger w-100" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </aside>
 
-        <li className="nav-item">
-          <Link to="/admin/mobile-brand" className="btn btn-light text-start w-100">
-            Mobile Brand
-          </Link>
-        </li>
+      {/* Mobile Sidebar (Fixed Position) */}
+      <aside
+        className={`d-md-none position-fixed bg-white border-end d-flex flex-column p-3 ${
+          isOpen ? '' : 'd-none'
+        }`}
+        style={{ 
+          height: "100vh",
+          width: '280px',
+          left: isOpen ? '0' : '-280px',
+          top: 0,
+          zIndex: 1040,
+          transition: 'left 0.3s ease-in-out',
+          boxShadow: isOpen ? '2px 0 10px rgba(0,0,0,0.1)' : 'none'
+        }}
+      >
+        {/* Mobile Close Button */}
+        <div className="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+          <div className="fw-bold fs-5 text-primary">Admin Panel</div>
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            onClick={onClose}
+            aria-label="Close sidebar"
+          >
+            ✕
+          </button>
+        </div>
 
-        <li className="nav-item">
-          <Link to="/admin/mobile-model" className="btn btn-light text-start w-100">
-            Mobile Model
-          </Link>
-        </li>
+        {/* Navigation */}
+        <ul className="nav nav-pills flex-column gap-2" style={{ overflowY: 'auto', flex: 1 }}>
+          {navItems.map((item) => (
+            <li key={item.path} className="nav-item">
+              <Link
+                to={item.path}
+                className="btn btn-light text-start w-100"
+                onClick={handleLinkClick}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-        <li className="nav-item">
-          <Link to="/admin/products" className="btn btn-light text-start w-100">
-            Products
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/admin/mobile-case" className="btn btn-light text-start w-100">
-            Mobile Case
-          </Link>
-        </li>
-      </ul>
-
-      {/* Logout */}
-      <div className="mt-auto">
-        <button
-          className="btn btn-danger w-100"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-      </div>
-    </aside>
+        {/* Logout */}
+        <div className="mt-auto pt-3 border-top">
+          <button className="btn btn-danger w-100" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

@@ -1,6 +1,4 @@
 import React from 'react'
-import Header from '../components/Header'
-import SearchPopup from '../components/SearchPopup'
 import Billboard from '../components/Billboard'
 import CompanyServices from '../components/CompanyServices'
 import MobileProducts from '../components/MobileProducts'
@@ -10,15 +8,10 @@ import LatestBlog from '../components/LatestBlog'
 import Testimonials from '../components/Testimonials'
 import Subscribe from '../components/Subscribe'
 import Instagram from '../components/Instagram'
-import Footer from '../components/Footer'
-import SVGSymbols from '../components/SVGSymbols'
 
-const Home = ({ isLoggedIn,setIsLoggedIn }) => {
+const Home = () => {
   return (
     <>
-      <SVGSymbols />
-      <SearchPopup />
-      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
       <Billboard />
       <CompanyServices />
       <MobileProducts />
@@ -28,10 +21,8 @@ const Home = ({ isLoggedIn,setIsLoggedIn }) => {
       <Testimonials />
       <Subscribe />
       <Instagram />
-      <Footer />
     </>
   )
 }
 
 export default Home
-

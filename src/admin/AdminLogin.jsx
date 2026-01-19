@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { adminAPI } from "../utils/api";
 
 const AdminLogin = ({ setIsAdmin }) => {
   const [email, setEmail] = useState("");
@@ -20,30 +21,18 @@ const AdminLogin = ({ setIsAdmin }) => {
     setError("");
 
     try {
-      const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/auth/admin/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
-
-      if (res.ok && data.token) {
+      const data = await adminAPI.login(email, password);
+      
+      if (data.token) {
         localStorage.setItem("adminToken", data.token);
         localStorage.setItem("isAdmin", "true");
         navigate("/admin/dashboard", { replace: true });
       } else {
-        //alert(data.message || "Invalid admin credentials");
         setError(data.message || "Invalid admin credentials");
       }
     } catch (error) {
-      //console.error("Admin login error:", error);
-      alert("Server error. Please try again later.");
-      setError("Server error. Please try again later.");
+      console.error("Admin login error:", error);
+      setError(error.message || "Server error. Please try again later.");
     } finally {
       setLoading(false);
     }
