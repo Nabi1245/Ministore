@@ -99,11 +99,34 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
     
     if (!response.ok) {
+      // Handle invalid or expired token (401 Unauthorized or 403 Forbidden with token error)
+      const isTokenError = (response.status === 401 || response.status === 403) && 
+                          data.message && 
+                          (data.message.toLowerCase().includes('invalid or expired token') || 
+                           data.message.toLowerCase().includes('invalid token') ||
+                           data.message.toLowerCase().includes('expired token') ||
+                           data.message.toLowerCase().includes('token expired'));
+      
+      if (isTokenError) {
+        // Clear invalid token
+        localStorage.removeItem('token');
+        // Clear user-related data
+        localStorage.removeItem('user');
+        // Create a custom error that can be caught and handled
+        const error = new Error(data.message || 'Invalid or expired token');
+        error.isTokenError = true;
+        error.status = response.status;
+        throw error;
+      }
       throw new Error(data.message || 'API request failed');
     }
     
     return { data, status: response.status };
   } catch (error) {
+    // If it's already our custom error, re-throw it
+    if (error.isTokenError) {
+      throw error;
+    }
     console.error('API Error:', error);
     throw error;
   }
