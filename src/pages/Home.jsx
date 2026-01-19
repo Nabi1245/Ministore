@@ -17,7 +17,7 @@ const Home = () => {
       <MobileProducts />
       <SmartWatches />
       <YearlySale />
-      <LatestBlog />
+      {/* <LatestBlog /> */}
       <Testimonials />
       <Subscribe />
       <Instagram />

@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate();
   const { mergeGuestCart } = useCart();
 
@@ -97,13 +98,22 @@ const Login = () => {
                 {/* Password */}
                 <div className="mb-4">
                   <label className="form-label">Password</label>
-                  <input
-                    type="password"
+                  <div className="input-group">
+                    <input
+                    type={showPassword ?  "text" : "password"}
                     className={`form-control ${error ? "is-invalid" : ""}`}
                     placeholder="Enter password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button 
+                  type="button" 
+                  className="btn btn-outline-secondary" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                  </div>
                 </div>
 
                 {/* Button */}

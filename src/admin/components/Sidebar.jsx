@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  
   const handleLogout = () => {
+    // 1️⃣ Clear auth data
     localStorage.removeItem("adminToken");
     localStorage.removeItem("isAdmin");
-    navigate("/admin/login");
+    // 2️⃣ Redirect to login
+    navigate("/admin/login", { replace: true });
   };
 
   // Navigation items
