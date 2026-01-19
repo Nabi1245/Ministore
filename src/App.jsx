@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { SearchPopupProvider } from "./contexts/SearchPopupContext";
 import { CartProvider } from "./contexts/CartContext";
+import UserLayout from "./components/UserLayout";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import ProductDetails from "./pages/ProductDetails";
@@ -35,14 +36,6 @@ function App() {
       // Bootstrap is available via CDN
     }
   }, []);
-  // 🔴 LOGIN STATE (truth source)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
 
   // admin panel
   const [isAdmin, setIsAdmin] = useState(
@@ -55,25 +48,17 @@ function App() {
         <CartProvider>
           <SearchPopupProvider>
             <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-                }
-              />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/product/:id" element={<ProductDetails />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route
-                path="/login"
-                element={<Login setIsLoggedIn={setIsLoggedIn} />}
-              />
-              <Route
-                path="/login-auth"
-                element={<Auth isLoggedIn={setIsLoggedIn} />}
-              />
-              <Route path="/sign-up" element={<SignUp />} />
+              {/* User Routes with Universal Layout */}
+              <Route path="/" element={<UserLayout />}>
+                <Route index element={<Home />} />
+                <Route path="shop" element={<Shop />} />
+                <Route path="product/:id" element={<ProductDetails />} />
+                <Route path="cart" element={<Cart />} />
+                <Route path="checkout" element={<Checkout />} />
+                <Route path="login" element={<Login />} />
+                <Route path="login-auth" element={<Auth />} />
+                <Route path="sign-up" element={<SignUp />} />
+              </Route>
 
               {/* Admin Routes */}
 
@@ -81,101 +66,62 @@ function App() {
                 path="/admin/login"
                 element={<AdminLogin setIsAdmin={setIsAdmin} />}
               />
-              <Route 
-                path="/"
-                element={<Layout/>}
+              
+              {/* Admin Routes with Layout */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminProtectedRoute>
+                    <Layout />
+                  </AdminProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route
+                  path="dashboard"
+                  element={<AdminDashboard />}
                 />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminDashboard />
-                  </AdminProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/categories"
-                element={
-                  <AdminProtectedRoute>
-                    <CategoryDashboard />
-                  </AdminProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/categories/add"
-                element={
-                  <AdminProtectedRoute>
-                    <AddCategory />
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/mobile-brand/add"
-                element={
-                  <AdminProtectedRoute>
-                    <AddMobileBrand />
-                  </AdminProtectedRoute>
-                }
-              />
-               <Route
-                path="/admin/mobile-brand"
-                element={
-                  <AdminProtectedRoute>
-                    <MobileBrandDashboard />
-                  </AdminProtectedRoute>
-                }
-              />
-               <Route
-                path="/admin/mobile-model"
-                element={
-                  <AdminProtectedRoute>
-                    <MobileModelDashboard />
-                  </AdminProtectedRoute>
-                }
-              />
-               <Route
-                path="/admin/mobile-model/add"
-                element={
-                  <AdminProtectedRoute>
-                    <AddMobileModel />
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/products"
-                element={
-                  <AdminProtectedRoute>
-                    <ProductsDashboard/>
-                  </AdminProtectedRoute>
-                }
-              />
-             
-              <Route
-                path="/admin/products/add"
-                element={
-                  <AdminProtectedRoute>
-                    <AddProduct/>
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/mobile-case"
-                element={
-                  <AdminProtectedRoute>
-                    <MobileCase/>
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/mobile-case/add"
-                element={
-                  <AdminProtectedRoute>
-                    <AddMobileCase/>
-                  </AdminProtectedRoute>
-                }
-              />
+                <Route
+                  path="categories"
+                  element={<CategoryDashboard />}
+                />
+                <Route
+                  path="categories/add"
+                  element={<AddCategory />}
+                />
+                <Route
+                  path="mobile-brand"
+                  element={<MobileBrandDashboard />}
+                />
+                <Route
+                  path="mobile-brand/add"
+                  element={<AddMobileBrand />}
+                />
+                <Route
+                  path="mobile-model"
+                  element={<MobileModelDashboard />}
+                />
+                <Route
+                  path="mobile-model/add"
+                  element={<AddMobileModel />}
+                />
+                <Route
+                  path="products"
+                  element={<ProductsDashboard />}
+                />
+                <Route
+                  path="products/add"
+                  element={<AddProduct />}
+                />
+                <Route
+                  path="mobile-case"
+                  element={<MobileCase />}
+                />
+                <Route
+                  path="mobile-case/add"
+                  element={<AddMobileCase />}
+                />
+              </Route>
               
 
             </Routes>

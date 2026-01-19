@@ -14,7 +14,7 @@ const MobileProducts = () => {
   const handleAddToCart = (product, e) => {
     e.preventDefault()
     addToCart(product, 1)
-    alert(`${product.name} added to cart!`)
+    alert(`${product.title || product.name} added to cart!`)
   }
 
   return (
@@ -72,7 +72,7 @@ const MobileProducts = () => {
                   <div className="card-detail d-flex justify-content-between align-items-baseline pt-3">
                     <h3 className="card-title text-uppercase">
                       <Link to={`/product/${product.id}`} className="text-decoration-none text-dark">
-                        {product.name}
+                        {product.title || product.name}
                       </Link>
                     </h3>
                     <span className="item-price text-primary">${product.price}</span>
