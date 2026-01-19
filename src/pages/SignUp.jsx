@@ -11,6 +11,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // const handleSignup = async () => {
@@ -107,13 +108,25 @@ const SignUp = () => {
                 {/* Password */}
                 <div className="mb-4">
                   <label className="form-label">Password</label>
-                  <input
-                    type="password"
+                  <div className="input-group">
+
+                     <input
+                    type={showPassword ?  "text" : "password"}
                     className={`form-control ${error ? "is-invalid" : ""}`}
                     placeholder="Create password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button
+                  className='btn btn-outline-secondary'
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                  </div>
+                 
                 </div>
 
                 {/* Button */}

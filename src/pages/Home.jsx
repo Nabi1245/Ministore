@@ -24,7 +24,7 @@ const Home = ({ isLoggedIn,setIsLoggedIn }) => {
       <MobileProducts />
       <SmartWatches />
       <YearlySale />
-      <LatestBlog />
+      {/* <LatestBlog /> */}
       <Testimonials />
       <Subscribe />
       <Instagram />
