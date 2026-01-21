@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
+import { userAuthAPI } from "../utils/api";
 import "./auth.css";
 
 const Login = () => {
@@ -17,19 +18,11 @@ const Login = () => {
     try {
       setLoading(true);
       setError("");
-      const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/auth/user/signin",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (res.status === 200) {
-        localStorage.setItem("token", data.token); // browser memory
+      
+      const data = await userAuthAPI.signin(email, password);
+      
+      if (data.token) {
+        localStorage.setItem("token", data.token);
         
         // Dispatch event to sync login state across components
         window.dispatchEvent(new Event("loginStatusChanged"));

@@ -15,9 +15,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   const navItems = [
     { path: "/admin/dashboard", label: "Dashboard" },
     { path: "/admin/categories", label: "Categories" },
+    { path: "/admin/products", label: "Products" },
+    { path: "/admin/orders", label: "Orders" },
+    { path: "/admin/users", label: "Users" },
+    { path: "/admin/admins", label: "Admins" },
     { path: "/admin/mobile-brand", label: "Mobile Brand" },
     { path: "/admin/mobile-model", label: "Mobile Model" },
-    { path: "/admin/products", label: "Products" },
     { path: "/admin/mobile-case", label: "Mobile Case" },
   ];
 
