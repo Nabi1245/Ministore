@@ -31,7 +31,7 @@ const AddProduct = () => {
     const fetchCategories = async () => {
       try {
         const res = await fetch(
-          "https://artiststation.co.in/foxecom/api/categories"
+          "https://artiststation.co.in/foxecom/api/categories",
         );
         const data = await res.json();
         if (res.ok) setCategories(data);
@@ -100,7 +100,7 @@ const AddProduct = () => {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-        }
+        },
       );
 
       const data = await res.json();
@@ -134,9 +134,7 @@ const AddProduct = () => {
               <h4 className="mb-3 fw-bold">Add Product</h4>
 
               {error && <div className="alert alert-danger">{error}</div>}
-              {success && (
-                <div className="alert alert-success">{success}</div>
-              )}
+              {success && <div className="alert alert-success">{success}</div>}
 
               <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <div className="row g-3">
@@ -236,13 +234,29 @@ const AddProduct = () => {
                 </div>
 
                 <div className="d-flex justify-content-end mt-4">
-                  <button
+                  <div className="col-12 d-flex gap-2 mt-3">
+                     <button
                     type="submit"
                     className="btn btn-primary px-4"
                     disabled={loading}
                   >
                     {loading ? "Uploading..." : "Create Product"}
                   </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate(-1)}
+                  >
+                    Cancel
+                  </button>
+
+                  </div>
+                 
+
+                  {/* <div className="col-12 d-flex gap-2 mt-3">
+         
+         
+        </div> */}
                 </div>
               </form>
             </div>

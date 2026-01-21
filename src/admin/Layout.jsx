@@ -14,7 +14,7 @@ const Layout = () => {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="">
       <div className="row g-0">
         {/* ===== LEFT SIDEBAR (FIXED, NO SCROLL) ===== */}
         {/* <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} /> */}

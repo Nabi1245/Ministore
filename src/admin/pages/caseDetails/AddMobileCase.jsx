@@ -266,13 +266,21 @@ const AddMobileCase = () => {
                   </div>
                 </div>
 
-                <div className="text-end mt-4">
+                <div className="col-12 d-flex gap-2 mt-3 text-end mt-4">
                   <button
                     type="submit"
                     className="btn btn-primary px-4"
                     disabled={loading}
                   >
                     {loading ? "Saving..." : "Create Case Details"}
+                  </button>
+                  
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate(-1)}
+                  >
+                    Cancel
                   </button>
                 </div>
               </form>
