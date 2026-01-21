@@ -101,39 +101,6 @@ const Shop = () => {
         <div className="row mb-4">
           <div className="col-12">
             <h1 className="display-5 text-uppercase mb-4">Shop</h1>
-
-            <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
-              <div className="category-filter d-flex gap-2 flex-wrap">
-                <button
-                  className={`btn ${selectedCategory === 'all' ? 'btn-dark' : 'btn-outline-dark'}`}
-                  onClick={() => setSelectedCategory('all')}
-                >
-                  All Products
-                </button>
-                {categories.map(cat => (
-                  <button
-                    key={cat.id}
-                    className={`btn ${selectedCategory === cat.name.toLowerCase() ? 'btn-dark' : 'btn-outline-dark'}`}
-                    onClick={() => setSelectedCategory(cat.name.toLowerCase())}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
-
-              <div className="sort-filter">
-                <select
-                  className="form-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  style={{ width: '200px' }}
-                >
-                  <option value="default">Default Sorting</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                </select>
-              </div>
-            </div>
           </div>
         </div>
 

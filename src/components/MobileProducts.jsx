@@ -1,20 +1,53 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination } from 'swiper/modules'
-import { getProductsByCategory } from '../data/products'
+import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
 const MobileProducts = () => {
   const { addToCart } = useCart()
-  const products = getProductsByCategory('mobile')
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const handleAddToCart = (product, e) => {
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true)
+      // Get mobile case category products
+      const categories = await categoryAPI.getAll()
+      const mobileCategory = categories.find(cat => 
+        cat.name.toLowerCase().includes('mobile') || 
+        cat.name.toLowerCase().includes('case')
+      )
+      
+      if (mobileCategory) {
+        const params = {
+          categoryId: mobileCategory.id,
+          limit: 8,
+          page: 1
+        }
+        const productsData = await productAPI.getAll(params)
+        setProducts(productsData || [])
+      }
+    } catch (error) {
+      console.error('Error loading mobile products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddToCart = async (product, e) => {
     e.preventDefault()
-    addToCart(product, 1)
-    alert(`${product.title || product.name} added to cart!`)
+    const success = await addToCart(product, 1)
+    if (success) {
+      alert(`${product.title || product.name} added to cart!`)
+    }
   }
 
   return (
@@ -47,12 +80,25 @@ const MobileProducts = () => {
               }
             }}
           >
-            {products.map((product) => (
+            {loading ? (
+              <SwiperSlide>
+                <div className="text-center p-4">Loading...</div>
+              </SwiperSlide>
+            ) : products.length === 0 ? (
+              <SwiperSlide>
+                <div className="text-center p-4">No products available</div>
+              </SwiperSlide>
+            ) : (
+              products.map((product) => (
               <SwiperSlide key={product.id}>
                 <div className="product-card position-relative">
                   <Link to={`/product/${product.id}`}>
                     <div className="image-holder">
-                      <img src={product.image} alt="product-item" className="img-fluid" />
+                      <img 
+                        src={getImageUrl(product.thumbnailImage || product.images?.[0]?.imageUrl)} 
+                        alt={product.title} 
+                        className="img-fluid" 
+                      />
                     </div>
                   </Link>
                   <div className="cart-concern position-absolute">
@@ -75,11 +121,12 @@ const MobileProducts = () => {
                         {product.title || product.name}
                       </Link>
                     </h3>
-                    <span className="item-price text-primary">${product.price}</span>
+                    <span className="item-price text-primary">₹{parseFloat(product.price || 0).toFixed(2)}</span>
                   </div>
                 </div>
               </SwiperSlide>
-            ))}
+              ))
+            )}
           </Swiper>
         </div>
       </div>

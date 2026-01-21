@@ -3,6 +3,7 @@ import SVGSymbols from '../components/SVGSymbols'
 import Header from '../components/Header'
 import "./auth.css";
 import { useNavigate } from 'react-router-dom';
+import { userAuthAPI } from '../utils/api';
 
 const SignUp = () => {
 
@@ -33,34 +34,24 @@ const SignUp = () => {
   // }
 
   const handleSignup = async () => {
-  try {
-    const res = await fetch(
-      "https://artiststation.co.in/foxecom/api/auth/user/signup",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Signup successful, please login");
-      navigate("/login"); // ya signin page
-    } else {
-      alert(data.message || "Signup failed");
+    try {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      
+      await userAuthAPI.signup(email, password);
+      
+      setSuccess("Signup successful! Please login to continue.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (error) {
+      console.error("Signup error:", error);
+      setError(error.message || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.log(error);
-    alert("Server error");
-  }
-};
+  };
   return (
     <>
       <SVGSymbols />

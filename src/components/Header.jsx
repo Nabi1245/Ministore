@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
+import { userAuthAPI } from "../utils/api";
 
 const Header = ({ isLoggedIn: propIsLoggedIn, setIsLoggedIn: propSetIsLoggedIn }) => {
   const { getCartItemsCount, loadCart } = useCart();
@@ -62,13 +63,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, setIsLoggedIn: propSetIsLoggedIn }
       if (token) {
         // Call logout API if token exists
         try {
-          await fetch("https://artiststation.co.in/foxecom/api/auth/user/signout", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          await userAuthAPI.signout();
         } catch (apiError) {
           console.log("Signout API error", apiError);
           // Continue with logout even if API call fails
@@ -289,6 +284,18 @@ const Header = ({ isLoggedIn: propIsLoggedIn, setIsLoggedIn: propSetIsLoggedIn }
                       </button>
                       <ul className="dropdown-menu dropdown-menu-start dropdown-menu-lg-end shadow w-100 w-lg-auto">
                         <li>
+                          <Link
+                            className="dropdown-item"
+                            to="/my-orders"
+                            data-bs-dismiss="offcanvas"
+                          >
+                            My Orders
+                          </Link>
+                        </li>
+                        <li>
+                          <hr className="dropdown-divider" />
+                        </li>
+                        <li>
                           <button
                             className="dropdown-item text-danger"
                             onClick={handleLogout}
@@ -336,6 +343,17 @@ const Header = ({ isLoggedIn: propIsLoggedIn, setIsLoggedIn: propSetIsLoggedIn }
                         Account
                       </button>
                       <ul className="dropdown-menu dropdown-menu-end shadow">
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to="/my-orders"
+                          >
+                            My Orders
+                          </Link>
+                        </li>
+                        <li>
+                          <hr className="dropdown-divider" />
+                        </li>
                         <li>
                           <button
                             className="dropdown-item text-danger"

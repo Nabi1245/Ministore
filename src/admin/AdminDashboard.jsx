@@ -107,9 +107,9 @@ const AdminDashboard = () => {
               <h2 className="text-info mb-2 mb-md-3" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 {dashboardStats.totalUsers || 0}
               </h2>
-              <button className="btn btn-info btn-sm w-100 w-md-auto" onClick={() => alert('Users page coming soon')}>
+              <Link to={"/admin/users"} className="btn btn-info btn-sm w-100 w-md-auto">
                 View Users
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -122,9 +122,9 @@ const AdminDashboard = () => {
               <h2 className="text-warning mb-2 mb-md-3" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 {dashboardStats.totalOrders || 0}
               </h2>
-              <button className="btn btn-warning btn-sm w-100 w-md-auto" onClick={() => alert('Orders page coming soon')}>
+              <Link to={"/admin/orders"} className="btn btn-warning btn-sm w-100 w-md-auto">
                 View Orders
-              </button>
+              </Link>
             </div>
           </div>
         </div>

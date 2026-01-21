@@ -14,12 +14,7 @@ const Home = () => {
     <>
       <Billboard />
       <CompanyServices />
-      <MobileProducts />
-      <SmartWatches />
       <YearlySale />
-      {/* <LatestBlog /> */}
-      <Testimonials />
-      <Subscribe />
       <Instagram />
     </>
   )

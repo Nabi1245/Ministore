@@ -37,10 +37,30 @@ const adminApiRequest = async (endpoint, options = {}) => {
   
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+    
+    // Handle 204 No Content and other responses with no body
+    if (response.status === 204 || response.status === 201) {
+      // Check if response has content before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        return { data: null, status: response.status };
+      }
+    }
+    
+    // Try to parse JSON, but handle empty responses gracefully
+    let data = null;
+    const text = await response.text();
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        // If parsing fails, return the text as data
+        data = text;
+      }
+    }
     
     if (!response.ok) {
-      throw new Error(data.message || 'API request failed');
+      throw new Error(data?.message || 'API request failed');
     }
     
     return { data, status: response.status };
@@ -96,12 +116,32 @@ const apiRequest = async (endpoint, options = {}) => {
   
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+    
+    // Handle 204 No Content and other responses with no body
+    if (response.status === 204 || response.status === 201) {
+      // Check if response has content before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        return { data: null, status: response.status };
+      }
+    }
+    
+    // Try to parse JSON, but handle empty responses gracefully
+    let data = null;
+    const text = await response.text();
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        // If parsing fails, return the text as data
+        data = text;
+      }
+    }
     
     if (!response.ok) {
       // Handle invalid or expired token (401 Unauthorized or 403 Forbidden with token error)
       const isTokenError = (response.status === 401 || response.status === 403) && 
-                          data.message && 
+                          data && data.message && 
                           (data.message.toLowerCase().includes('invalid or expired token') || 
                            data.message.toLowerCase().includes('invalid token') ||
                            data.message.toLowerCase().includes('expired token') ||
@@ -118,7 +158,7 @@ const apiRequest = async (endpoint, options = {}) => {
         error.status = response.status;
         throw error;
       }
-      throw new Error(data.message || 'API request failed');
+      throw new Error(data?.message || 'API request failed');
     }
     
     return { data, status: response.status };
@@ -165,6 +205,32 @@ export const categoryAPI = {
   },
 };
 
+// Mobile Brand APIs
+export const mobileBrandAPI = {
+  getAll: async () => {
+    const { data } = await apiRequest('/mobile-brands');
+    return data;
+  },
+  
+  getById: async (id) => {
+    const { data } = await apiRequest(`/mobile-brands/${id}`);
+    return data;
+  },
+};
+
+// Mobile Model APIs
+export const mobileModelAPI = {
+  getAll: async () => {
+    const { data } = await apiRequest('/mobile-models');
+    return data;
+  },
+  
+  getById: async (id) => {
+    const { data } = await apiRequest(`/mobile-models/${id}`);
+    return data;
+  },
+};
+
 // Guest Cart APIs
 export const guestCartAPI = {
   create: async (guestCartId) => {
@@ -197,9 +263,11 @@ export const guestCartAPI = {
   },
   
   removeItem: async (guestCartId, productId) => {
-    await apiRequest(`/guest-cart/${guestCartId}/item/${productId}`, {
+    const { data, status } = await apiRequest(`/guest-cart/${guestCartId}/item/${productId}`, {
       method: 'DELETE',
     });
+    // 204 No Content is expected for successful delete
+    return { success: status === 204 || status === 200, data };
   },
 };
 
@@ -227,15 +295,19 @@ export const userCartAPI = {
   },
   
   removeItem: async (productId) => {
-    await apiRequest(`/cart/${productId}`, {
+    const { data, status } = await apiRequest(`/cart/${productId}`, {
       method: 'DELETE',
     });
+    // 204 No Content is expected for successful delete
+    return { success: status === 204 || status === 200, data };
   },
   
   clear: async () => {
-    await apiRequest('/cart', {
+    const { data, status } = await apiRequest('/cart', {
       method: 'DELETE',
     });
+    // 204 No Content is expected for successful delete
+    return { success: status === 204 || status === 200, data };
   },
   
   mergeGuestCart: async (guestCartId) => {
@@ -301,6 +373,11 @@ export const orderAPI = {
     });
     return data;
   },
+
+  trackOrder: async (orderId) => {
+    const { data } = await apiRequest(`/track/${orderId}`);
+    return data;
+  },
 };
 
 // Payment APIs
@@ -319,6 +396,83 @@ export const paymentAPI = {
       body: JSON.stringify(paymentData),
     });
     return data;
+  },
+};
+
+// User Authentication APIs
+export const userAuthAPI = {
+  signup: async (email, password) => {
+    const { data } = await apiRequest('/auth/user/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    return data;
+  },
+
+  signin: async (email, password) => {
+    const { data } = await apiRequest('/auth/user/signin', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    return data;
+  },
+
+  signout: async () => {
+    const { data } = await apiRequest('/auth/user/signout', {
+      method: 'POST',
+    });
+    return data;
+  },
+
+  getCurrentUser: async () => {
+    const { data } = await apiRequest('/auth/user/me');
+    return data;
+  },
+
+  refreshToken: async () => {
+    const { data } = await apiRequest('/auth/user/refresh-token', {
+      method: 'POST',
+    });
+    return data;
+  },
+
+  forgotPassword: async (email) => {
+    const { data } = await apiRequest('/auth/user/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    return data;
+  },
+
+  resetPassword: async (token, newPassword) => {
+    const { data } = await apiRequest('/auth/user/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    });
+    return data;
+  },
+};
+
+// User Profile APIs
+export const userAPI = {
+  getProfile: async () => {
+    const { data } = await apiRequest('/me');
+    return data;
+  },
+
+  updateProfile: async (userData) => {
+    const { data } = await apiRequest('/me', {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+    return data;
+  },
+
+  deleteAccount: async () => {
+    const { data, status } = await apiRequest('/me', {
+      method: 'DELETE',
+    });
+    return { success: status === 204 || status === 200, data };
   },
 };
 
@@ -348,7 +502,7 @@ export const adminAPI = {
     return data;
   },
 
-  // Admin Management
+  // Admin Management - CRUD
   createAdmin: async (adminData) => {
     const { data } = await adminApiRequest('/admins', {
       method: 'POST',
@@ -402,7 +556,140 @@ export const adminAPI = {
     return data;
   },
 
-  // User Management (Admin only)
+  // Category Management - CRUD
+  createCategory: async (categoryData) => {
+    const { data } = await adminApiRequest('/categories', {
+      method: 'POST',
+      body: JSON.stringify(categoryData),
+    });
+    return data;
+  },
+
+  updateCategory: async (id, categoryData) => {
+    const { data } = await adminApiRequest(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(categoryData),
+    });
+    return data;
+  },
+
+  deleteCategory: async (id) => {
+    await adminApiRequest(`/categories/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Product Management - CRUD
+  createProduct: async (formData) => {
+    const token = getAdminToken();
+    const url = `${API_BASE_URL}/products`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData, // FormData for file uploads
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create product');
+    }
+    return data;
+  },
+
+  updateProduct: async (id, formData) => {
+    const token = getAdminToken();
+    const url = `${API_BASE_URL}/products/${id}`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData, // FormData for file uploads
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update product');
+    }
+    return data;
+  },
+
+  deleteProduct: async (id) => {
+    await adminApiRequest(`/products/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Mobile Brand Management - CRUD
+  createMobileBrand: async (brandData) => {
+    const { data } = await adminApiRequest('/mobile-brands', {
+      method: 'POST',
+      body: JSON.stringify(brandData),
+    });
+    return data;
+  },
+
+  updateMobileBrand: async (id, brandData) => {
+    const { data } = await adminApiRequest(`/mobile-brands/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(brandData),
+    });
+    return data;
+  },
+
+  deleteMobileBrand: async (id) => {
+    await adminApiRequest(`/mobile-brands/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Mobile Model Management - CRUD
+  createMobileModel: async (modelData) => {
+    const { data } = await adminApiRequest('/mobile-models', {
+      method: 'POST',
+      body: JSON.stringify(modelData),
+    });
+    return data;
+  },
+
+  updateMobileModel: async (id, modelData) => {
+    const { data } = await adminApiRequest(`/mobile-models/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(modelData),
+    });
+    return data;
+  },
+
+  deleteMobileModel: async (id) => {
+    await adminApiRequest(`/mobile-models/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Case Details Management - CRUD
+  createCaseDetail: async (caseData) => {
+    const { data } = await adminApiRequest('/case-details', {
+      method: 'POST',
+      body: JSON.stringify(caseData),
+    });
+    return data;
+  },
+
+  updateCaseDetail: async (id, caseData) => {
+    const { data } = await adminApiRequest(`/case-details/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(caseData),
+    });
+    return data;
+  },
+
+  deleteCaseDetail: async (id) => {
+    await adminApiRequest(`/case-details/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // User Management (Admin only) - CRUD
   getAllUsers: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = `/admin/users${queryString ? `?${queryString}` : ''}`;
@@ -420,7 +707,21 @@ export const adminAPI = {
     return data;
   },
 
-  // Admin Orders
+  updateUser: async (id, userData) => {
+    const { data } = await adminApiRequest(`/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+    return data;
+  },
+
+  deleteUser: async (id) => {
+    await adminApiRequest(`/users/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Admin Orders - CRUD
   getAllOrders: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = `/admin/orders${queryString ? `?${queryString}` : ''}`;
@@ -437,11 +738,15 @@ export const adminAPI = {
 export default {
   productAPI,
   categoryAPI,
+  mobileBrandAPI,
+  mobileModelAPI,
   guestCartAPI,
   userCartAPI,
   checkoutAPI,
   orderAPI,
   paymentAPI,
   caseDetailsAPI,
+  userAuthAPI,
+  userAPI,
   adminAPI,
 };

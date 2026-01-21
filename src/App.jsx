@@ -29,6 +29,22 @@ import AddMobileCase from "./admin/pages/caseDetails/AddMobileCase";
 import ContactUs from "./pages/ContactUs.jsx";
 import MobileBrandDetails from "./admin/pages/mobileBrand/mobileBrandDetails.jsx";
 import ProductView from "./admin/pages/products/ProductView.jsx";
+import OrderSuccess from "./pages/OrderSuccess";
+import MyOrders from "./pages/MyOrders";
+import TrackOrder from "./pages/TrackOrder";
+// Import new admin pages
+import EditCategory from "./admin/pages/EditCategory";
+import EditProduct from "./admin/pages/products/EditProduct";
+import EditMobileBrand from "./admin/pages/mobileBrand/EditMobileBrand";
+import EditMobileModel from "./admin/pages/mobileModel/EditMobileModel";
+import EditMobileCase from "./admin/pages/caseDetails/EditMobileCase";
+import OrdersDashboard from "./admin/pages/orders/OrdersDashboard";
+import OrderView from "./admin/pages/orders/OrderView";
+import UsersDashboard from "./admin/pages/users/UsersDashboard";
+import UserView from "./admin/pages/users/UserView";
+import AdminsDashboard from "./admin/pages/admins/AdminsDashboard";
+import AddAdmin from "./admin/pages/admins/AddAdmin";
+import EditAdmin from "./admin/pages/admins/EditAdmin";
 
 
 
@@ -59,6 +75,9 @@ function App() {
                 <Route path="product/:id" element={<ProductDetails />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />
+                <Route path="order-success/:id" element={<OrderSuccess />} />
+                <Route path="my-orders" element={<MyOrders />} />
+                <Route path="order/:id/track" element={<TrackOrder />} />
                 <Route path="login" element={<Login />} />
                 <Route path="login-auth" element={<Auth />} />
                 <Route path="sign-up" element={<SignUp />} />
@@ -94,6 +113,10 @@ function App() {
                   element={<AddCategory />}
                 />
                 <Route
+                  path="categories/edit/:id"
+                  element={<EditCategory />}
+                />
+                <Route
                   path="mobile-brand"
                   element={<MobileBrandDashboard />}
                 />
@@ -106,12 +129,20 @@ function App() {
                   element={<MobileBrandDetails />}
                 />
                 <Route
+                  path="mobile-brand/edit/:id"
+                  element={<EditMobileBrand />}
+                />
+                <Route
                   path="mobile-model"
                   element={<MobileModelDashboard />}
                 />
                 <Route
                   path="mobile-model/add"
                   element={<AddMobileModel />}
+                />
+                <Route
+                  path="mobile-model/edit/:id"
+                  element={<EditMobileModel />}
                 />
                 <Route
                   path="products"
@@ -126,12 +157,48 @@ function App() {
                   element={<ProductView />}
                 />
                 <Route
+                  path="products/edit/:id"
+                  element={<EditProduct />}
+                />
+                <Route
                   path="mobile-case"
                   element={<MobileCase />}
                 />
                 <Route
                   path="mobile-case/add"
                   element={<AddMobileCase />}
+                />
+                <Route
+                  path="mobile-case/edit/:id"
+                  element={<EditMobileCase />}
+                />
+                <Route
+                  path="orders"
+                  element={<OrdersDashboard />}
+                />
+                <Route
+                  path="orders/view/:id"
+                  element={<OrderView />}
+                />
+                <Route
+                  path="users"
+                  element={<UsersDashboard />}
+                />
+                <Route
+                  path="users/view/:id"
+                  element={<UserView />}
+                />
+                <Route
+                  path="admins"
+                  element={<AdminsDashboard />}
+                />
+                <Route
+                  path="admins/add"
+                  element={<AddAdmin />}
+                />
+                <Route
+                  path="admins/edit/:id"
+                  element={<EditAdmin />}
                 />
               </Route>
               
