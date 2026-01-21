@@ -28,6 +28,7 @@ import MobileCase from "./admin/pages/caseDetails/MobileCase";
 import AddMobileCase from "./admin/pages/caseDetails/AddMobileCase";
 import ContactUs from "./pages/ContactUs.jsx";
 import MobileBrandDetails from "./admin/pages/mobileBrand/mobileBrandDetails.jsx";
+import ProductView from "./admin/pages/products/ProductView.jsx";
 
 
 
@@ -121,8 +122,8 @@ function App() {
                   element={<AddProduct />}
                 />
                 <Route
-                  path="/admin/products/details/:id"
-                  element={<ProductDetails />}
+                  path="/admin/products/view/:id"
+                  element={<ProductView />}
                 />
                 <Route
                   path="mobile-case"

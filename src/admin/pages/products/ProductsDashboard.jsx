@@ -127,7 +127,7 @@ const ProductsDashboard = () => {
 
                       <td className="text-center">
                         <Link
-                          to={`/admin/products/details/${product.id}`}
+                          to={`/admin/products/view/${product.id}`} 
                           className="btn btn-sm btn-outline-primary me-2"
                         >
                           View
