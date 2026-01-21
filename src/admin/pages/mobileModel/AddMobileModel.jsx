@@ -26,7 +26,7 @@ const AddMobileModel = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         const data = await res.json();
@@ -75,7 +75,7 @@ const AddMobileModel = () => {
             brandId,
             name,
           }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -133,14 +133,18 @@ const AddMobileModel = () => {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={loading}
-        >
-          {loading ? "Saving..." : "Save Model"}
-        </button>
+        <div className="col-12 d-flex gap-2 mt-3">
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? "Saving..." : "Save Model"}
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

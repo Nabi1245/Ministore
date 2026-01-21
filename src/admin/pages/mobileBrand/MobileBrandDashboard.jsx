@@ -2,40 +2,41 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const MobileBrandDashboard = () => {
-  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  /* =========================
+     FETCH BRANDS
+  ========================== */
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    const fetchBrands = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      setError("");
+        const res = await fetch(
+          "https://artiststation.co.in/foxecom/api/mobile-brands"
+        );
 
-      const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/mobile-brands",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        if (!res.ok) {
+          throw new Error("Failed to load brands");
         }
-      );
 
-      if (!res.ok) throw new Error("Failed to fetch categories");
+        const data = await res.json();
 
-      const data = await res.json();
-      setCategories(data || []);
-    } catch (err) {
-      console.error(err);
-      setError("Unable to load categories");
-    } finally {
-      setLoading(false);
-    }
-  };
+        // ensure array
+        setBrands(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load brands");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBrands();
+  }, []);
   return (
     <>
       {/* Page Header */}
@@ -53,7 +54,7 @@ const MobileBrandDashboard = () => {
           {loading && (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" />
-              <p className="mt-3 mb-0 text-muted">Loading categories...</p>
+              <p className="mt-3 mb-0 text-muted">Loading brands...</p>
             </div>
           )}
 
@@ -63,14 +64,14 @@ const MobileBrandDashboard = () => {
           )}
 
           {/* Empty */}
-          {!loading && !error && categories.length === 0 && (
+          {!loading && !error && brands.length === 0 && (
             <div className="text-center py-5 text-muted">
-              No categories found
+              No brands found
             </div>
           )}
 
           {/* Table */}
-          {!loading && !error && categories.length > 0 && (
+          {!loading && !error && brands.length > 0 && (
             <div className="table-responsive">
               <table className="table align-middle table-hover mb-0">
                 <thead className="table-light">
@@ -83,21 +84,27 @@ const MobileBrandDashboard = () => {
                 </thead>
 
                 <tbody>
-                  {categories.map((cat, index) => (
-                    <tr key={cat.id}>
+                  {brands.map((brand, index) => (
+                    <tr key={brand.id}>
                       <td>{index + 1}</td>
-                      <td className="fw-medium">{cat.name}</td>
+                      <td className="fw-medium">{brand.name}</td>
                       
                       <td className="text-muted">
-                        {new Date(cat.createdAt).toLocaleDateString()}
+                        {new Date(brand.createdAt).toLocaleDateString()}
                       </td>
                       <td className="text-center">
-                        <button className="btn btn-sm btn-outline-primary me-2">
+                        <Link 
+                        to={`/admin/mobile-brand/details/${brand.id}`}
+                        className="btn btn-sm btn-outline-primary me-2"
+                        >
                           View
-                        </button>
-                        <button className="btn btn-sm btn-outline-secondary">
+                        </Link>
+                        <Link 
+                        to={`/admin/mobile-brand/edit/${brand.id}`}
+                        className="btn btn-sm btn-outline-secondary"
+                        >
                           Edit
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   ))}

@@ -26,6 +26,8 @@ import ProductsDashboard from "./admin/pages/products/ProductsDashboard";
 import AddProduct from "./admin/pages/products/AddProducts";
 import MobileCase from "./admin/pages/caseDetails/MobileCase";
 import AddMobileCase from "./admin/pages/caseDetails/AddMobileCase";
+import ContactUs from "./pages/ContactUs.jsx";
+import MobileBrandDetails from "./admin/pages/mobileBrand/mobileBrandDetails.jsx";
 
 
 
@@ -52,6 +54,7 @@ function App() {
               <Route path="/" element={<UserLayout />}>
                 <Route index element={<Home />} />
                 <Route path="shop" element={<Shop />} />
+                <Route path="contact-us" element={<ContactUs />} />
                 <Route path="product/:id" element={<ProductDetails />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />
@@ -98,6 +101,10 @@ function App() {
                   element={<AddMobileBrand />}
                 />
                 <Route
+                  path="/admin/mobile-brand/details/:id"
+                  element={<MobileBrandDetails />}
+                />
+                <Route
                   path="mobile-model"
                   element={<MobileModelDashboard />}
                 />
@@ -112,6 +119,10 @@ function App() {
                 <Route
                   path="products/add"
                   element={<AddProduct />}
+                />
+                <Route
+                  path="/admin/products/details/:id"
+                  element={<ProductDetails />}
                 />
                 <Route
                   path="mobile-case"

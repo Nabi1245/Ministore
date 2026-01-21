@@ -223,6 +223,11 @@ const Header = ({ isLoggedIn: propIsLoggedIn, setIsLoggedIn: propSetIsLoggedIn }
                     Products
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link to="/contact-us" className="nav-link" >
+                    ContactUs
+                  </Link>
+                </li>
               {/* User Items Section */}
               <li className="nav-item w-100 d-lg-none mt-3 mt-lg-0 border-top pt-3 pt-lg-0 border-top-0">
                 <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-3 w-100">

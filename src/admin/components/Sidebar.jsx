@@ -41,17 +41,16 @@ const Sidebar = ({ isOpen, onClose }) => {
       
       {/* Sidebar */}
       <aside
-        className="col-12 col-md-3 col-lg-2 bg-white border-end d-none d-md-flex flex-column p-3"
-        style={{ 
-          height: "100vh",
-          position: 'static'
+        className="col-12 col-md-3 col-lg-2 bg-white border-end d-none d-md-flex flex-column p-3 d-flex flex-column"
+        style={{
+          height: "100vh"
         }}
-      >
+        >
         {/* Logo */}
         <div className="mb-3 mb-md-4 fw-bold fs-5 text-primary">Admin Panel</div>
 
         {/* Navigation */}
-        <ul className="nav nav-pills flex-column gap-2" style={{ overflowY: 'auto', flex: 1 }}>
+        <ul className="nav nav-pills flex-column gap-2">
           {navItems.map((item) => (
             <li key={item.path} className="nav-item">
               <Link
