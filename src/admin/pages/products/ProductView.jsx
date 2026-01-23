@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const ProductView = () => {
   const { id } = useParams(); // get product id from URL
@@ -80,13 +80,17 @@ const ProductView = () => {
 
               {/* ACTION BUTTONS */}
               <div className="mt-4 d-flex gap-2">
-                <button className="btn btn-outline-primary btn-sm">
-                  Edit Product
-                </button>
+                <Link
+                  to={`/admin/products/edit/${product.id}`}
+                  className="btn btn-sm btn-outline-secondary"
+                  title="Edit Product"
+                >
+                  Edit
+                </Link>
 
-                <button className="btn btn-outline-secondary btn-sm">
+                <Link to={"/admin/products"} className="btn btn-secondary">
                   Back
-                </button>
+                </Link>
               </div>
             </div>
           </div>
