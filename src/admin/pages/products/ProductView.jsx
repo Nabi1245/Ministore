@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const  ProductView = () => {
-    const { id } = useParams(); // get product id from URL
+const ProductView = () => {
+  const { id } = useParams(); // get product id from URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
+
+  useEffect(() => {
     fetchProductById();
   }, [id]);
-    const fetchProductById = async () => {
+  const fetchProductById = async () => {
     try {
       const res = await fetch(
-        `https://artiststation.co.in/foxecom/api/products/${id}`
+        `https://artiststation.co.in/foxecom/api/products/${id}`,
       );
       const data = await res.json();
       setProduct(data);
@@ -28,83 +28,72 @@ const  ProductView = () => {
 
   return (
     <div className="container my-4">
-  <div className="card shadow-sm">
-    <div className="card-header bg-light">
-      <h4 className="mb-0">Product Details</h4>
-    </div>
-
-    <div className="card-body">
-      <div className="row g-4 align-items-start">
-        
-        {/* LEFT: Product Image */}
-        <div className="col-12 col-md-4 text-center">
-          <img
-            src={`https://artiststation.co.in/foxecom${product.thumbnailImage}`}
-            alt={product.title}
-            className="img-fluid rounded border"
-            style={{ maxHeight: "250px", objectFit: "contain" }}
-          />
+      <div className="card shadow-sm">
+        <div className="card-header bg-light">
+          <h4 className="mb-0">Product Details</h4>
         </div>
 
-        {/* RIGHT: Product Info */}
-        <div className="col-12 col-md-8">
-          <h5 className="mb-3">{product.title}</h5>
-
-          <div className="row">
-            <div className="col-6 mb-2">
-              <strong>Category:</strong>
-              <div className="text-muted">
-                {product.category?.name}
-              </div>
+        <div className="card-body">
+          <div className="row g-4 align-items-start">
+            {/* LEFT: Product Image */}
+            <div className="col-12 col-md-4 text-center">
+              <img
+                src={`https://artiststation.co.in/foxecom${product.thumbnailImage}`}
+                alt={product.title}
+                className="img-fluid rounded border"
+                style={{ maxHeight: "250px", objectFit: "contain" }}
+              />
             </div>
 
-            <div className="col-6 mb-2">
-              <strong>Stock:</strong>
-              <div className="text-muted">
-                {product.stock}
-              </div>
-            </div>
+            {/* RIGHT: Product Info */}
+            <div className="col-12 col-md-8">
+              <h5 className="mb-3">{product.title}</h5>
 
-            <div className="col-6 mb-2">
-              <strong>Price:</strong>
-              <div className="text-muted">
-                ₹{product.price}
-              </div>
-            </div>
+              <div className="row">
+                <div className="col-6 mb-2">
+                  <strong>Category:</strong>
+                  <div className="text-muted">{product.category?.name}</div>
+                </div>
 
-            <div className="col-6 mb-2">
-              <strong>Discount:</strong>
-              <div className="text-muted">
-                ₹{product.discount || 0}
-              </div>
-            </div>
+                <div className="col-6 mb-2">
+                  <strong>Stock:</strong>
+                  <div className="text-muted">{product.stock}</div>
+                </div>
 
-            <div className="col-12 mt-2">
-              <strong>Created:</strong>
-              <div className="text-muted">
-                {new Date(product.createdAt).toDateString()}
+                <div className="col-6 mb-2">
+                  <strong>Price:</strong>
+                  <div className="text-muted">₹{product.price}</div>
+                </div>
+
+                <div className="col-6 mb-2">
+                  <strong>Discount:</strong>
+                  <div className="text-muted">₹{product.discount || 0}</div>
+                </div>
+
+                <div className="col-12 mt-2">
+                  <strong>Created:</strong>
+                  <div className="text-muted">
+                    {new Date(product.createdAt).toDateString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* ACTION BUTTONS */}
+              <div className="mt-4 d-flex gap-2">
+                <button className="btn btn-outline-primary btn-sm">
+                  Edit Product
+                </button>
+
+                <button className="btn btn-outline-secondary btn-sm">
+                  Back
+                </button>
               </div>
             </div>
           </div>
-
-          {/* ACTION BUTTONS */}
-          <div className="mt-4 d-flex gap-2">
-            <button className="btn btn-outline-primary btn-sm">
-              Edit Product
-            </button>
-
-            <button className="btn btn-outline-secondary btn-sm">
-              Back
-            </button>
-          </div>
         </div>
-
       </div>
     </div>
-  </div>
-</div>
+  );
+};
 
-  )
-}
-
-export default ProductView
+export default ProductView;
