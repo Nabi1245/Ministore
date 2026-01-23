@@ -20,35 +20,124 @@ button, input, textarea, select {
   font-family: 'Poppins', sans-serif !important;
 }
 
+/* ============================================
+   COLOR SCHEME
+   ============================================
+   Primary: #89bb56 (Minimal Use)
+   Secondary: #ffffff
+   
+   These colors are defined in style.css as CSS variables:
+   - --primary-color: #89bb56
+   - --secondary-color: #ffffff
+   ============================================ */
+
 /* Color Scheme Overrides */
 :root {
-  --bs-primary: #89bb56;
-  --bs-secondary: #ffffff;
+  --bs-primary: var(--primary-color);
+  --bs-secondary: var(--secondary-color);
   --bs-primary-rgb: 137, 187, 86;
 }
 
 /* Minimal use of primary color - only for specific important elements */
 .btn-primary {
-  background-color: #89bb56 !important;
-  border-color: #89bb56 !important;
-  color: #ffffff !important;
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
 }
 
 .btn-primary:hover {
   background-color: #7aa84a !important;
   border-color: #7aa84a !important;
-  color: #ffffff !important;
+  color: var(--secondary-color) !important;
 }
 
 /* Text primary - use sparingly */
 .text-primary {
-  color: #89bb56 !important;
+  color: var(--primary-color) !important;
 }
 
 /* Background primary - use sparingly */
 .bg-primary {
-  background-color: #89bb56 !important;
-  color: #ffffff !important;
+  background-color: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
+}
+
+/* Override Bootstrap success color to use primary (for consistency) */
+.text-success {
+  color: var(--primary-color) !important;
+}
+
+.bg-success {
+  background-color: var(--primary-color) !important;
+}
+
+.btn-success {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
+}
+
+.btn-success:hover {
+  background-color: #7aa84a !important;
+  border-color: #7aa84a !important;
+  color: var(--secondary-color) !important;
+}
+
+/* Override text-dark to use primary color */
+.text-dark {
+  color: var(--primary-color) !important;
+}
+
+/* Navigation links use primary color */
+.nav-link {
+  color: var(--primary-color) !important;
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+  opacity: 0.8;
+}
+
+/* All links use primary color */
+a {
+  color: var(--primary-color) !important;
+}
+
+a:hover {
+  color: var(--primary-color) !important;
+  opacity: 0.8;
+}
+
+/* Headings use primary color */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-color) !important;
+}
+
+/* Navbar brand uses primary color */
+.navbar-brand {
+  color: var(--primary-color) !important;
+}
+
+/* Dropdown items use primary color */
+.dropdown-item {
+  color: var(--primary-color) !important;
+}
+
+.dropdown-item:hover {
+  color: var(--primary-color) !important;
+  background-color: rgba(137, 187, 86, 0.1) !important;
+}
+
+/* Card titles and headings */
+.card-title {
+  color: var(--primary-color) !important;
+}
+
+/* Display headers */
+.display-header,
+.display-2,
+.display-7 {
+  color: var(--primary-color) !important;
 }
 
 /* Shop Page Styles */
@@ -83,7 +172,7 @@ button, input, textarea, select {
 }
 
 .form-select:focus, .form-control:focus {
-  border-color: #89bb56;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 0.2rem rgba(137, 187, 86, 0.25);
 }
 
