@@ -136,7 +136,7 @@ const Footer = () => {
             </div>
             <div className="col-md-4 col-sm-6">
               <div className="copyright">
-                <p>© Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
+                <p>© Copyright 2023 Foxecom. Design by <a href="https://ideatore./">inIDEATORE INTERACTIVE PVT LTD</a>
                 </p>
               </div>
             </div>

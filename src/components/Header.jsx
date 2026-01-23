@@ -36,7 +36,7 @@ const Header = () => {
         
         {/* Logo */}
         <Link className="navbar-brand fw-bold fs-4" to="/">
-          MiniStore.
+          FOXECOM
         </Link>
 
         {/* Toggle Button */}
@@ -54,19 +54,19 @@ const Header = () => {
           <ul className="navbar-nav ms-auto align-items-lg-center gap-lg-4">
 
             <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === "/" ? "fw-bold text-success" : ""}`} to="/">
+              <Link className={`nav-link ${location.pathname === "/" ? "fw-bold text-primary" : ""}`} to="/">
                 Home
               </Link>
             </li>
 
             <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === "/shop" ? "fw-bold text-success" : ""}`} to="/shop">
+              <Link className={`nav-link ${location.pathname === "/shop" ? "fw-bold text-primary" : ""}`} to="/shop">
                 Products
               </Link>
             </li>
 
             <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === "/contact-us" ? "fw-bold text-success" : ""}`} to="/contact-us">
+              <Link className={`nav-link ${location.pathname === "/contact-us" ? "fw-bold text-primary" : ""}`} to="/contact-us">
                 Contact Us
               </Link>
             </li>
