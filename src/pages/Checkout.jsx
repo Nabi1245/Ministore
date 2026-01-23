@@ -227,13 +227,13 @@ const Checkout = () => {
   return (
     <div className="padding-large">
         <div className="container">
-          <h1 className="display-5 text-uppercase mb-4">Checkout</h1>
+          <h1 className="h2 h-md-3 text-uppercase mb-4 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Checkout</h1>
 
           <div className="row">
             <div className="col-lg-8">
               <div className="card">
                 <div className="card-header">
-                  <h5 className="mb-0">Shipping Information</h5>
+                  <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Shipping Information</h5>
                 </div>
                 <div className="card-body">
                   <form onSubmit={handleSubmit}>
@@ -378,7 +378,7 @@ const Checkout = () => {
             <div className="col-lg-4">
               <div className="card">
                 <div className="card-header">
-                  <h5 className="mb-0">Order Summary</h5>
+                  <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Order Summary</h5>
                 </div>
                 <div className="card-body">
                   {cartItems.map((item) => (

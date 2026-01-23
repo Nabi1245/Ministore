@@ -21,12 +21,15 @@ const EditAdmin = () => {
   const fetchAdmin = async () => {
     try {
       setFetching(true);
+      setError("");
       const data = await adminAPI.getAdminById(id);
-      setName(data.name || "");
-      setEmail(data.email || "");
+      // Handle both new format (with success) and legacy format
+      const admin = data.admin || data;
+      setName(admin.name || "");
+      setEmail(admin.email || "");
     } catch (err) {
       console.error(err);
-      setError("Failed to load admin");
+      setError(err.message || "Failed to load admin");
     } finally {
       setFetching(false);
     }
@@ -55,15 +58,15 @@ const EditAdmin = () => {
         updateData.password = password;
       }
 
-      await adminAPI.updateAdmin(id, updateData);
-
-      setSuccess("Admin updated successfully");
+      const result = await adminAPI.updateAdmin(id, updateData);
+      
+      setSuccess(result.message || "Admin updated successfully");
       setTimeout(() => {
         navigate("/admin/admins");
       }, 1500);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to update admin");
+      setError(err.message || "Failed to update admin. Make sure email is unique if changed.");
     } finally {
       setLoading(false);
     }

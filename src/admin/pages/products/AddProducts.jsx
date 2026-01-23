@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { categoryAPI } from "../../../utils/api";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const AddProduct = () => {
   const [images, setImages] = useState([]);
 
   const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,14 +32,17 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(
-          "https://artiststation.co.in/foxecom/api/categories",
-        );
-        const data = await res.json();
-        if (res.ok) setCategories(data);
+        setLoadingCategories(true);
+        setError("");
+        const data = await categoryAPI.getAll();
+        // Handle both new format (with success) and legacy format
+        const categoriesList = data.categories || data;
+        setCategories(Array.isArray(categoriesList) ? categoriesList : []);
       } catch (err) {
         console.error(err);
-        setError("Failed to load categories");
+        setError(err.message || "Failed to load categories");
+      } finally {
+        setLoadingCategories(false);
       }
     };
 
@@ -153,14 +158,20 @@ const AddProduct = () => {
                       className="form-select"
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
+                      disabled={loadingCategories}
                     >
-                      <option value="">Select Category</option>
-                      {categories.map((cat) => (
+                      <option value="">
+                        {loadingCategories ? "Loading categories..." : "Select Category"}
+                      </option>
+                      {Array.isArray(categories) && categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name}
                         </option>
                       ))}
                     </select>
+                    {!loadingCategories && categories.length === 0 && (
+                      <small className="text-muted">No categories available. Please add categories first.</small>
+                    )}
                   </div>
 
                   <div className="col-md-4">

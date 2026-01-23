@@ -64,8 +64,8 @@ const SignUp = () => {
 
                 {/* Header */}
                 <div className="text-center mb-4">
-                  <h4 className="fw-bold mb-1">Sign Up</h4>
-                  <p className="text-muted mb-0">
+                  <h4 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>Sign Up</h4>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
                     Create your account
                   </p>
                 </div>

@@ -14,8 +14,23 @@ const OrdersDashboard = () => {
   });
 
   useEffect(() => {
-    fetchOrders();
+    const hasFilters = Object.values(filters).some(v => v !== "");
+    if (hasFilters) {
+      applyFilters();
+    } else {
+      fetchOrders();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page]);
+
+  const [filters, setFilters] = useState({
+    status: "",
+    search: "",
+    startDate: "",
+    endDate: "",
+    minAmount: "",
+    maxAmount: ""
+  });
 
   const fetchOrders = async () => {
     try {
@@ -25,18 +40,76 @@ const OrdersDashboard = () => {
         page: pagination.page,
         limit: pagination.limit,
       });
-      setOrders(data.data || []);
-      setPagination((prev) => ({
-        ...prev,
-        totalPages: data.totalPages || 1,
-        total: data.total || 0,
-      }));
+      
+      // Handle response format
+      const ordersList = data.data || data.orders || [];
+      setOrders(ordersList);
+      
+      if (data.pagination) {
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: data.pagination.totalPages || 1,
+          total: data.pagination.totalItems || data.total || 0,
+        }));
+      } else {
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: data.totalPages || 1,
+          total: data.total || 0,
+        }));
+      }
     } catch (err) {
       console.error(err);
-      setError("Unable to load orders");
+      setError(err.message || "Unable to load orders");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const applyFilters = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const params = {
+        page: pagination.page,
+        limit: pagination.limit,
+        ...filters
+      };
+      
+      const data = await adminAPI.getOrdersWithFilters(params);
+      const ordersList = data.data || [];
+      setOrders(ordersList);
+      
+      if (data.pagination) {
+        setPagination(prev => ({
+          ...prev,
+          totalPages: data.pagination.totalPages || 1,
+          total: data.pagination.totalItems || 0,
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Unable to filter orders");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      status: "",
+      search: "",
+      startDate: "",
+      endDate: "",
+      minAmount: "",
+      maxAmount: ""
+    });
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const getStatusBadge = (status) => {
@@ -77,17 +150,128 @@ const OrdersDashboard = () => {
       </div>
 
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setError("")}
+          ></button>
         </div>
       )}
+
+      {/* Filters Card */}
+      <div className="card shadow-sm mb-4">
+        <div className="card-body">
+          <div className="row g-3">
+            <div className="col-md-2">
+              <label className="form-label small fw-semibold">Status</label>
+              <select
+                className="form-select form-select-sm"
+                value={filters.status}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+              >
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div className="col-md-2">
+              <label className="form-label small fw-semibold">Search</label>
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                placeholder="Order ID or Email"
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <label className="form-label small fw-semibold">Start Date</label>
+              <input
+                type="date"
+                className="form-control form-control-sm"
+                value={filters.startDate}
+                onChange={(e) => handleFilterChange('startDate', e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <label className="form-label small fw-semibold">End Date</label>
+              <input
+                type="date"
+                className="form-control form-control-sm"
+                value={filters.endDate}
+                onChange={(e) => handleFilterChange('endDate', e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <label className="form-label small fw-semibold">Min Amount</label>
+              <input
+                type="number"
+                className="form-control form-control-sm"
+                placeholder="Min"
+                value={filters.minAmount}
+                onChange={(e) => handleFilterChange('minAmount', e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <label className="form-label small fw-semibold">Max Amount</label>
+              <input
+                type="number"
+                className="form-control form-control-sm"
+                placeholder="Max"
+                value={filters.maxAmount}
+                onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="row mt-2">
+            <div className="col-12">
+              <button
+                className="btn btn-sm btn-primary me-2"
+                onClick={applyFilters}
+              >
+                Apply Filters
+              </button>
+              <button
+                className="btn btn-sm btn-outline-secondary"
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="card">
         <div className="card-body">
           {orders.length === 0 ? (
-            <p className="text-center text-muted">No orders found</p>
+            <div className="text-center py-5">
+              <p className="text-muted mb-2">No orders found</p>
+              {Object.values(filters).some(v => v !== "") && (
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
           ) : (
             <>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <small className="text-muted">
+                    Showing {orders.length} of {pagination.total} orders
+                  </small>
+                </div>
+              </div>
+              
               <div className="table-responsive">
                 <table className="table table-hover">
                   <thead>
@@ -104,20 +288,21 @@ const OrdersDashboard = () => {
                     {orders.map((order) => (
                       <tr key={order.id}>
                         <td>#{order.id}</td>
-                        <td>{order.user?.email || "N/A"}</td>
-                        <td>{formatCurrency(order.totalAmount)}</td>
+                        <td>{order.user?.email || order.emailAddress || "N/A"}</td>
+                        <td className="fw-semibold">{formatCurrency(order.totalAmount)}</td>
                         <td>
                           <span
                             className={`badge bg-${getStatusBadge(order.status)}`}
                           >
-                            {order.status}
+                            {order.status?.toUpperCase()}
                           </span>
                         </td>
-                        <td>{formatDate(order.createdAt)}</td>
+                        <td className="small">{formatDate(order.createdAt)}</td>
                         <td>
                           <Link
                             to={`/admin/orders/view/${order.id}`}
                             className="btn btn-sm btn-primary"
+                            title="View Order Details"
                           >
                             View
                           </Link>
@@ -131,12 +316,13 @@ const OrdersDashboard = () => {
               {pagination.totalPages > 1 && (
                 <div className="d-flex justify-content-between align-items-center mt-3">
                   <div>
-                    Showing page {pagination.page} of {pagination.totalPages} (
-                    {pagination.total} total orders)
+                    <small className="text-muted">
+                      Page {pagination.page} of {pagination.totalPages} ({pagination.total} total orders)
+                    </small>
                   </div>
                   <div className="btn-group">
                     <button
-                      className="btn btn-outline-primary"
+                      className="btn btn-sm btn-outline-primary"
                       disabled={pagination.page === 1}
                       onClick={() =>
                         setPagination((prev) => ({
@@ -148,7 +334,7 @@ const OrdersDashboard = () => {
                       Previous
                     </button>
                     <button
-                      className="btn btn-outline-primary"
+                      className="btn btn-sm btn-outline-primary"
                       disabled={pagination.page === pagination.totalPages}
                       onClick={() =>
                         setPagination((prev) => ({

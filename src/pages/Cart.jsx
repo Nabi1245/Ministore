@@ -55,8 +55,8 @@ const Cart = () => {
             <svg className="cart-outline mb-4" width="100" height="100" style={{ opacity: 0.3 }}>
               <use xlinkHref="#cart-outline"></use>
             </svg>
-            <h2 className="mb-3">Your cart is empty</h2>
-            <p className="lead mb-4">Looks like you haven't added anything to your cart yet.</p>
+            <h2 className="mb-3 fw-semibold" style={{ fontSize: '1.5rem' }}>Your cart is empty</h2>
+            <p className="mb-4" style={{ fontSize: '1rem' }}>Looks like you haven't added anything to your cart yet.</p>
             <Link to="/shop" className="btn btn-dark btn-lg">
               Continue Shopping
             </Link>
@@ -69,7 +69,7 @@ const Cart = () => {
   return (
     <div className="padding-large">
         <div className="container">
-          <h1 className="display-5 text-uppercase mb-4">Shopping Cart</h1>
+          <h1 className="h2 h-md-3 text-uppercase mb-4 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Shopping Cart</h1>
 
           <div className="row">
             <div className="col-lg-8">
@@ -95,7 +95,7 @@ const Cart = () => {
 
                         <div className="flex-grow-1 ms-4">
                           <Link to={`/product/${item.id}`} className="text-decoration-none text-dark">
-                            <h5 className="mb-2">{item.title}</h5>
+                            <h5 className="mb-2 fw-semibold" style={{ fontSize: '1rem' }}>{item.title}</h5>
                           </Link>
                           {item.category && (
                             <p className="text-muted mb-2">Category: <span className="text-capitalize">{item.category}</span></p>
@@ -105,9 +105,9 @@ const Cart = () => {
                               {item.caseDetails.brand?.name} {item.caseDetails.model?.name}
                             </p>
                           )}
-                          <p className="h5 text-primary mb-0">{formatPrice(itemPrice)}</p>
+                          <p className="text-primary mb-0 fw-bold" style={{ fontSize: '1.1rem' }}>{formatPrice(itemPrice)}</p>
                           {item.discountPrice && (
-                            <small className="text-muted text-decoration-line-through">{formatPrice(item.price)}</small>
+                            <small className="text-muted text-decoration-line-through" style={{ fontSize: '0.85rem' }}>{formatPrice(item.price)}</small>
                           )}
                         </div>
 
@@ -138,10 +138,11 @@ const Cart = () => {
                         </div>
 
                         <div className="text-end me-4">
-                          <p className="h5 mb-2">{formatPrice(itemTotal)}</p>
+                          <p className="mb-2 fw-bold" style={{ fontSize: '1.25rem' }}>{formatPrice(itemTotal)}</p>
                           <button
                             className="btn btn-link text-danger p-0"
                             onClick={() => removeFromCart(item.id)}
+                            style={{ fontSize: '0.9rem' }}
                           >
                             Remove
                           </button>
@@ -168,21 +169,21 @@ const Cart = () => {
             <div className="col-lg-4">
               <div className="card">
                 <div className="card-header">
-                  <h5 className="mb-0">Order Summary</h5>
+                  <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Order Summary</h5>
                 </div>
                 <div className="card-body">
-                  <div className="d-flex justify-content-between mb-3">
+                  <div className="d-flex justify-content-between mb-3" style={{ fontSize: '0.95rem' }}>
                     <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
                     <strong>{formatPrice(getCartTotal())}</strong>
                   </div>
-                  <div className="d-flex justify-content-between mb-3">
+                  <div className="d-flex justify-content-between mb-3" style={{ fontSize: '0.95rem' }}>
                     <span>Shipping</span>
                     <span className="text-success">Free</span>
                   </div>
                   <hr />
                   <div className="d-flex justify-content-between mb-4">
-                    <strong>Total</strong>
-                    <strong className="h4 text-primary">{formatPrice(getCartTotal())}</strong>
+                    <strong style={{ fontSize: '1.1rem' }}>Total</strong>
+                    <strong className="text-primary fw-bold" style={{ fontSize: '1.5rem' }}>{formatPrice(getCartTotal())}</strong>
                   </div>
 
                   <button

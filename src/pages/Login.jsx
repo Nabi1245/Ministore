@@ -59,10 +59,10 @@ const Login = () => {
 
                 {/* Title */}
                 <div className="text-center mb-4">
-                  <h4 className="fw-bold mb-1">
+                  <h4 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>
                     {isSignup ? "Sign Up" : "Sign In"}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
                     {isSignup
                       ? "Create your account"
                       : "Sign in to continue"}

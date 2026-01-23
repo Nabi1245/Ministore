@@ -98,7 +98,7 @@ const TrackOrder = () => {
     <div className="padding-large">
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="display-5 text-uppercase">Track Order</h1>
+          <h1 className="h2 h-md-3 text-uppercase fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Track Order</h1>
           <Link to="/my-orders" className="btn btn-outline-secondary">
             Back to Orders
           </Link>
@@ -108,7 +108,7 @@ const TrackOrder = () => {
           <div className="col-lg-8">
             <div className="card mb-4">
               <div className="card-header bg-light">
-                <h5 className="mb-0">Order Information</h5>
+                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Order Information</h5>
               </div>
               <div className="card-body">
                 <div className="row mb-3">
@@ -175,7 +175,7 @@ const TrackOrder = () => {
           <div className="col-lg-4">
             <div className="card">
               <div className="card-header bg-light">
-                <h5 className="mb-0">Shipping Address</h5>
+                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Shipping Address</h5>
               </div>
               <div className="card-body">
                 <p className="mb-1">

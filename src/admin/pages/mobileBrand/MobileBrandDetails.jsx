@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { mobileBrandAPI } from '../../../utils/api';
 
 const MobileBrandDetails = () => {
   const { id } = useParams(); // 👈 brand id from URL
+  const navigate = useNavigate();
   const [brand, setBrand] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -10,89 +12,113 @@ const MobileBrandDetails = () => {
   useEffect(() => {
     const fetchBrand = async () => {
       try {
-        const res = await fetch(
-          `https://artiststation.co.in/foxecom/api/mobile-brands/${id}`
-        );
-
-        if (!res.ok) {
-          throw new Error("Brand not found");
-        }
-
-        const data = await res.json();
-        setBrand(data);
+        setLoading(true);
+        setError("");
+        const data = await mobileBrandAPI.getById(id);
+        // Handle both new format (with success) and legacy format
+        const brandData = data.brand || data;
+        setBrand(brandData);
       } catch (err) {
-        setError(err.message);
+        console.error(err);
+        setError(err.message || "Brand not found");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBrand();
+    if (id) {
+      fetchBrand();
+    }
   }, [id]);
 
   if (loading) {
-    return <div className="text-center py-4">Loading brand...</div>;
-  }
-
-  if (error) {
-    return <div className="alert alert-danger">{error}</div>;
-  }
-  return (
-     <>
-          {/* Page Header */}
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-            <h4 className="mb-2 mb-md-0 text-uppercase">Brands</h4>
-            <Link to={"/admin/mobile-brand/add"} className="btn btn-primary">
-              + Add Brand
-            </Link>
-          </div>
-    
-          {/* Content Card */}
-          <div className="card shadow-sm">
-               <div className="container-fluid">
-      {/* Back */}
-      <div className="mb-3">
-        <Link to="/admin/mobile-brand" className="btn btn-light">
-          ← Back to Brands
-        </Link>
-      </div>
-
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <h4 className="fw-bold mb-3">Brand Details</h4>
-
-          <table className="table table-bordered">
-            <tbody>
-              <tr>
-                <th style={{ width: "200px" }}>Brand ID</th>
-                <td>{brand.id}</td>
-              </tr>
-
-              <tr>
-                <th>Brand Name</th>
-                <td>{brand.name}</td>
-              </tr>
-
-              <tr>
-                <th>Created At</th>
-                <td>
-                  {new Date(brand.createdAt).toLocaleDateString()}
-                </td>
-              </tr>
-
-              <tr>
-                <th>Last Updated</th>
-                <td>
-                  {new Date(brand.updatedAt).toLocaleDateString()}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  if (error || !brand) {
+    return (
+      <div className="alert alert-danger">
+        {error || "Brand not found"}
+        <button
+          className="btn btn-sm btn-outline-danger ms-2"
+          onClick={() => navigate("/admin/mobile-brand")}
+        >
+          Back to Brands
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Page Header */}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h4 className="mb-2 mb-md-0 text-uppercase">Brand Details</h4>
+        <div className="d-flex gap-2">
+          <Link to={`/admin/mobile-brand/edit/${id}`} className="btn btn-warning">
+            Edit Brand
+          </Link>
+          <Link to={"/admin/mobile-brand"} className="btn btn-secondary">
+            ← Back to Brands
+          </Link>
+        </div>
+      </div>
+
+      {/* Content Card */}
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <h5 className="fw-bold mb-4">Brand Information</h5>
+
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <tbody>
+                <tr>
+                  <th style={{ width: "200px" }}>Brand ID</th>
+                  <td>#{brand.id}</td>
+                </tr>
+
+                <tr>
+                  <th>Brand Name</th>
+                  <td className="fw-medium">{brand.name}</td>
+                </tr>
+
+                <tr>
+                  <th>Created At</th>
+                  <td>
+                    {new Date(brand.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>Last Updated</th>
+                  <td>
+                    {new Date(brand.updatedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </>
+        </div>
+      </div>
+    </>
   )
 }
 

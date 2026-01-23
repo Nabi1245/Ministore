@@ -66,21 +66,31 @@ const UsersDashboard = () => {
       </div>
 
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setError("")}
+          ></button>
         </div>
       )}
 
-      <div className="card mb-3">
+      {/* Search Card */}
+      <div className="card shadow-sm mb-4">
         <div className="card-body">
           <div className="row">
             <div className="col-md-6">
+              <label className="form-label small fw-semibold">Search Users</label>
               <input
                 type="text"
                 className="form-control"
                 placeholder="Search by email..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPagination(prev => ({ ...prev, page: 1 }));
+                }}
               />
             </div>
           </div>
@@ -90,9 +100,27 @@ const UsersDashboard = () => {
       <div className="card">
         <div className="card-body">
           {users.length === 0 ? (
-            <p className="text-center text-muted">No users found</p>
+            <div className="text-center py-5">
+              <p className="text-muted mb-2">No users found</p>
+              {search && (
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => setSearch("")}
+                >
+                  Clear Search
+                </button>
+              )}
+            </div>
           ) : (
             <>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <small className="text-muted">
+                    Showing {users.length} of {pagination.total} users
+                  </small>
+                </div>
+              </div>
+              
               <div className="table-responsive">
                 <table className="table table-hover">
                   <thead>
@@ -108,17 +136,18 @@ const UsersDashboard = () => {
                     {users.map((user) => (
                       <tr key={user.id}>
                         <td>#{user.id}</td>
-                        <td>{user.email}</td>
+                        <td className="fw-medium">{user.email}</td>
                         <td>
-                          <span className="badge bg-secondary">
+                          <span className={`badge ${user.role === 'admin' ? 'bg-danger' : 'bg-secondary'}`}>
                             {user.role || "customer"}
                           </span>
                         </td>
-                        <td>{formatDate(user.createdAt)}</td>
+                        <td className="small">{formatDate(user.createdAt)}</td>
                         <td>
                           <Link
                             to={`/admin/users/view/${user.id}`}
                             className="btn btn-sm btn-primary"
+                            title="View User Details"
                           >
                             View
                           </Link>
@@ -132,12 +161,13 @@ const UsersDashboard = () => {
               {pagination.totalPages > 1 && (
                 <div className="d-flex justify-content-between align-items-center mt-3">
                   <div>
-                    Showing page {pagination.page} of {pagination.totalPages} (
-                    {pagination.total} total users)
+                    <small className="text-muted">
+                      Page {pagination.page} of {pagination.totalPages} ({pagination.total} total users)
+                    </small>
                   </div>
                   <div className="btn-group">
                     <button
-                      className="btn btn-outline-primary"
+                      className="btn btn-sm btn-outline-primary"
                       disabled={pagination.page === 1}
                       onClick={() =>
                         setPagination((prev) => ({
@@ -149,7 +179,7 @@ const UsersDashboard = () => {
                       Previous
                     </button>
                     <button
-                      className="btn btn-outline-primary"
+                      className="btn btn-sm btn-outline-primary"
                       disabled={pagination.page === pagination.totalPages}
                       onClick={() =>
                         setPagination((prev) => ({

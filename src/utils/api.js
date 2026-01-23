@@ -190,12 +190,31 @@ export const productAPI = {
     const { data } = await apiRequest(`/products/search?name=${encodeURIComponent(name)}`);
     return data;
   },
+
+  // Enhanced filtering and sorting
+  filterAndSort: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/products/filter${queryString ? `?${queryString}` : ''}`;
+    const { data } = await apiRequest(endpoint);
+    return data;
+  },
+
+  // Get available filter options
+  getFilterOptions: async (categoryId = null) => {
+    const endpoint = categoryId 
+      ? `/products/filter/options?categoryId=${categoryId}`
+      : '/products/filter/options';
+    const { data } = await apiRequest(endpoint);
+    return data;
+  },
 };
 
 // Category APIs
 export const categoryAPI = {
-  getAll: async () => {
-    const { data } = await apiRequest('/categories');
+  getAll: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/categories${queryString ? `?${queryString}` : ''}`;
+    const { data } = await apiRequest(endpoint);
     return data;
   },
   
@@ -207,8 +226,10 @@ export const categoryAPI = {
 
 // Mobile Brand APIs
 export const mobileBrandAPI = {
-  getAll: async () => {
-    const { data } = await apiRequest('/mobile-brands');
+  getAll: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/mobile-brands${queryString ? `?${queryString}` : ''}`;
+    const { data } = await apiRequest(endpoint);
     return data;
   },
   
@@ -220,8 +241,10 @@ export const mobileBrandAPI = {
 
 // Mobile Model APIs
 export const mobileModelAPI = {
-  getAll: async () => {
-    const { data } = await apiRequest('/mobile-models');
+  getAll: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/mobile-models${queryString ? `?${queryString}` : ''}`;
+    const { data } = await apiRequest(endpoint);
     return data;
   },
   
@@ -482,7 +505,9 @@ export const caseDetailsAPI = {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = `/case-details${queryString ? `?${queryString}` : ''}`;
     const { data } = await apiRequest(endpoint);
-    return data.caseDetails || [];
+    // Backend returns { caseDetails: [...], totalItems, totalPages, currentPage }
+    // Return the full object so components can access pagination if needed
+    return data;
   },
   
   getById: async (id) => {
@@ -508,17 +533,31 @@ export const adminAPI = {
       method: 'POST',
       body: JSON.stringify(adminData),
     });
-    return data;
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, admin: data };
   },
 
-  getAllAdmins: async () => {
-    const { data } = await adminApiRequest('/admins');
-    return data;
+  getAllAdmins: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/admins${queryString ? `?${queryString}` : ''}`;
+    const { data } = await adminApiRequest(endpoint);
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, admins: Array.isArray(data) ? data : [], pagination: {} };
   },
 
   getAdminById: async (id) => {
     const { data } = await adminApiRequest(`/admins/${id}`);
-    return data;
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, admin: data };
   },
 
   updateAdmin: async (id, adminData) => {
@@ -526,13 +565,22 @@ export const adminAPI = {
       method: 'PUT',
       body: JSON.stringify(adminData),
     });
-    return data;
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, admin: data };
   },
 
   deleteAdmin: async (id) => {
-    await adminApiRequest(`/admins/${id}`, {
+    const { data } = await adminApiRequest(`/admins/${id}`, {
       method: 'DELETE',
     });
+    // Handle both new format (with success) and legacy format
+    if (data && data.success !== undefined) {
+      return data;
+    }
+    return { success: true, message: 'Admin deleted successfully' };
   },
 
   // Dashboard Statistics
@@ -726,12 +774,94 @@ export const adminAPI = {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = `/admin/orders${queryString ? `?${queryString}` : ''}`;
     const { data } = await adminApiRequest(endpoint);
-    return data;
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, data: data.data || data, pagination: data.pagination || {} };
   },
 
   getOrderById: async (id) => {
     const { data } = await adminApiRequest(`/admin/orders/${id}`);
-    return data;
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, data: data.data || data };
+  },
+
+  // Order Status Update
+  updateOrderStatus: async (id, statusData) => {
+    const { data } = await adminApiRequest(`/admin/orders/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(statusData),
+    });
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, data };
+  },
+
+  // Get Orders with Filters
+  getOrdersWithFilters: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/admin/orders/filter${queryString ? `?${queryString}` : ''}`;
+    const { data } = await adminApiRequest(endpoint);
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, data: data.data || [], pagination: data.pagination || {} };
+  },
+
+  // Admin Product Listing with Filters
+  getAllProductsForAdmin: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/admin/products${queryString ? `?${queryString}` : ''}`;
+    const { data } = await adminApiRequest(endpoint);
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, products: data.products || [], pagination: data.pagination || {} };
+  },
+
+  // Bulk Operations
+  bulkDeleteCategories: async (categoryIds) => {
+    const { data } = await adminApiRequest('/admin/categories/bulk', {
+      method: 'DELETE',
+      body: JSON.stringify({ categoryIds }),
+    });
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, message: 'Categories deleted successfully' };
+  },
+
+  bulkDeleteMobileBrands: async (brandIds) => {
+    const { data } = await adminApiRequest('/mobile-brands/bulk', {
+      method: 'DELETE',
+      body: JSON.stringify({ brandIds }),
+    });
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, message: 'Brands deleted successfully' };
+  },
+
+  bulkDeleteMobileModels: async (modelIds) => {
+    const { data } = await adminApiRequest('/mobile-models/bulk', {
+      method: 'DELETE',
+      body: JSON.stringify({ modelIds }),
+    });
+    // Handle both new format (with success) and legacy format
+    if (data.success !== undefined) {
+      return data;
+    }
+    return { success: true, message: 'Models deleted successfully' };
   },
 };
 

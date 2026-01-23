@@ -30,15 +30,15 @@ const AddAdmin = () => {
       setError("");
       setSuccess("");
 
-      await adminAPI.createAdmin({ name, email, password });
-
-      setSuccess("Admin created successfully");
+      const result = await adminAPI.createAdmin({ name, email, password });
+      
+      setSuccess(result.message || "Admin created successfully");
       setTimeout(() => {
         navigate("/admin/admins");
       }, 1500);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to create admin");
+      setError(err.message || "Failed to create admin. Make sure email is unique and password is at least 6 characters.");
     } finally {
       setLoading(false);
     }
