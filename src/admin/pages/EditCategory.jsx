@@ -20,12 +20,15 @@ const EditCategory = () => {
   const fetchCategory = async () => {
     try {
       setFetching(true);
+      setError("");
       const data = await categoryAPI.getById(id);
-      setName(data.name || "");
-      setSlug(data.slug || "");
+      // Handle both new format (with success) and legacy format
+      const category = data.category || data;
+      setName(category.name || "");
+      setSlug(category.slug || "");
     } catch (err) {
       console.error(err);
-      setError("Failed to load category");
+      setError(err.message || "Failed to load category");
     } finally {
       setFetching(false);
     }
@@ -44,15 +47,21 @@ const EditCategory = () => {
       setError("");
       setSuccess("");
 
-      await adminAPI.updateCategory(id, { name, slug });
+      // Validate slug format
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        setError("Slug must contain only lowercase letters, numbers, and hyphens");
+        return;
+      }
 
-      setSuccess("Category updated successfully");
+      const result = await adminAPI.updateCategory(id, { name: name.trim(), slug: slug.trim() });
+      
+      setSuccess(result.message || "Category updated successfully");
       setTimeout(() => {
         navigate("/admin/categories");
       }, 1500);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to update category");
+      setError(err.message || "Failed to update category. Make sure name and slug are unique.");
     } finally {
       setLoading(false);
     }

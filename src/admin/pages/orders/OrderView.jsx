@@ -8,22 +8,81 @@ const OrderView = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [statusForm, setStatusForm] = useState({
+    status: "",
+    shiprocketOrderId: "",
+    shipmentId: "",
+    awbCode: "",
+    courierName: "",
+    shipmentStatus: ""
+  });
 
   useEffect(() => {
     fetchOrder();
   }, [id]);
 
+  useEffect(() => {
+    if (order) {
+      setStatusForm({
+        status: order.status || "",
+        shiprocketOrderId: order.shiprocketOrderId || "",
+        shipmentId: order.shipmentId || "",
+        awbCode: order.awbCode || "",
+        courierName: order.courierName || "",
+        shipmentStatus: order.shipmentStatus || ""
+      });
+    }
+  }, [order]);
+
   const fetchOrder = async () => {
     try {
       setLoading(true);
       setError("");
+      setSuccessMessage("");
       const data = await adminAPI.getOrderById(id);
       setOrder(data.data || data);
     } catch (err) {
       console.error(err);
-      setError("Failed to load order");
+      setError(err.message || "Failed to load order");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusUpdate = async (e) => {
+    e.preventDefault();
+    
+    if (!window.confirm("Are you sure you want to update the order status?")) {
+      return;
+    }
+
+    try {
+      setUpdatingStatus(true);
+      setError("");
+      setSuccessMessage("");
+      
+      const updateData = {};
+      if (statusForm.status) updateData.status = statusForm.status;
+      if (statusForm.shiprocketOrderId) updateData.shiprocketOrderId = statusForm.shiprocketOrderId;
+      if (statusForm.shipmentId) updateData.shipmentId = statusForm.shipmentId;
+      if (statusForm.awbCode) updateData.awbCode = statusForm.awbCode;
+      if (statusForm.courierName) updateData.courierName = statusForm.courierName;
+      if (statusForm.shipmentStatus) updateData.shipmentStatus = statusForm.shipmentStatus;
+
+      const result = await adminAPI.updateOrderStatus(id, updateData);
+      setSuccessMessage("Order status updated successfully");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      
+      // Refresh order data
+      await fetchOrder();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to update order status");
+      setTimeout(() => setError(""), 5000);
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
@@ -84,7 +143,122 @@ const OrderView = () => {
         </button>
       </div>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="alert alert-success alert-dismissible fade show" role="alert">
+          {successMessage}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setSuccessMessage("")}
+          ></button>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="alert alert-danger alert-dismissible fade show" role="alert">
+          {error}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setError("")}
+          ></button>
+        </div>
+      )}
+
       <div className="row g-4">
+        {/* Order Status Update Form */}
+        <div className="col-12">
+          <div className="card">
+            <div className="card-header bg-primary text-white">
+              <h5 className="mb-0">Update Order Status</h5>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleStatusUpdate}>
+                <div className="row g-3">
+                  <div className="col-md-3">
+                    <label className="form-label fw-semibold">Order Status *</label>
+                    <select
+                      className="form-select"
+                      value={statusForm.status}
+                      onChange={(e) => setStatusForm(prev => ({ ...prev, status: e.target.value }))}
+                      required
+                    >
+                      <option value="">Select Status</option>
+                      <option value="pending">Pending</option>
+                      <option value="paid">Paid</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label fw-semibold">Shiprocket Order ID</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={statusForm.shiprocketOrderId}
+                      onChange={(e) => setStatusForm(prev => ({ ...prev, shiprocketOrderId: e.target.value }))}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label fw-semibold">Shipment ID</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={statusForm.shipmentId}
+                      onChange={(e) => setStatusForm(prev => ({ ...prev, shipmentId: e.target.value }))}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label fw-semibold">AWB Code</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={statusForm.awbCode}
+                      onChange={(e) => setStatusForm(prev => ({ ...prev, awbCode: e.target.value }))}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label fw-semibold">Courier Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={statusForm.courierName}
+                      onChange={(e) => setStatusForm(prev => ({ ...prev, courierName: e.target.value }))}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label fw-semibold">Shipment Status</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={statusForm.shipmentStatus}
+                      onChange={(e) => setStatusForm(prev => ({ ...prev, shipmentStatus: e.target.value }))}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="col-md-12">
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={updatingStatus || !statusForm.status}
+                    >
+                      {updatingStatus ? "Updating..." : "Update Status"}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
         {/* Order Information */}
         <div className="col-md-6">
           <div className="card">
@@ -98,7 +272,7 @@ const OrderView = () => {
               <p>
                 <strong>Status:</strong>{" "}
                 <span className={`badge bg-${getStatusBadge(order.status)}`}>
-                  {order.status}
+                  {order.status?.toUpperCase()}
                 </span>
               </p>
               <p>
@@ -115,6 +289,32 @@ const OrderView = () => {
               {order.razorpayPaymentId && (
                 <p>
                   <strong>Payment ID:</strong> {order.razorpayPaymentId}
+                </p>
+              )}
+              {order.shiprocketOrderId && (
+                <p>
+                  <strong>Shiprocket Order ID:</strong> {order.shiprocketOrderId}
+                </p>
+              )}
+              {order.shipmentId && (
+                <p>
+                  <strong>Shipment ID:</strong> {order.shipmentId}
+                </p>
+              )}
+              {order.awbCode && (
+                <p>
+                  <strong>AWB Code:</strong> {order.awbCode}
+                </p>
+              )}
+              {order.courierName && (
+                <p>
+                  <strong>Courier:</strong> {order.courierName}
+                </p>
+              )}
+              {order.shipmentStatus && (
+                <p>
+                  <strong>Shipment Status:</strong>{" "}
+                  <span className="badge bg-info">{order.shipmentStatus}</span>
                 </p>
               )}
             </div>

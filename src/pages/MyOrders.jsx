@@ -109,7 +109,7 @@ const MyOrders = () => {
     <div className="padding-large">
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="display-5 text-uppercase">My Orders</h1>
+          <h1 className="h2 h-md-3 text-uppercase fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>My Orders</h1>
           <Link to="/shop" className="btn btn-outline-primary">
             Continue Shopping
           </Link>
@@ -154,10 +154,10 @@ const MyOrders = () => {
         </div>
 
         {orders.length === 0 ? (
-          <div className="card">
-            <div className="card-body text-center py-5">
-              <h5 className="text-muted">No orders found</h5>
-              <p className="text-muted">You haven't placed any orders yet.</p>
+            <div className="card">
+              <div className="card-body text-center py-5">
+                <h5 className="text-muted fw-semibold" style={{ fontSize: '1.1rem' }}>No orders found</h5>
+                <p className="text-muted" style={{ fontSize: '0.95rem' }}>You haven't placed any orders yet.</p>
               <Link to="/shop" className="btn btn-primary">
                 Start Shopping
               </Link>

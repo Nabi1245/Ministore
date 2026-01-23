@@ -104,11 +104,11 @@ const OrderSuccess = () => {
               />
             </svg>
           </div>
-          <h1 className="display-4 text-success mb-3">Order Placed Successfully!</h1>
-          <p className="lead text-muted">
+          <h1 className="h2 h-md-3 text-success mb-3 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Order Placed Successfully!</h1>
+          <p className="text-muted mb-2" style={{ fontSize: '1rem' }}>
             Thank you for your order. We've received your order and will begin processing it right away.
           </p>
-          <p className="text-muted">
+          <p className="text-muted" style={{ fontSize: '0.95rem' }}>
             Order ID: <strong>#{order.id}</strong>
           </p>
         </div>
@@ -219,7 +219,7 @@ const OrderSuccess = () => {
             {/* Shipping Address */}
             <div className="card">
               <div className="card-header bg-light">
-                <h5 className="mb-0">Shipping Address</h5>
+                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Shipping Address</h5>
               </div>
               <div className="card-body">
                 <p className="mb-1">
@@ -244,7 +244,7 @@ const OrderSuccess = () => {
           <div className="col-lg-4">
             <div className="card">
               <div className="card-body">
-                <h5 className="card-title mb-4">What's Next?</h5>
+                <h5 className="card-title mb-4 fw-semibold" style={{ fontSize: '1.1rem' }}>What's Next?</h5>
                 <ul className="list-unstyled">
                   <li className="mb-3">
                     <strong>1. Order Confirmation</strong>

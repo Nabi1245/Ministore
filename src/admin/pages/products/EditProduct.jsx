@@ -32,6 +32,7 @@ const EditProduct = () => {
   const fetchData = async () => {
     try {
       setFetching(true);
+      setError("");
       const [productData, categoriesData] = await Promise.all([
         productAPI.getById(id),
         categoryAPI.getAll(),
@@ -47,10 +48,12 @@ const EditProduct = () => {
       setDescription(product.description || "");
       setExistingImages(product.images || []);
 
-      setCategories(Array.isArray(categoriesData) ? categoriesData : categoriesData.data || []);
+      // Handle both new format (with success) and legacy format
+      const categoriesList = categoriesData.categories || categoriesData;
+      setCategories(Array.isArray(categoriesList) ? categoriesList : []);
     } catch (err) {
       console.error(err);
-      setError("Failed to load product");
+      setError(err.message || "Failed to load product");
     } finally {
       setFetching(false);
     }
@@ -190,14 +193,20 @@ const EditProduct = () => {
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
                     required
+                    disabled={fetching}
                   >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
+                    <option value="">
+                      {fetching ? "Loading categories..." : "Select a category"}
+                    </option>
+                    {Array.isArray(categories) && categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
                     ))}
                   </select>
+                  {!fetching && categories.length === 0 && (
+                    <small className="text-muted">No categories available. Please add categories first.</small>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { adminAPI } from "../../utils/api";
 
 const AddCategory = () => {
   const navigate = useNavigate();
@@ -18,35 +19,20 @@ const AddCategory = () => {
       return;
     }
 
+    // Validate slug format
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      setError("Slug must contain only lowercase letters, numbers, and hyphens");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
       setSuccess("");
 
-      const token = localStorage.getItem("adminToken");
-
-      const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/categories",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name,
-            slug,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to create category");
-      }
-
-      setSuccess("Category created successfully");
+      const result = await adminAPI.createCategory({ name: name.trim(), slug: slug.trim() });
+      
+      setSuccess(result.message || "Category created successfully");
 
       // Optional redirect after success
       setTimeout(() => {
@@ -54,7 +40,7 @@ const AddCategory = () => {
       }, 1200);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Server error");
+      setError(err.message || "Failed to create category. Make sure name and slug are unique.");
     } finally {
       setLoading(false);
     }

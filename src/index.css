@@ -1,5 +1,146 @@
 @import '../css/bootstrap.min.css';
 @import '../style.css';
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import './styles/header.css';
+
+/* Global Poppins font application */
+* {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+body {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+button, input, textarea, select {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Color Scheme Overrides */
+:root {
+  --bs-primary: #89bb56;
+  --bs-secondary: #ffffff;
+  --bs-primary-rgb: 137, 187, 86;
+}
+
+/* Minimal use of primary color - only for specific important elements */
+.btn-primary {
+  background-color: #89bb56 !important;
+  border-color: #89bb56 !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  background-color: #7aa84a !important;
+  border-color: #7aa84a !important;
+  color: #ffffff !important;
+}
+
+/* Text primary - use sparingly */
+.text-primary {
+  color: #89bb56 !important;
+}
+
+/* Background primary - use sparingly */
+.bg-primary {
+  background-color: #89bb56 !important;
+  color: #ffffff !important;
+}
+
+/* Shop Page Styles */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.product-card img {
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Filter Sidebar Styles */
+.card-header.bg-light {
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.form-select, .form-control {
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-select:focus, .form-control:focus {
+  border-color: #89bb56;
+  box-shadow: 0 0 0 0.2rem rgba(137, 187, 86, 0.25);
+}
+
+/* Header Text Size Standardization */
+.nav-link {
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+}
+
+@media (max-width: 991px) {
+  .product-card {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Mobile header text sizes */
+  .navbar-nav .nav-link {
+    font-size: 1rem !important;
+  }
+  
+  .dropdown-toggle {
+    font-size: 0.95rem !important;
+  }
+  
+  .dropdown-item {
+    font-size: 0.95rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .padding-large {
+    padding-top: 100px !important;
+    padding-bottom: 3rem !important;
+  }
+  
+  /* Ensure consistent text sizes on mobile */
+  h1, .h1 {
+    font-size: clamp(1.5rem, 5vw, 2rem) !important;
+  }
+  
+  h2, .h2 {
+    font-size: clamp(1.25rem, 4vw, 1.75rem) !important;
+  }
+  
+  h3, .h3 {
+    font-size: clamp(1.1rem, 3vw, 1.5rem) !important;
+  }
+  
+  h4, .h4 {
+    font-size: clamp(1rem, 2.5vw, 1.25rem) !important;
+  }
+  
+  h5, .h5 {
+    font-size: clamp(0.95rem, 2vw, 1.1rem) !important;
+  }
+  
+  p, .lead {
+    font-size: 0.95rem !important;
+  }
+}
 

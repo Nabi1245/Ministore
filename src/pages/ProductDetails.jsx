@@ -148,10 +148,10 @@ const ProductDetails = () => {
             </div>
 
             <div className="col-md-6">
-              <h1 className="display-4 text-uppercase mb-3">{product.title}</h1>
+              <h1 className="h2 h-md-3 text-uppercase mb-3 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)' }}>{product.title}</h1>
 
               <div className="price-section mb-4">
-                <span className="h3 text-primary me-3">{formatPrice(price)}</span>
+                <span className="h4 text-primary me-3 fw-bold" style={{ fontSize: '1.75rem' }}>{formatPrice(price)}</span>
                 {originalPrice && (
                   <>
                     <span className="text-muted text-decoration-line-through">{formatPrice(originalPrice)}</span>
@@ -164,14 +164,14 @@ const ProductDetails = () => {
 
               {product.description && (
                 <div className="description mb-4">
-                  <p className="lead">{product.description}</p>
+                  <p className="mb-0" style={{ fontSize: '1rem', lineHeight: '1.6' }}>{product.description}</p>
                 </div>
               )}
 
               {/* Display Case Details for Mobile Cases */}
               {product.caseDetails && (
                 <div className="case-details mb-4">
-                  <h5 className="mb-3">Product Specifications:</h5>
+                  <h5 className="mb-3 fw-semibold" style={{ fontSize: '1.1rem' }}>Product Specifications:</h5>
                   <div className="card">
                     <div className="card-body">
                       <table className="table table-sm">
@@ -268,7 +268,7 @@ const ProductDetails = () => {
 
           <div className="row mt-5">
             <div className="col-12">
-              <h3 className="mb-4">Product Information</h3>
+              <h3 className="mb-4 fw-semibold" style={{ fontSize: '1.5rem' }}>Product Information</h3>
               <div className="card">
                 <div className="card-body">
                   <table className="table">

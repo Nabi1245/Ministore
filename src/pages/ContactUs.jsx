@@ -78,14 +78,14 @@ const ContactUs = () => {
                   {success && 
                     <div className='alert alert-success'>{success}</div> 
                   }
-                  {/* FORM */}
-                  <form onSubmit={handleSubmit}>
-                    <div className="row g-3">
-                      {/* Name */}
-                      <div className="col-md-6">
-                        <label className="form-label">
-                          Name <span className="text-danger">*</span>
-                        </label>
+                {/* FORM */}
+                <form onSubmit={handleSubmit}>
+                  <div className="row g-3">
+                    {/* Name */}
+                    <div className="col-md-6">
+                      <label className="form-label" style={{ fontSize: '0.95rem' }}>
+                        Name <span className="text-danger">*</span>
+                      </label>
                         <input 
                         type="text"
                         name='name'
@@ -96,9 +96,9 @@ const ContactUs = () => {
                         onChange={handleChange} 
                         />
                       </div>
-                      {/* Email */}
-                      <div className="col-md-6">
-                        <label className="form-label">Email</label>
+                    {/* Email */}
+                    <div className="col-md-6">
+                      <label className="form-label" style={{ fontSize: '0.95rem' }}>Email</label>
                         <input 
                         type="email"
                         name='email'
@@ -124,9 +124,9 @@ const ContactUs = () => {
                         onChange={handleChange} 
                         />
                        </div>
-                       {/* Message */}
-                       <div className="col-12">
-                        <label className="form-label">Message</label>
+                    {/* Message */}
+                    <div className="col-12">
+                      <label className="form-label" style={{ fontSize: '0.95rem' }}>Message</label>
                           <textarea 
                           name="message"
                           className='form-control'
