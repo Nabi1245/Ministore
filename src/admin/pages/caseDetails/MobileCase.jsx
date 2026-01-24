@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { caseDetailsAPI, getImageUrl } from "../../../utils/api";
+import fallbackImage from '../../../assest/images/product-item1.jpg';
 
 const MobileCase = () => {
   const [cases, setCases] = useState([]);
@@ -120,7 +121,7 @@ const MobileCase = () => {
                           className="card-img-top"
                           style={{ height: 200, objectFit: "cover" }}
                           onError={(e) => {
-                            e.target.src = '/images/product-item1.jpg';
+                            e.target.src = fallbackImage;
                           }}
                         />
                       )}
