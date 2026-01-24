@@ -140,7 +140,7 @@ const ContactUs = () => {
                        {/* Submit */}
                        <div className="text-center mt-4">
                         <button type='submit' className="btn btn-primary px-5">
-                          Send Message
+                          Sendc Message
                         </button>
                        </div>
                     </div>
