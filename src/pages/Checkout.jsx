@@ -133,7 +133,7 @@ const Checkout = () => {
           key: razorpayOrder.key,
           amount: razorpayOrder.amount,
           currency: razorpayOrder.currency,
-          name: 'Your Store',
+          name: 'FOXECOM',
           description: `Order #${orderId}`,
           order_id: razorpayOrder.razorpayOrderId,
           handler: async function (response) {

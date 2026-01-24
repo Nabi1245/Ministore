@@ -1,24 +1,27 @@
 import React from 'react'
+import postItem1 from '../assest/images/post-item1.jpg'
+import postItem2 from '../assest/images/post-item2.jpg'
+import postItem3 from '../assest/images/post-item3.jpg'
 
 const LatestBlog = () => {
   const posts = [
     {
       id: 1,
-      image: '/images/post-item1.jpg',
+      image: postItem1,
       date: 'feb 22, 2023',
       category: 'Gadgets',
       title: "Get some cool gadgets in 2023"
     },
     {
       id: 2,
-      image: '/images/post-item2.jpg',
+      image: postItem2,
       date: 'feb 25, 2023',
       category: 'Technology',
       title: "Technology Hack You Won't Get"
     },
     {
       id: 3,
-      image: '/images/post-item3.jpg',
+      image: postItem3,
       date: 'feb 22, 2023',
       category: 'Camera',
       title: "Top 10 Small Camera In The World"

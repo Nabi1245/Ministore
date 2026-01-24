@@ -70,9 +70,12 @@ const adminApiRequest = async (endpoint, options = {}) => {
   }
 };
 
+// Import fallback image
+import fallbackImage from '../assest/images/product-item1.jpg';
+
 // Helper function to get full image URL
 export const getImageUrl = (imagePath) => {
-  if (!imagePath) return '/images/product-item1.jpg';
+  if (!imagePath) return fallbackImage;
   
   // If already a full URL, return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -84,9 +87,17 @@ export const getImageUrl = (imagePath) => {
     return `${BASE_URL}${imagePath}`;
   }
   
-  // If it's a local image path (starts with /images/), return as is
-  if (imagePath.startsWith('/images/')) {
+  // If it's already an imported image (object with src property or string path from import), return as is
+  if (typeof imagePath === 'object' || (typeof imagePath === 'string' && !imagePath.startsWith('/'))) {
     return imagePath;
+  }
+  
+  // If it's a local image path (starts with /images/), try to import it
+  // Note: Dynamic imports don't work well in Vite, so we return the path
+  // Components should import images directly when possible
+  if (imagePath.startsWith('/images/')) {
+    // Return fallback for now - components should import images directly
+    return fallbackImage;
   }
   
   // Default: assume it's a backend upload path

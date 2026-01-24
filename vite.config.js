@@ -4,6 +4,7 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+   base: "/foxecom-frontend",
   plugins: [react()],
   server: {
     port: 5173,

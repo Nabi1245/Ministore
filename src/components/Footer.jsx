@@ -1,4 +1,10 @@
 import React from 'react'
+import mainLogo from '../assest/images/main-logo.png'
+import dhlLogo from '../assest/images/dhl.png'
+import shippingCard from '../assest/images/shippingcard.png'
+import visaLogo from '../assest/images/visa.jpg'
+import mastercardLogo from '../assest/images/mastercard.jpg'
+import paypalLogo from '../assest/images/paypal.jpg'
 
 const Footer = () => {
   return (
@@ -10,7 +16,7 @@ const Footer = () => {
               <div className="row d-flex flex-wrap justify-content-between">
                 <div className="col-lg-3 col-sm-6 pb-3">
                   <div className="footer-menu">
-                    <img src="/images/main-logo.png" alt="logo" />
+                    <img src={mainLogo} alt="logo" />
                     <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
                     <div className="social-links">
                       <ul className="d-flex list-unstyled">
@@ -119,8 +125,8 @@ const Footer = () => {
               <div className="Shipping d-flex">
                 <p>We ship with:</p>
                 <div className="card-wrap ps-2">
-                  <img src="/images/dhl.png" alt="visa" />
-                  <img src="/images/shippingcard.png" alt="mastercard" />
+                  <img src={dhlLogo} alt="visa" />
+                  <img src={shippingCard} alt="mastercard" />
                 </div>
               </div>
             </div>
@@ -128,9 +134,9 @@ const Footer = () => {
               <div className="payment-method d-flex">
                 <p>Payment options:</p>
                 <div className="card-wrap ps-2">
-                  <img src="/images/visa.jpg" alt="visa" />
-                  <img src="/images/mastercard.jpg" alt="mastercard" />
-                  <img src="/images/paypal.jpg" alt="paypal" />
+                  <img src={visaLogo} alt="visa" />
+                  <img src={mastercardLogo} alt="mastercard" />
+                  <img src={paypalLogo} alt="paypal" />
                 </div>
               </div>
             </div>
