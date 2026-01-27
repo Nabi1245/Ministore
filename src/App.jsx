@@ -45,6 +45,10 @@ import UserView from "./admin/pages/users/UserView";
 import AdminsDashboard from "./admin/pages/admins/AdminsDashboard";
 import AddAdmin from "./admin/pages/admins/AddAdmin";
 import EditAdmin from "./admin/pages/admins/EditAdmin";
+import AboutUs from "./pages/AboutUs.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import TermsConditions from "./pages/TermsConditions.jsx";
+import RefundPolicy from "./pages/RefundPolicy.jsx";
 
 
 
@@ -72,6 +76,10 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="shop" element={<Shop />} />
                 <Route path="contact-us" element={<ContactUs />} />
+                <Route path="about-us" element={<AboutUs />} />
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="terms" element={<TermsConditions/>} />
+                <Route path="refund-policy" element={<RefundPolicy/>} />
                 <Route path="product/:id" element={<ProductDetails />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />

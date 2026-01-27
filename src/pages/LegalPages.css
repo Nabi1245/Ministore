@@ -1,0 +1,106 @@
+LegalPages.css
+
+/* Primary Green Color Theme */
+:root {
+  --primary-green: #198754;
+  --light-green: #d1e7dd;
+  --dark-green: #0f5132;
+}
+
+.legal-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.legal-card {
+  border-radius: 15px;
+  overflow: hidden;
+  border: none;
+}
+
+.legal-card .card-header {
+  border-radius: 15px 15px 0 0 !important;
+}
+
+.legal-section {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.legal-section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--primary-green), #20c997);
+  border-radius: 3px;
+}
+
+.custom-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.custom-list li {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.custom-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--primary-green);
+  font-weight: bold;
+}
+
+.security-feature {
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, #f8fff9, white);
+}
+
+.security-feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(25, 135, 84, 0.1);
+  border-color: var(--primary-green) !important;
+}
+
+.contact-info-card, .contact-card {
+  background: linear-gradient(135deg, #f8fff9 0%, #ffffff 100%);
+  border-left: 4px solid var(--primary-green) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .legal-card .card-body {
+    padding: 1.5rem !important;
+  }
+  
+  .legal-section {
+    padding-left: 1rem;
+  }
+  
+  .legal-section::before {
+    width: 2px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .legal-card {
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+  }
+  
+  .card-header {
+    color: #000 !important;
+    background: #f8f9fa !important;
+  }
+  
+  .btn, .card-footer {
+    display: none !important;
+  }
+}
