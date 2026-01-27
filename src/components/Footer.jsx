@@ -80,7 +80,7 @@ const Footer = () => {
                         <a href="privacy-policy">Privacy & Policy</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Returns Policies</a>
+                        <a href="refund-policy">Returns Policies</a>
                       </li>
                       <li className="menu-item pb-2">
                         <a href="#">Shipping + Delivery</a>
