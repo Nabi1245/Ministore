@@ -329,6 +329,7 @@ h3.cart-title {
 .btn.btn-light:hover {
   background-color: var(--primary-color);
   color: var(--light-color);
+  color: #ffffff !important;
 }
 .btn.btn-primary {
   background: var(--primary-color);

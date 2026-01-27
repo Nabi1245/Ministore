@@ -3,7 +3,7 @@ import React from 'react';
 
 const RefundPolicy = () => {
   return (
-    <div className="container py-5">
+    <div className="container py-5 mt-5">
       <div className="row justify-content-center">
         <div className="col-lg-10 col-xl-8">
           {/* Header Section */}

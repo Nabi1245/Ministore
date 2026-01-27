@@ -1,5 +1,5 @@
 import React from 'react'
-import mainLogo from '../assest/images/main-logo.png'
+import mainLogo from '../assest/images/foxicom.webp'
 import dhlLogo from '../assest/images/dhl.png'
 import shippingCard from '../assest/images/shippingcard.png'
 import visaLogo from '../assest/images/visa.jpg'
@@ -16,7 +16,7 @@ const Footer = () => {
               <div className="row d-flex flex-wrap justify-content-between">
                 <div className="col-lg-3 col-sm-6 pb-3">
                   <div className="footer-menu">
-                    <img src={mainLogo} alt="logo" />
+                    <img src={mainLogo} alt="logo" width={100} />
                     <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
                     <div className="social-links">
                       <ul className="d-flex list-unstyled">
@@ -67,13 +67,13 @@ const Footer = () => {
                         <a href="/">Home</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="/about-us">About</a>
+                        <a href="foxecom-frontend/about-us">About</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="/shop">Shop</a>
+                        <a href="foxecom-frontend/shop">Shop</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="/contact-us">Contact</a>
+                        <a href="foxecom-frontend/contact-us">Contact</a>
                       </li>
                     </ul>
                   </div>
@@ -83,16 +83,16 @@ const Footer = () => {
                     <h5 className="widget-title pb-2">Help & Info Help</h5>
                     <ul className="menu-list list-unstyled">
                       <li className="menu-item pb-2">
-                        <a href="privacy-policy">Privacy & Policy</a>
+                        <a href="foxecom-frontend/privacy-policy">Privacy & Policy</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Returns Policies</a>
+                        <a href="foxecom-frontend/refund-policy">Returns Policies</a>
                       </li>
                       <li className="menu-item pb-2">
                         <a href="#">Shipping + Delivery</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Contact Us</a>
+                        <a href="">Contact Us</a>
                       </li>
                       <li className="menu-item pb-2">
                         <a href="#">Faqs</a>
