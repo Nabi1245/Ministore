@@ -1,4 +1,10 @@
 import React from 'react'
+import mainLogo from '../assest/images/foxicom.webp'
+import dhlLogo from '../assest/images/dhl.png'
+import shippingCard from '../assest/images/shippingcard.png'
+import visaLogo from '../assest/images/visa.jpg'
+import mastercardLogo from '../assest/images/mastercard.jpg'
+import paypalLogo from '../assest/images/paypal.jpg'
 
 const Footer = () => {
   return (
@@ -10,7 +16,7 @@ const Footer = () => {
               <div className="row d-flex flex-wrap justify-content-between">
                 <div className="col-lg-3 col-sm-6 pb-3">
                   <div className="footer-menu">
-                    <img src="/images/main-logo.png" alt="logo" />
+                    <img src={mainLogo} alt="logo" width={100} />
                     <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
                     <div className="social-links">
                       <ul className="d-flex list-unstyled">
@@ -61,13 +67,13 @@ const Footer = () => {
                         <a href="/">Home</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="/about-us">About</a>
+                        <a href="foxecom-frontend/about-us">About</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="/shop">Shop</a>
+                        <a href="foxecom-frontend/shop">Shop</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="/contact-us">Contact</a>
+                        <a href="foxecom-frontend/contact-us">Contact</a>
                       </li>
                     </ul>
                   </div>
@@ -77,16 +83,16 @@ const Footer = () => {
                     <h5 className="widget-title pb-2">Help & Info Help</h5>
                     <ul className="menu-list list-unstyled">
                       <li className="menu-item pb-2">
-                        <a href="privacy-policy">Privacy & Policy</a>
+                        <a href="foxecom-frontend/privacy-policy">Privacy & Policy</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="refund-policy">Returns Policies</a>
+                        <a href="foxecom-frontend/refund-policy">Returns Policies</a>
                       </li>
                       <li className="menu-item pb-2">
                         <a href="#">Shipping + Delivery</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Contact Us</a>
+                        <a href="">Contact Us</a>
                       </li>
                       <li className="menu-item pb-2">
                         <a href="#">Faqs</a>
@@ -116,8 +122,8 @@ const Footer = () => {
               <div className="Shipping d-flex">
                 <p>We ship with:</p>
                 <div className="card-wrap ps-2">
-                  <img src="/images/dhl.png" alt="visa" />
-                  <img src="/images/shippingcard.png" alt="mastercard" />
+                  <img src={dhlLogo} alt="visa" />
+                  <img src={shippingCard} alt="mastercard" />
                 </div>
               </div>
             </div>
@@ -125,15 +131,15 @@ const Footer = () => {
               <div className="payment-method d-flex">
                 <p>Payment options:</p>
                 <div className="card-wrap ps-2">
-                  <img src="/images/visa.jpg" alt="visa" />
-                  <img src="/images/mastercard.jpg" alt="mastercard" />
-                  <img src="/images/paypal.jpg" alt="paypal" />
+                  <img src={visaLogo} alt="visa" />
+                  <img src={mastercardLogo} alt="mastercard" />
+                  <img src={paypalLogo} alt="paypal" />
                 </div>
               </div>
             </div>
             <div className="col-md-4 col-sm-6">
               <div className="copyright">
-                <p>© Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
+                <p>© Copyright 2023 Foxecom. Design by <a href="https://ideatore./">inIDEATORE INTERACTIVE PVT LTD</a>
                 </p>
               </div>
             </div>
