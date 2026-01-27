@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { productAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
+import fallbackImage from '../assest/images/product-item1.jpg'
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -89,7 +90,7 @@ const ProductDetails = () => {
   
   // Fallback to default image if no images found
   if (imagePaths.length === 0) {
-    imagePaths.push('/images/product-item1.jpg')
+    imagePaths.push(fallbackImage)
   }
   
   const images = imagePaths.map(path => getImageUrl(path))
@@ -118,7 +119,7 @@ const ProductDetails = () => {
                     className="img-fluid w-100"
                     style={{ borderRadius: '8px', maxHeight: '500px', objectFit: 'contain' }}
                     onError={(e) => {
-                      e.target.src = '/images/product-item1.jpg'
+                      e.target.src = fallbackImage
                     }}
                   />
                 </div>
@@ -138,7 +139,7 @@ const ProductDetails = () => {
                         }}
                         onClick={() => setSelectedImage(index)}
                         onError={(e) => {
-                          e.target.src = '/images/product-item1.jpg'
+                          e.target.src = fallbackImage
                         }}
                       />
                     ))}

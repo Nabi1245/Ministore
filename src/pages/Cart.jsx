@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
 import { getImageUrl } from '../utils/api'
+import fallbackImage from '../assest/images/product-item1.jpg'
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, clearCart, getCartTotal, loading, loadCart, isLoggedIn } = useCart()
@@ -83,12 +84,12 @@ const Cart = () => {
                       <div key={item.id} className="d-flex align-items-center mb-4 pb-4 border-bottom">
                         <Link to={`/product/${item.id}`} className="text-decoration-none">
                           <img
-                            src={getImageUrl(item.image || item.thumbnailImage || '/images/product-item1.jpg')}
+                            src={getImageUrl(item.image || item.thumbnailImage)}
                             alt={item.title}
                             className="img-fluid"
                             style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px' }}
                             onError={(e) => {
-                              e.target.src = '/images/product-item1.jpg'
+                              e.target.src = fallbackImage
                             }}
                           />
                         </Link>

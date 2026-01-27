@@ -1,12 +1,17 @@
 import React from 'react'
+import instaItem1 from '../assest/images/insta-item1.jpg'
+import instaItem2 from '../assest/images/insta-item2.jpg'
+import instaItem3 from '../assest/images/insta-item3.jpg'
+import instaItem4 from '../assest/images/insta-item4.jpg'
+import instaItem5 from '../assest/images/insta-item5.jpg'
 
 const Instagram = () => {
   const instaItems = [
-    { id: 1, image: '/images/insta-item1.jpg' },
-    { id: 2, image: '/images/insta-item2.jpg' },
-    { id: 3, image: '/images/insta-item3.jpg' },
-    { id: 4, image: '/images/insta-item4.jpg' },
-    { id: 5, image: '/images/insta-item5.jpg' },
+    { id: 1, image: instaItem1 },
+    { id: 2, image: instaItem2 },
+    { id: 3, image: instaItem3 },
+    { id: 4, image: instaItem4 },
+    { id: 5, image: instaItem5 },
   ]
 
   return (

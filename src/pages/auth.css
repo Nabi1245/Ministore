@@ -24,15 +24,19 @@
 .auth-box button {
   width: 100%;
   padding: 10px;
-  background: purple;
-  color: white;
+  background: var(--primary-color);
+  color: var(--secondary-color);
   border: none;
   border-radius: 20px;
   cursor: pointer;
 }
 
+.auth-box button:hover {
+  background: #7aa84a;
+}
+
 .auth-box p {
   margin-top: 15px;
-  color: blue;
+  color: var(--primary-color);
   cursor: pointer;
 }

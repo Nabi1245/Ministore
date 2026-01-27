@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
+import bannerImage from '../assest/images/banner-image.png'
 
 const Billboard = () => {
   const prevRef = useRef(null)
@@ -34,7 +35,7 @@ const Billboard = () => {
               </div>
               <div className="col-md-5">
                 <div className="image-holder">
-                  <img src="/images/banner-image.png" alt="banner" />
+                  <img src={bannerImage} alt="banner" />
                 </div>
               </div>
             </div>
@@ -51,7 +52,7 @@ const Billboard = () => {
               </div>
               <div className="col-md-5">
                 <div className="image-holder">
-                  <img src="/images/banner-image.png" alt="banner" />
+                  <img src={bannerImage} alt="banner" />
                 </div>
               </div>
             </div>

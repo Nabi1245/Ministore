@@ -1,3 +1,17 @@
+// Import product images
+import productItem1 from '../assest/images/product-item1.jpg'
+import productItem2 from '../assest/images/product-item2.jpg'
+import productItem3 from '../assest/images/product-item3.jpg'
+import productItem4 from '../assest/images/product-item4.jpg'
+import productItem5 from '../assest/images/product-item5.jpg'
+import productItem6 from '../assest/images/product-item6.jpg'
+import productItem7 from '../assest/images/product-item7.jpg'
+import productItem8 from '../assest/images/product-item8.jpg'
+import productItem9 from '../assest/images/product-item9.jpg'
+import productItem10 from '../assest/images/product-item10.jpg'
+import singleImage1 from '../assest/images/single-image1.png'
+import singleImage2 from '../assest/images/single-image2.jpg'
+
 // Product data
 export const products = [
   // Mobile Phones
@@ -7,8 +21,8 @@ export const products = [
     category: 'mobile',
     price: 980,
     originalPrice: 1200,
-    image: '/images/product-item1.jpg',
-    images: ['/images/product-item1.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem1,
+    images: [productItem1, singleImage1, singleImage2],
     description: 'The iPhone 10 features a stunning 5.8-inch Super Retina display, A11 Bionic chip, and dual 12MP cameras. Experience the future of smartphones with Face ID and wireless charging.',
     features: [
       '5.8-inch Super Retina HD display',
@@ -29,8 +43,8 @@ export const products = [
     category: 'mobile',
     price: 1100,
     originalPrice: 1300,
-    image: '/images/product-item2.jpg',
-    images: ['/images/product-item2.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem2,
+    images: [productItem2, singleImage1, singleImage2],
     description: 'The iPhone 11 comes with a 6.1-inch Liquid Retina display, A13 Bionic chip, and dual-camera system. Perfect for capturing stunning photos and videos.',
     features: [
       '6.1-inch Liquid Retina HD display',
@@ -51,8 +65,8 @@ export const products = [
     category: 'mobile',
     price: 780,
     originalPrice: 900,
-    image: '/images/product-item3.jpg',
-    images: ['/images/product-item3.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem3,
+    images: [productItem3, singleImage1, singleImage2],
     description: 'The iPhone 8 features a 4.7-inch Retina HD display, A11 Bionic chip, and a 12MP camera. Classic design with modern performance.',
     features: [
       '4.7-inch Retina HD display',
@@ -73,8 +87,8 @@ export const products = [
     category: 'mobile',
     price: 1500,
     originalPrice: 1700,
-    image: '/images/product-item4.jpg',
-    images: ['/images/product-item4.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem4,
+    images: [productItem4, singleImage1, singleImage2],
     description: 'The iPhone 13 features a 6.1-inch Super Retina XDR display, A15 Bionic chip, and advanced dual-camera system with Cinematic mode.',
     features: [
       '6.1-inch Super Retina XDR display',
@@ -95,8 +109,8 @@ export const products = [
     category: 'mobile',
     price: 1300,
     originalPrice: 1500,
-    image: '/images/product-item5.jpg',
-    images: ['/images/product-item5.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem5,
+    images: [productItem5, singleImage1, singleImage2],
     description: 'The iPhone 12 features a 6.1-inch Super Retina XDR display, A14 Bionic chip, and dual-camera system. 5G capable for ultra-fast speeds.',
     features: [
       '6.1-inch Super Retina XDR display',
@@ -118,8 +132,8 @@ export const products = [
     category: 'watch',
     price: 870,
     originalPrice: 1000,
-    image: '/images/product-item6.jpg',
-    images: ['/images/product-item6.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem6,
+    images: [productItem6, singleImage1, singleImage2],
     description: 'Elegant pink smartwatch with fitness tracking, heart rate monitoring, and smartphone notifications. Perfect for active lifestyles.',
     features: [
       '1.4-inch AMOLED display',
@@ -140,8 +154,8 @@ export const products = [
     category: 'watch',
     price: 680,
     originalPrice: 850,
-    image: '/images/product-item7.jpg',
-    images: ['/images/product-item7.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem7,
+    images: [productItem7, singleImage1, singleImage2],
     description: 'Durable heavy-duty smartwatch designed for extreme conditions. Built to last with premium materials and advanced features.',
     features: [
       'Rugged design',
@@ -162,8 +176,8 @@ export const products = [
     category: 'watch',
     price: 750,
     originalPrice: 900,
-    image: '/images/product-item8.jpg',
-    images: ['/images/product-item8.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem8,
+    images: [productItem8, singleImage1, singleImage2],
     description: 'Stylish spotted design smartwatch with premium features. Track your fitness, receive notifications, and stay connected.',
     features: [
       'Unique spotted design',
@@ -184,8 +198,8 @@ export const products = [
     category: 'watch',
     price: 650,
     originalPrice: 800,
-    image: '/images/product-item9.jpg',
-    images: ['/images/product-item9.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem9,
+    images: [productItem9, singleImage1, singleImage2],
     description: 'Classic black smartwatch with essential features. Sleek design meets functionality for everyday use.',
     features: [
       'Classic black design',
@@ -206,8 +220,8 @@ export const products = [
     category: 'watch',
     price: 750,
     originalPrice: 950,
-    image: '/images/product-item10.jpg',
-    images: ['/images/product-item10.jpg', '/images/single-image1.png', '/images/single-image2.jpg'],
+    image: productItem10,
+    images: [productItem10, singleImage1, singleImage2],
     description: 'Premium black smartwatch with advanced features. The perfect companion for your active lifestyle.',
     features: [
       'Premium black design',
