@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
+import fallbackImage from '../assest/images/product-item1.jpg'
 
 const Shop = () => {
   const { addToCart } = useCart()
@@ -482,7 +483,7 @@ const Shop = () => {
             {!loading && products.length > 0 && (
               <div className="row">
                 {products.map((product) => {
-                  const imagePath = product.thumbnailImage || product.images?.[0]?.imageUrl || '/images/product-item1.jpg'
+                  const imagePath = product.thumbnailImage || product.images?.[0]?.imageUrl
                   const imageUrl = getImageUrl(imagePath)
                   const price = parseFloat(product.discountPrice || product.price)
                   const originalPrice = product.discountPrice ? parseFloat(product.price) : null
@@ -499,7 +500,7 @@ const Shop = () => {
                               className="img-fluid w-100 h-100"
                               style={{ objectFit: 'contain', padding: '10px' }}
                               onError={(e) => {
-                                e.target.src = '/images/product-item1.jpg'
+                                e.target.src = fallbackImage
                               }}
                             />
                             {originalPrice && (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { adminAPI, getImageUrl } from "../../../utils/api";
+import fallbackImage from '../../../assest/images/product-item1.jpg';
 
 const ProductsDashboard = () => {
   const [products, setProducts] = useState([]);
@@ -301,7 +302,7 @@ const ProductsDashboard = () => {
                             className="rounded"
                             style={{ objectFit: "cover" }}
                             onError={(e) => {
-                              e.target.src = '/images/product-item1.jpg';
+                              e.target.src = fallbackImage;
                             }}
                           />
                         </td>

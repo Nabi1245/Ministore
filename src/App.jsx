@@ -67,7 +67,7 @@ function App() {
 
   return (
     <>
-      <Router>
+      <Router basename="/foxecom-frontend">
         <CartProvider>
           <SearchPopupProvider>
             <Routes>

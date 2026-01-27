@@ -88,7 +88,7 @@ ul.inner-list li {
    font-size: 1.2em;
 }
 a {
-  color: var(--dark-color);
+  color: var(--primary-color);
   text-decoration: none;
   transition: 0.3s color ease-out;
 }
@@ -98,6 +98,7 @@ a.light {
 a:hover {
   text-decoration: none;
   color: var(--primary-color);
+  opacity: 0.8;
 }
 
 /*------------ Background Color -----------*/
@@ -597,7 +598,7 @@ h3.cart-title {
     height: 50px;
 }
 .navbar-nav .nav-item a.nav-link {
-    color: var(--accent-color);
+    color: var(--primary-color);
 }
 .navbar-nav .nav-item a.nav-link.active, 
 .navbar-nav .nav-item a.nav-link:focus, 
