@@ -1,149 +1,633 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getAllProducts, getProductsByCategory } from '../data/products'
+import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import SVGSymbols from '../components/SVGSymbols'
 
 const Shop = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [sortBy, setSortBy] = useState('default')
   const { addToCart } = useCart()
+  
+  // State management
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [filterOptions, setFilterOptions] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [loadingFilters, setLoadingFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    categoryId: '',
+    brandName: '',
+    modelName: '',
+    minPrice: '',
+    maxPrice: '',
+    inStock: '',
+    color: '',
+    material: '',
+    caseType: '',
+    search: ''
+  })
+  
+  // Sort states
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState('DESC')
+  
+  // Pagination states
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 12,
+    totalItems: 0,
+    totalPages: 1
+  })
 
-  const categories = [
-    { value: 'all', label: 'All Products' },
-    { value: 'mobile', label: 'Mobile Phones' },
-    { value: 'watch', label: 'Smart Watches' }
-  ]
+  // Load categories on mount
+  useEffect(() => {
+    loadCategories()
+  }, [])
 
-  let products = selectedCategory === 'all' 
-    ? getAllProducts() 
-    : getProductsByCategory(selectedCategory)
+  // Load filter options when category changes
+  useEffect(() => {
+    if (filters.categoryId) {
+      loadFilterOptions(filters.categoryId)
+    } else {
+      loadFilterOptions()
+    }
+  }, [filters.categoryId])
 
-  // Sort products
-  if (sortBy === 'price-low') {
-    products = [...products].sort((a, b) => a.price - b.price)
-  } else if (sortBy === 'price-high') {
-    products = [...products].sort((a, b) => b.price - a.price)
-  } else if (sortBy === 'name') {
-    products = [...products].sort((a, b) => a.name.localeCompare(b.name))
+  // Load products when filters, sort, or pagination changes
+  useEffect(() => {
+    loadProducts()
+  }, [filters, sortBy, sortOrder, pagination.page])
+
+  const loadCategories = async () => {
+    try {
+      const data = await categoryAPI.getAll()
+      setCategories(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Error loading categories:', error)
+    }
   }
 
-  const handleAddToCart = (product, e) => {
+  const loadFilterOptions = async (categoryId = null) => {
+    try {
+      setLoadingFilters(true)
+      const data = await productAPI.getFilterOptions(categoryId)
+      // Handle both new API format and legacy format
+      setFilterOptions(data.data || data)
+    } catch (error) {
+      console.error('Error loading filter options:', error)
+    } finally {
+      setLoadingFilters(false)
+    }
+  }
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true)
+      
+      // Build query parameters
+      const params = {
+        page: pagination.page,
+        limit: pagination.limit,
+        sortBy: sortBy,
+        sortOrder: sortOrder
+      }
+
+      // Add filters
+      if (filters.categoryId) params.categoryId = filters.categoryId
+      if (filters.brandName) params.brandName = filters.brandName
+      if (filters.modelName) params.modelName = filters.modelName
+      if (filters.minPrice) params.minPrice = filters.minPrice
+      if (filters.maxPrice) params.maxPrice = filters.maxPrice
+      if (filters.inStock) params.inStock = filters.inStock
+      if (filters.color) params.color = filters.color
+      if (filters.material) params.material = filters.material
+      if (filters.caseType) params.caseType = filters.caseType
+      if (filters.search) params.search = filters.search
+
+      const response = await productAPI.filterAndSort(params)
+      
+      // Handle both new API format and legacy format
+      if (response.success && response.data) {
+        setProducts(response.data.products || [])
+        if (response.data.pagination) {
+          setPagination(prev => ({
+            ...prev,
+            totalItems: response.data.pagination.totalItems || 0,
+            totalPages: response.data.pagination.totalPages || 1,
+            currentPage: response.data.pagination.currentPage || 1
+          }))
+        }
+      } else if (response.products) {
+        // Legacy format fallback
+        setProducts(response.products || [])
+        if (response.totalPages) {
+          setPagination(prev => ({
+            ...prev,
+            totalItems: response.totalItems || 0,
+            totalPages: response.totalPages || 1,
+            currentPage: response.currentPage || 1
+          }))
+        }
+      } else {
+        setProducts([])
+      }
+    } catch (error) {
+      console.error('Error loading products:', error)
+      setProducts([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }))
+    // Reset to page 1 when filters change
+    setPagination(prev => ({ ...prev, page: 1 }))
+  }
+
+  const handleSortChange = (field) => {
+    if (sortBy === field) {
+      // Toggle sort order if same field
+      setSortOrder(prev => prev === 'ASC' ? 'DESC' : 'ASC')
+    } else {
+      setSortBy(field)
+      setSortOrder('DESC')
+    }
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      categoryId: '',
+      brandName: '',
+      modelName: '',
+      minPrice: '',
+      maxPrice: '',
+      inStock: '',
+      color: '',
+      material: '',
+      caseType: '',
+      search: ''
+    })
+    setSortBy('createdAt')
+    setSortOrder('DESC')
+    setPagination(prev => ({ ...prev, page: 1 }))
+  }
+
+  const handleAddToCart = async (product, e) => {
     e.preventDefault()
-    addToCart(product, 1)
-    alert(`${product.name} added to cart!`)
+    const success = await addToCart(product, 1)
+    if (success) {
+      alert(`${product.title} added to cart!`)
+    }
   }
+
+  const formatPrice = (price) => {
+    return `₹${parseFloat(price).toFixed(2)}`
+  }
+
+  const hasActiveFilters = Object.values(filters).some(val => val !== '') || sortBy !== 'createdAt'
 
   return (
-    <>
-      <SVGSymbols />
-      <Header />
-      <div className="padding-large">
-        <div className="container">
-          <div className="row mb-4">
-            <div className="col-12">
-              <h1 className="display-5 text-uppercase mb-4">Shop</h1>
-              
-              <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
-                <div className="category-filter d-flex gap-2 flex-wrap">
-                  {categories.map(cat => (
-                    <button
-                      key={cat.value}
-                      className={`btn ${selectedCategory === cat.value ? 'btn-dark' : 'btn-outline-dark'}`}
-                      onClick={() => setSelectedCategory(cat.value)}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
+    <div className="padding-large">
+      <div className="container">
+        {/* Header */}
+        <div className="row mb-4">
+          <div className="col-12">
+            <h1 className="text-uppercase mb-3 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Shop</h1>
+          </div>
+        </div>
 
-                <div className="sort-filter">
+        {/* Search Bar */}
+        <div className="row mb-4">
+          <div className="col-12">
+            <div className="input-group">
+              <span className="input-group-text bg-light">
+                <i className="bi bi-search"></i>
+              </span>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                placeholder="Search products..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+              />
+              {filters.search && (
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => handleFilterChange('search', '')}
+                >
+                  <i className="bi bi-x"></i>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="row">
+          {/* Filters Sidebar */}
+          <div className="col-lg-3 col-md-4 mb-4">
+            <div className="card shadow-sm">
+              <div className="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>
+                  <i className="bi bi-funnel me-2"></i>
+                  Filters
+                </h5>
+                <button
+                  className="btn btn-sm btn-outline-secondary d-lg-none"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <i className={`bi bi-chevron-${showFilters ? 'up' : 'down'}`}></i>
+                </button>
+              </div>
+              
+              <div className={`card-body ${showFilters ? '' : 'd-none d-lg-block'}`}>
+                {/* Clear Filters Button */}
+                {hasActiveFilters && (
+                  <button
+                    className="btn btn-outline-danger btn-sm w-100 mb-3"
+                    onClick={clearFilters}
+                  >
+                    <i className="bi bi-x-circle me-2"></i>
+                    Clear All Filters
+                  </button>
+                )}
+
+                {/* Category Filter */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    <i className="bi bi-grid me-2"></i>
+                    Category
+                  </label>
                   <select
                     className="form-select"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    style={{ width: '200px' }}
+                    value={filters.categoryId}
+                    onChange={(e) => handleFilterChange('categoryId', e.target.value)}
                   >
-                    <option value="default">Default Sorting</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="name">Name: A to Z</option>
+                    <option value="">All Categories</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
                   </select>
                 </div>
+
+                {/* Brand Filter */}
+                {filterOptions?.brands && filterOptions.brands.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-tag me-2"></i>
+                      Brand
+                    </label>
+                    <select
+                      className="form-select"
+                      value={filters.brandName}
+                      onChange={(e) => handleFilterChange('brandName', e.target.value)}
+                    >
+                      <option value="">All Brands</option>
+                      {filterOptions.brands.map((brand, idx) => (
+                        <option key={idx} value={brand}>{brand}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Model Filter */}
+                {filterOptions?.models && filterOptions.models.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-phone me-2"></i>
+                      Model
+                    </label>
+                    <select
+                      className="form-select"
+                      value={filters.modelName}
+                      onChange={(e) => handleFilterChange('modelName', e.target.value)}
+                    >
+                      <option value="">All Models</option>
+                      {filterOptions.models.map((model, idx) => (
+                        <option key={idx} value={model}>{model}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Price Range */}
+                {filterOptions?.priceRange && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-currency-rupee me-2"></i>
+                      Price Range
+                    </label>
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          placeholder="Min"
+                          value={filters.minPrice}
+                          onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                          min="0"
+                        />
+                      </div>
+                      <div className="col-6">
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          placeholder="Max"
+                          value={filters.maxPrice}
+                          onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                          min="0"
+                        />
+                      </div>
+                    </div>
+                    <small className="text-muted">
+                      Range: ₹{filterOptions.priceRange.min} - ₹{filterOptions.priceRange.max}
+                    </small>
+                  </div>
+                )}
+
+                {/* Stock Filter */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    <i className="bi bi-box-seam me-2"></i>
+                    Availability
+                  </label>
+                  <select
+                    className="form-select"
+                    value={filters.inStock}
+                    onChange={(e) => handleFilterChange('inStock', e.target.value)}
+                  >
+                    <option value="">All Products</option>
+                    <option value="true">In Stock</option>
+                    <option value="false">Out of Stock</option>
+                  </select>
+                </div>
+
+                {/* Color Filter */}
+                {filterOptions?.colors && filterOptions.colors.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-palette me-2"></i>
+                      Color
+                    </label>
+                    <select
+                      className="form-select"
+                      value={filters.color}
+                      onChange={(e) => handleFilterChange('color', e.target.value)}
+                    >
+                      <option value="">All Colors</option>
+                      {filterOptions.colors.map((color, idx) => (
+                        <option key={idx} value={color}>{color}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Material Filter */}
+                {filterOptions?.materials && filterOptions.materials.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-box me-2"></i>
+                      Material
+                    </label>
+                    <select
+                      className="form-select"
+                      value={filters.material}
+                      onChange={(e) => handleFilterChange('material', e.target.value)}
+                    >
+                      <option value="">All Materials</option>
+                      {filterOptions.materials.map((material, idx) => (
+                        <option key={idx} value={material}>{material}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Case Type Filter */}
+                {filterOptions?.caseTypes && filterOptions.caseTypes.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-shield-check me-2"></i>
+                      Case Type
+                    </label>
+                    <select
+                      className="form-select"
+                      value={filters.caseType}
+                      onChange={(e) => handleFilterChange('caseType', e.target.value)}
+                    >
+                      <option value="">All Types</option>
+                      {filterOptions.caseTypes.map((type, idx) => (
+                        <option key={idx} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="row">
-            {products.map((product) => (
-              <div key={product.id} className="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div className="product-card position-relative h-100">
-                  <Link to={`/product/${product.id}`} className="text-decoration-none">
-                    <div className="image-holder position-relative">
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="img-fluid w-100"
-                        style={{ height: '300px', objectFit: 'cover' }}
-                      />
-                      {product.originalPrice > product.price && (
-                        <span className="badge bg-danger position-absolute top-0 end-0 m-2">
-                          {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                  
-                  <div className="cart-concern position-absolute" style={{ bottom: '80px', left: '50%', transform: 'translateX(-50%)', opacity: 0, transition: 'opacity 0.3s' }}>
-                    <div className="cart-button d-flex">
-                      <button
-                        className="btn btn-medium btn-black"
-                        onClick={(e) => handleAddToCart(product, e)}
-                        disabled={!product.inStock}
+          {/* Products Grid */}
+          <div className="col-lg-9 col-md-8">
+            {/* Sort and Results Info */}
+            <div className="card shadow-sm mb-4">
+              <div className="card-body">
+                <div className="row align-items-center">
+                  <div className="col-md-6 mb-2 mb-md-0">
+                    <span className="text-muted" style={{ fontSize: '0.95rem' }}>
+                      Showing {products.length} of {pagination.totalItems} products
+                    </span>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="d-flex align-items-center justify-content-md-end">
+                      <label className="form-label me-2 mb-0" style={{ fontSize: '0.95rem' }}>Sort by:</label>
+                      <select
+                        className="form-select form-select-sm"
+                        style={{ width: 'auto', minWidth: '150px', fontSize: '0.9rem' }}
+                        value={`${sortBy}-${sortOrder}`}
+                        onChange={(e) => {
+                          const [field, order] = e.target.value.split('-')
+                          setSortBy(field)
+                          setSortOrder(order)
+                        }}
                       >
-                        Add to Cart
-                        <svg className="cart-outline ms-2">
-                          <use xlinkHref="#cart-outline"></use>
-                        </svg>
-                      </button>
+                        <option value="createdAt-DESC">Newest First</option>
+                        <option value="createdAt-ASC">Oldest First</option>
+                        <option value="price-ASC">Price: Low to High</option>
+                        <option value="price-DESC">Price: High to Low</option>
+                        <option value="title-ASC">Name: A to Z</option>
+                        <option value="title-DESC">Name: Z to A</option>
+                        <option value="stock-DESC">Stock: High to Low</option>
+                        <option value="discount-DESC">Best Discount</option>
+                      </select>
                     </div>
                   </div>
-
-                  <div className="card-detail d-flex justify-content-between align-items-baseline pt-3">
-                    <Link to={`/product/${product.id}`} className="text-decoration-none text-dark">
-                      <h3 className="card-title text-uppercase mb-1">{product.name}</h3>
-                    </Link>
-                    <div className="text-end">
-                      <span className="item-price text-primary d-block">${product.price}</span>
-                      {product.originalPrice > product.price && (
-                        <span className="text-muted text-decoration-line-through small">${product.originalPrice}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <style>{`
-                    .product-card:hover .cart-concern {
-                      opacity: 1 !important;
-                    }
-                  `}</style>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {products.length === 0 && (
-            <div className="text-center py-5">
-              <p className="lead">No products found in this category.</p>
             </div>
-          )}
+
+            {/* Loading State */}
+            {loading && products.length === 0 && (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className="mt-3 text-muted">Loading products...</p>
+              </div>
+            )}
+
+            {/* Products Grid */}
+            {!loading && products.length > 0 && (
+              <div className="row">
+                {products.map((product) => {
+                  const imagePath = product.thumbnailImage || product.images?.[0]?.imageUrl || '/images/product-item1.jpg'
+                  const imageUrl = getImageUrl(imagePath)
+                  const price = parseFloat(product.discountPrice || product.price)
+                  const originalPrice = product.discountPrice ? parseFloat(product.price) : null
+                  const inStock = product.stock && product.stock > 0
+
+                  return (
+                    <div key={product.id} className="col-lg-4 col-md-6 col-sm-6 mb-4">
+                      <div className="card h-100 shadow-sm product-card">
+                        <Link to={`/product/${product.id}`} className="text-decoration-none">
+                          <div className="position-relative" style={{ height: '250px', overflow: 'hidden', backgroundColor: '#f8f9fa' }}>
+                            <img
+                              src={imageUrl}
+                              alt={product.title}
+                              className="img-fluid w-100 h-100"
+                              style={{ objectFit: 'contain', padding: '10px' }}
+                              onError={(e) => {
+                                e.target.src = '/images/product-item1.jpg'
+                              }}
+                            />
+                            {originalPrice && (
+                              <span className="badge bg-danger position-absolute top-0 end-0 m-2">
+                                {Math.round(((originalPrice - price) / originalPrice) * 100)}% OFF
+                              </span>
+                            )}
+                            {!inStock && (
+                              <span className="badge bg-secondary position-absolute top-0 start-0 m-2">
+                                Out of Stock
+                              </span>
+                            )}
+                          </div>
+                        </Link>
+
+                        <div className="card-body d-flex flex-column">
+                          <Link to={`/product/${product.id}`} className="text-decoration-none text-dark">
+                            <h5 className="card-title mb-2 fw-semibold" style={{ fontSize: '1rem' }}>{product.title}</h5>
+                          </Link>
+
+                          {/* Case Details */}
+                          {product.caseDetails && (
+                            <p className="text-muted small mb-2">
+                              <i className="bi bi-tag me-1"></i>
+                              {product.caseDetails.brand?.name} {product.caseDetails.model?.name}
+                            </p>
+                          )}
+
+                          <div className="mt-auto">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                              <div>
+                                <span className="h5 text-primary mb-0">{formatPrice(price)}</span>
+                                {originalPrice && (
+                                  <span className="text-muted text-decoration-line-through small ms-2">
+                                    {formatPrice(originalPrice)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <button
+                              className="btn btn-primary w-100"
+                              onClick={(e) => handleAddToCart(product, e)}
+                              disabled={!inStock}
+                            >
+                              <i className="bi bi-cart-plus me-2"></i>
+                              {inStock ? 'Add to Cart' : 'Out of Stock'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* No Products Found */}
+            {!loading && products.length === 0 && (
+              <div className="text-center py-5">
+                <i className="bi bi-inbox text-muted" style={{ fontSize: '4rem' }}></i>
+                <h4 className="mt-3 fw-semibold" style={{ fontSize: '1.25rem' }}>No products found</h4>
+                <p className="text-muted" style={{ fontSize: '0.95rem' }}>Try adjusting your filters or search terms</p>
+                {hasActiveFilters && (
+                  <button className="btn btn-primary mt-3" onClick={clearFilters}>
+                    Clear All Filters
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {!loading && pagination.totalPages > 1 && (
+              <div className="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                  <ul className="pagination">
+                    <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                        disabled={pagination.page === 1}
+                      >
+                        <i className="bi bi-chevron-left"></i> Previous
+                      </button>
+                    </li>
+                    
+                    {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
+                      let pageNum
+                      if (pagination.totalPages <= 5) {
+                        pageNum = i + 1
+                      } else if (pagination.page <= 3) {
+                        pageNum = i + 1
+                      } else if (pagination.page >= pagination.totalPages - 2) {
+                        pageNum = pagination.totalPages - 4 + i
+                      } else {
+                        pageNum = pagination.page - 2 + i
+                      }
+                      
+                      return (
+                        <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
+                          <button
+                            className="page-link"
+                            onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                          >
+                            {pageNum}
+                          </button>
+                        </li>
+                      )
+                    })}
+                    
+                    <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.totalPages, prev.page + 1) }))}
+                        disabled={pagination.page === pagination.totalPages}
+                      >
+                        Next <i className="bi bi-chevron-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <Footer />
-    </>
+    </div>
   )
 }
 
 export default Shop
-

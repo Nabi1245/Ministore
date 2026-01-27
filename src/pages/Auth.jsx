@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../contexts/CartContext';
 
-const Auth = ({ setIsLoggedIn }) => {
+const Auth = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    console.log(setIsLoggedIn, "swapnil")
+    const { mergeGuestCart } = useCart();
 
   const handleLogin = async () => {
     try {
@@ -19,20 +20,31 @@ const Auth = ({ setIsLoggedIn }) => {
       );
 
       const data = await res.json();
-      console.log(res.status)
 
       if (res.status == 200) {
-        console.log("if condition");
-        // 🔥 here Login Cnf
         localStorage.setItem("token", data.token);
-        // setIsLoggedIn(true);
-        navigate("/");
+        
+        // Dispatch event to sync login state across components
+        window.dispatchEvent(new Event("loginStatusChanged"));
+        
+        // Merge guest cart into user cart after successful login
+        try {
+          await mergeGuestCart();
+        } catch (mergeError) {
+          console.error('Error merging cart:', mergeError);
+          // Don't block login if merge fails, just log it
+        }
+        
+        // Redirect to intended destination or home
+        const redirectTo = localStorage.getItem('redirectAfterLogin') || '/'
+        localStorage.removeItem('redirectAfterLogin')
+        navigate(redirectTo);
       } else {
         alert(data.message || "Login failed");
       }
     } catch (err) {
-      alert("Server error", err);
-    console.log(err)
+      console.error("Login error:", err);
+      alert("Server error. Please try again.");
     }
   };
 

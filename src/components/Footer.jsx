@@ -58,19 +58,16 @@ const Footer = () => {
                     <h5 className="widget-title pb-2">Quick Links</h5>
                     <ul className="menu-list list-unstyled text-uppercase">
                       <li className="menu-item pb-2">
-                        <a href="#">Home</a>
+                        <a href="/">Home</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">About</a>
+                        <a href="/about-us">About</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Shop</a>
+                        <a href="/shop">Shop</a>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Blogs</a>
-                      </li>
-                      <li className="menu-item pb-2">
-                        <a href="#">Contact</a>
+                        <a href="/contact-us">Contact</a>
                       </li>
                     </ul>
                   </div>
@@ -80,7 +77,7 @@ const Footer = () => {
                     <h5 className="widget-title pb-2">Help & Info Help</h5>
                     <ul className="menu-list list-unstyled">
                       <li className="menu-item pb-2">
-                        <a href="#">Track Your Order</a>
+                        <a href="privacy-policy">Privacy & Policy</a>
                       </li>
                       <li className="menu-item pb-2">
                         <a href="#">Returns Policies</a>

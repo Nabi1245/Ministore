@@ -3,6 +3,7 @@ import SVGSymbols from '../components/SVGSymbols'
 import Header from '../components/Header'
 import "./auth.css";
 import { useNavigate } from 'react-router-dom';
+import { userAuthAPI } from '../utils/api';
 
 const SignUp = () => {
 
@@ -11,6 +12,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // const handleSignup = async () => {
@@ -32,34 +34,24 @@ const SignUp = () => {
   // }
 
   const handleSignup = async () => {
-  try {
-    const res = await fetch(
-      "https://artiststation.co.in/foxecom/api/auth/user/signup",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Signup successful, please login");
-      navigate("/login"); // ya signin page
-    } else {
-      alert(data.message || "Signup failed");
+    try {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      
+      await userAuthAPI.signup(email, password);
+      
+      setSuccess("Signup successful! Please login to continue.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (error) {
+      console.error("Signup error:", error);
+      setError(error.message || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.log(error);
-    alert("Server error");
-  }
-};
+  };
   return (
     <>
       <SVGSymbols />
@@ -72,8 +64,8 @@ const SignUp = () => {
 
                 {/* Header */}
                 <div className="text-center mb-4">
-                  <h4 className="fw-bold mb-1">Sign Up</h4>
-                  <p className="text-muted mb-0">
+                  <h4 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>Sign Up</h4>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
                     Create your account
                   </p>
                 </div>
@@ -107,13 +99,25 @@ const SignUp = () => {
                 {/* Password */}
                 <div className="mb-4">
                   <label className="form-label">Password</label>
-                  <input
-                    type="password"
+                  <div className="input-group">
+
+                     <input
+                    type={showPassword ?  "text" : "password"}
                     className={`form-control ${error ? "is-invalid" : ""}`}
                     placeholder="Create password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button
+                  className='btn btn-outline-secondary'
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                  </div>
+                 
                 </div>
 
                 {/* Button */}

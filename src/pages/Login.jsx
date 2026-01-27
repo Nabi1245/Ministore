@@ -1,53 +1,57 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import SVGSymbols from "../components/SVGSymbols";
 import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
+import { userAuthAPI } from "../utils/api";
 import "./auth.css";
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate();
+  const { mergeGuestCart } = useCart();
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/auth/user/signin",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+      setLoading(true);
+      setError("");
+      
+      const data = await userAuthAPI.signin(email, password);
+      
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        
+        // Dispatch event to sync login state across components
+        window.dispatchEvent(new Event("loginStatusChanged"));
+        
+        // Merge guest cart into user cart after successful login
+        try {
+          await mergeGuestCart();
+        } catch (mergeError) {
+          console.error('Error merging cart:', mergeError);
+          // Don't block login if merge fails, just log it
         }
-      );
-      console.log(res);
-
-      const data = await res.json();
-      console.log(data);
-
-      if (res.status === 200) {
-        console.log("nabi status 200");
-        localStorage.setItem("token", data.token); // browser memory
-        setIsLoggedIn(true); // react state
-        navigate("/");
+        
+        // Redirect to intended destination or home
+        const redirectTo = localStorage.getItem('redirectAfterLogin') || '/'
+        localStorage.removeItem('redirectAfterLogin')
+        navigate(redirectTo);
       } else {
-        //alert(data.message || "Invalid login");
         setError(data.message || "Invalid login");
       }
     } catch (error) {
-      //alert("Server error");
-      console.log(error, "errormil gaya");
+      console.error("Login error:", error);
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <SVGSymbols />
-      <Header />
-
-      <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
         <div className="row w-100 justify-content-center">
           <div className="col-11 col-sm-8 col-md-6 col-lg-4">
             <div className="card shadow border-0">
@@ -55,10 +59,10 @@ const Login = ({ setIsLoggedIn }) => {
 
                 {/* Title */}
                 <div className="text-center mb-4">
-                  <h4 className="fw-bold mb-1">
+                  <h4 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>
                     {isSignup ? "Sign Up" : "Sign In"}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
                     {isSignup
                       ? "Create your account"
                       : "Sign in to continue"}
@@ -87,13 +91,22 @@ const Login = ({ setIsLoggedIn }) => {
                 {/* Password */}
                 <div className="mb-4">
                   <label className="form-label">Password</label>
-                  <input
-                    type="password"
+                  <div className="input-group">
+                    <input
+                    type={showPassword ?  "text" : "password"}
                     className={`form-control ${error ? "is-invalid" : ""}`}
                     placeholder="Enter password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button 
+                  type="button" 
+                  className="btn btn-outline-secondary" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                  </div>
                 </div>
 
                 {/* Button */}
@@ -119,11 +132,11 @@ const Login = ({ setIsLoggedIn }) => {
                   >
                     {isSignup
                       ? "Already have an account? Sign In"
-
-                      : 
-                      <Link to={"/sign-up"}>
-                        "New user? Sign Up"
-                      </Link>
+                      : (
+                        <Link to={"/sign-up"} className="text-decoration-none">
+                          New user? Sign Up
+                        </Link>
+                      )
                     }
                     
                   </button>
@@ -134,7 +147,7 @@ const Login = ({ setIsLoggedIn }) => {
           </div>
         </div>
       </div>
-    </>
+   
   );
 };
 

@@ -1,112 +1,155 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import SVGSymbols from '../components/SVGSymbols'
+import { getImageUrl } from '../utils/api'
 
 const Cart = () => {
-  const { cartItems, updateQuantity, removeFromCart, clearCart, getCartTotal } = useCart()
+  const { cartItems, updateQuantity, removeFromCart, clearCart, getCartTotal, loading, loadCart, isLoggedIn } = useCart()
   const navigate = useNavigate()
 
+  useEffect(() => {
+    loadCart()
+  }, [])
+
   const handleCheckout = () => {
-    if (cartItems.length > 0) {
-      navigate('/checkout')
+    if (cartItems.length === 0) {
+      alert('Your cart is empty')
+      return
     }
+    
+    // Check if user is logged in before proceeding to checkout
+    if (!isLoggedIn) {
+      alert('Please login to proceed with checkout')
+      // Store the intended destination to redirect after login
+      localStorage.setItem('redirectAfterLogin', '/checkout')
+      navigate('/login')
+      return
+    }
+    
+    navigate('/checkout')
+  }
+
+  const formatPrice = (price) => {
+    return `₹${parseFloat(price).toFixed(2)}`
+  }
+
+  if (loading) {
+    return (
+      <div className="padding-large text-center" style={{ minHeight: '60vh' }}>
+        <div className="container">
+          <div className="py-5">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (cartItems.length === 0) {
     return (
-      <>
-        <SVGSymbols />
-        <Header />
-        <div className="padding-large text-center" style={{ minHeight: '60vh' }}>
-          <div className="container">
-            <div className="py-5">
-              <svg className="cart-outline mb-4" width="100" height="100" style={{ opacity: 0.3 }}>
-                <use xlinkHref="#cart-outline"></use>
-              </svg>
-              <h2 className="mb-3">Your cart is empty</h2>
-              <p className="lead mb-4">Looks like you haven't added anything to your cart yet.</p>
-              <Link to="/shop" className="btn btn-dark btn-lg">
-                Continue Shopping
-              </Link>
-            </div>
+      <div className="padding-large text-center" style={{ minHeight: '60vh' }}>
+        <div className="container">
+          <div className="py-5">
+            <svg className="cart-outline mb-4" width="100" height="100" style={{ opacity: 0.3 }}>
+              <use xlinkHref="#cart-outline"></use>
+            </svg>
+            <h2 className="mb-3 fw-semibold" style={{ fontSize: '1.5rem' }}>Your cart is empty</h2>
+            <p className="mb-4" style={{ fontSize: '1rem' }}>Looks like you haven't added anything to your cart yet.</p>
+            <Link to="/shop" className="btn btn-dark btn-lg">
+              Continue Shopping
+            </Link>
           </div>
         </div>
-        <Footer />
-      </>
+      </div>
     )
   }
 
   return (
-    <>
-      <SVGSymbols />
-      <Header />
-      <div className="padding-large">
+    <div className="padding-large">
         <div className="container">
-          <h1 className="display-5 text-uppercase mb-4">Shopping Cart</h1>
+          <h1 className="h2 h-md-3 text-uppercase mb-4 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Shopping Cart</h1>
 
           <div className="row">
             <div className="col-lg-8">
               <div className="card">
                 <div className="card-body">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="d-flex align-items-center mb-4 pb-4 border-bottom">
-                      <Link to={`/product/${item.id}`} className="text-decoration-none">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="img-fluid"
-                          style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px' }}
-                        />
-                      </Link>
-
-                      <div className="flex-grow-1 ms-4">
-                        <Link to={`/product/${item.id}`} className="text-decoration-none text-dark">
-                          <h5 className="mb-2">{item.name}</h5>
+                  {cartItems.map((item) => {
+                    const itemPrice = item.discountPrice || item.price
+                    const itemTotal = itemPrice * item.quantity
+                    
+                    return (
+                      <div key={item.id} className="d-flex align-items-center mb-4 pb-4 border-bottom">
+                        <Link to={`/product/${item.id}`} className="text-decoration-none">
+                          <img
+                            src={getImageUrl(item.image || item.thumbnailImage || '/images/product-item1.jpg')}
+                            alt={item.title}
+                            className="img-fluid"
+                            style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px' }}
+                            onError={(e) => {
+                              e.target.src = '/images/product-item1.jpg'
+                            }}
+                          />
                         </Link>
-                        <p className="text-muted mb-2">Category: <span className="text-capitalize">{item.category}</span></p>
-                        <p className="h5 text-primary mb-0">${item.price}</p>
-                      </div>
 
-                      <div className="d-flex align-items-center me-4">
-                        <button
-                          className="btn btn-outline-secondary"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          className="form-control text-center mx-2"
-                          style={{ width: '80px' }}
-                          value={item.quantity}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value) || 1
-                            updateQuantity(item.id, val)
-                          }}
-                          min="1"
-                        />
-                        <button
-                          className="btn btn-outline-secondary"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
+                        <div className="flex-grow-1 ms-4">
+                          <Link to={`/product/${item.id}`} className="text-decoration-none text-dark">
+                            <h5 className="mb-2 fw-semibold" style={{ fontSize: '1rem' }}>{item.title}</h5>
+                          </Link>
+                          {item.category && (
+                            <p className="text-muted mb-2">Category: <span className="text-capitalize">{item.category}</span></p>
+                          )}
+                          {item.caseDetails && (
+                            <p className="text-muted mb-2 small">
+                              {item.caseDetails.brand?.name} {item.caseDetails.model?.name}
+                            </p>
+                          )}
+                          <p className="text-primary mb-0 fw-bold" style={{ fontSize: '1.1rem' }}>{formatPrice(itemPrice)}</p>
+                          {item.discountPrice && (
+                            <small className="text-muted text-decoration-line-through" style={{ fontSize: '0.85rem' }}>{formatPrice(item.price)}</small>
+                          )}
+                        </div>
 
-                      <div className="text-end me-4">
-                        <p className="h5 mb-2">${(item.price * item.quantity).toFixed(2)}</p>
-                        <button
-                          className="btn btn-link text-danger p-0"
-                          onClick={() => removeFromCart(item.id)}
-                        >
-                          Remove
-                        </button>
+                        <div className="d-flex align-items-center me-4">
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            className="form-control text-center mx-2"
+                            style={{ width: '80px' }}
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 1
+                              updateQuantity(item.id, val)
+                            }}
+                            min="1"
+                          />
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <div className="text-end me-4">
+                          <p className="mb-2 fw-bold" style={{ fontSize: '1.25rem' }}>{formatPrice(itemTotal)}</p>
+                          <button
+                            className="btn btn-link text-danger p-0"
+                            onClick={() => removeFromCart(item.id)}
+                            style={{ fontSize: '0.9rem' }}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
 
                   <div className="d-flex justify-content-between mt-3">
                     <Link to="/shop" className="btn btn-outline-dark">
@@ -126,21 +169,21 @@ const Cart = () => {
             <div className="col-lg-4">
               <div className="card">
                 <div className="card-header">
-                  <h5 className="mb-0">Order Summary</h5>
+                  <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Order Summary</h5>
                 </div>
                 <div className="card-body">
-                  <div className="d-flex justify-content-between mb-3">
+                  <div className="d-flex justify-content-between mb-3" style={{ fontSize: '0.95rem' }}>
                     <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                    <strong>${getCartTotal().toFixed(2)}</strong>
+                    <strong>{formatPrice(getCartTotal())}</strong>
                   </div>
-                  <div className="d-flex justify-content-between mb-3">
+                  <div className="d-flex justify-content-between mb-3" style={{ fontSize: '0.95rem' }}>
                     <span>Shipping</span>
                     <span className="text-success">Free</span>
                   </div>
                   <hr />
                   <div className="d-flex justify-content-between mb-4">
-                    <strong>Total</strong>
-                    <strong className="h4 text-primary">${getCartTotal().toFixed(2)}</strong>
+                    <strong style={{ fontSize: '1.1rem' }}>Total</strong>
+                    <strong className="text-primary fw-bold" style={{ fontSize: '1.5rem' }}>{formatPrice(getCartTotal())}</strong>
                   </div>
 
                   <button
@@ -185,10 +228,8 @@ const Cart = () => {
           </div>
         </div>
       </div>
-      <Footer />
-    </>
+    
   )
 }
 
 export default Cart
-

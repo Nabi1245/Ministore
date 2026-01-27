@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { getProductById } from '../data/products'
+import { productAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import SVGSymbols from '../components/SVGSymbols'
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -16,26 +13,34 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const foundProduct = getProductById(id)
-    if (foundProduct) {
-      setProduct(foundProduct)
-      setSelectedImage(0)
-    } else {
-      navigate('/shop')
-    }
-    setLoading(false)
-  }, [id, navigate])
+    loadProduct()
+  }, [id])
 
-  const handleAddToCart = () => {
+  const loadProduct = async () => {
+    try {
+      setLoading(true)
+      const productData = await productAPI.getById(id)
+      setProduct(productData)
+      setSelectedImage(0)
+    } catch (error) {
+      console.error('Error loading product:', error)
+      navigate('/shop')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddToCart = async () => {
     if (product) {
-      addToCart(product, quantity)
-      // Show success message (you can add a toast notification here)
-      alert(`${product.name} added to cart!`)
+      const success = await addToCart(product, quantity)
+      if (success) {
+        alert(`${product.title} added to cart!`)
+      }
     }
   }
 
   const increaseQuantity = () => {
-    if (product && quantity < product.stock) {
+    if (product && quantity < (product.stock || 999)) {
       setQuantity(prev => prev + 1)
     }
   }
@@ -46,38 +51,8 @@ const ProductDetails = () => {
     }
   }
 
-  const renderStars = (rating, size = 'normal') => {
-    const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 !== 0
-    const starSize = size === 'small' ? { width: '14px', height: '14px' } : {}
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <svg key={i} className="star star-fill" style={starSize}>
-          <use xlinkHref="#star-fill"></use>
-        </svg>
-      )
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <svg key="half" className="star star-half" style={starSize}>
-          <use xlinkHref="#star-half"></use>
-        </svg>
-      )
-    }
-
-    const emptyStars = 5 - Math.ceil(rating)
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <svg key={`empty-${i}`} className="star star-empty" style={starSize}>
-          <use xlinkHref="#star-empty"></use>
-        </svg>
-      )
-    }
-
-    return stars
+  const formatPrice = (price) => {
+    return `₹${parseFloat(price).toFixed(2)}`
   }
 
   if (loading) {
@@ -94,17 +69,42 @@ const ProductDetails = () => {
     return null
   }
 
+  // Build image array with thumbnail first, then all other images
+  const imagePaths = []
+  
+  // Add thumbnail image first if it exists
+  if (product.thumbnailImage) {
+    imagePaths.push(product.thumbnailImage)
+  }
+  
+  // Add all other product images (excluding thumbnail if it's already in the array)
+  if (product.images && product.images.length > 0) {
+    product.images.forEach(img => {
+      // Only add if it's different from thumbnail to avoid duplicates
+      if (img.imageUrl && img.imageUrl !== product.thumbnailImage) {
+        imagePaths.push(img.imageUrl)
+      }
+    })
+  }
+  
+  // Fallback to default image if no images found
+  if (imagePaths.length === 0) {
+    imagePaths.push('/images/product-item1.jpg')
+  }
+  
+  const images = imagePaths.map(path => getImageUrl(path))
+  const price = parseFloat(product.discountPrice || product.price)
+  const originalPrice = product.discountPrice ? parseFloat(product.price) : null
+  const inStock = product.stock && product.stock > 0
+
   return (
-    <>
-      <SVGSymbols />
-      <Header />
-      <div className="padding-large">
+    <div className="padding-large">
         <div className="container">
           <nav aria-label="breadcrumb" className="mb-4">
             <ol className="breadcrumb">
               <li className="breadcrumb-item"><Link to="/">Home</Link></li>
               <li className="breadcrumb-item"><Link to="/shop">Shop</Link></li>
-              <li className="breadcrumb-item active" aria-current="page">{product.name}</li>
+              <li className="breadcrumb-item active" aria-current="page">{product.title}</li>
             </ol>
           </nav>
 
@@ -113,72 +113,104 @@ const ProductDetails = () => {
               <div className="product-images">
                 <div className="main-image mb-3">
                   <img 
-                    src={product.images[selectedImage] || product.image} 
-                    alt={product.name}
+                    src={images[selectedImage] || images[0]} 
+                    alt={product.title}
                     className="img-fluid w-100"
-                    style={{ borderRadius: '8px', maxHeight: '500px', objectFit: 'cover' }}
+                    style={{ borderRadius: '8px', maxHeight: '500px', objectFit: 'contain' }}
+                    onError={(e) => {
+                      e.target.src = '/images/product-item1.jpg'
+                    }}
                   />
                 </div>
-                <div className="thumbnail-images d-flex gap-2">
-                  {product.images.map((img, index) => (
-                    <img
-                      key={index}
-                      src={img}
-                      alt={`${product.name} ${index + 1}`}
-                      className={`img-thumbnail ${selectedImage === index ? 'border-primary' : ''}`}
-                      style={{ 
-                        width: '80px', 
-                        height: '80px', 
-                        objectFit: 'cover',
-                        cursor: 'pointer'
-                      }}
-                      onClick={() => setSelectedImage(index)}
-                    />
-                  ))}
-                </div>
+                {images.length > 1 && (
+                  <div className="thumbnail-images d-flex gap-2">
+                    {images.map((img, index) => (
+                      <img
+                        key={index}
+                        src={img}
+                        alt={`${product.title} ${index + 1}`}
+                        className={`img-thumbnail ${selectedImage === index ? 'border-primary' : ''}`}
+                        style={{ 
+                          width: '80px', 
+                          height: '80px', 
+                          objectFit: 'contain',
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => setSelectedImage(index)}
+                        onError={(e) => {
+                          e.target.src = '/images/product-item1.jpg'
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="col-md-6">
-              <h1 className="display-4 text-uppercase mb-3">{product.name}</h1>
-              
-              <div className="rating mb-3">
-                {renderStars(product.rating)}
-                <span className="ms-2">({product.reviews} reviews)</span>
-              </div>
+              <h1 className="h2 h-md-3 text-uppercase mb-3 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)' }}>{product.title}</h1>
 
               <div className="price-section mb-4">
-                <span className="h3 text-primary me-3">${product.price}</span>
-                {product.originalPrice > product.price && (
-                  <span className="text-muted text-decoration-line-through">${product.originalPrice}</span>
-                )}
-                {product.originalPrice > product.price && (
-                  <span className="badge bg-danger ms-2">
-                    {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
-                  </span>
+                <span className="h4 text-primary me-3 fw-bold" style={{ fontSize: '1.75rem' }}>{formatPrice(price)}</span>
+                {originalPrice && (
+                  <>
+                    <span className="text-muted text-decoration-line-through">{formatPrice(originalPrice)}</span>
+                    <span className="badge bg-danger ms-2">
+                      {Math.round(((originalPrice - price) / originalPrice) * 100)}% OFF
+                    </span>
+                  </>
                 )}
               </div>
 
-              <div className="description mb-4">
-                <p className="lead">{product.description}</p>
-              </div>
+              {product.description && (
+                <div className="description mb-4">
+                  <p className="mb-0" style={{ fontSize: '1rem', lineHeight: '1.6' }}>{product.description}</p>
+                </div>
+              )}
 
-              <div className="features mb-4">
-                <h5 className="mb-3">Key Features:</h5>
-                <ul className="list-unstyled">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="mb-2">
-                      <svg className="me-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Display Case Details for Mobile Cases */}
+              {product.caseDetails && (
+                <div className="case-details mb-4">
+                  <h5 className="mb-3 fw-semibold" style={{ fontSize: '1.1rem' }}>Product Specifications:</h5>
+                  <div className="card">
+                    <div className="card-body">
+                      <table className="table table-sm">
+                        <tbody>
+                          <tr>
+                            <th style={{ width: '150px' }}>Brand</th>
+                            <td>{product.caseDetails.brand?.name || 'N/A'}</td>
+                          </tr>
+                          <tr>
+                            <th>Model</th>
+                            <td>{product.caseDetails.model?.name || 'N/A'}</td>
+                          </tr>
+                          {product.caseDetails.color && (
+                            <tr>
+                              <th>Color</th>
+                              <td className="text-capitalize">{product.caseDetails.color}</td>
+                            </tr>
+                          )}
+                          {product.caseDetails.material && (
+                            <tr>
+                              <th>Material</th>
+                              <td className="text-capitalize">{product.caseDetails.material}</td>
+                            </tr>
+                          )}
+                          {product.caseDetails.caseType && (
+                            <tr>
+                              <th>Case Type</th>
+                              <td className="text-capitalize">{product.caseDetails.caseType}</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="stock-info mb-4">
-                {product.inStock ? (
+                {inStock ? (
                   <p className="text-success">
                     <strong>In Stock</strong> ({product.stock} available)
                   </p>
@@ -204,15 +236,15 @@ const ProductDetails = () => {
                     value={quantity}
                     onChange={(e) => {
                       const val = parseInt(e.target.value) || 1
-                      setQuantity(Math.min(Math.max(1, val), product.stock))
+                      setQuantity(Math.min(Math.max(1, val), product.stock || 999))
                     }}
                     min="1"
-                    max={product.stock}
+                    max={product.stock || 999}
                   />
                   <button 
                     className="btn btn-outline-secondary"
                     onClick={increaseQuantity}
-                    disabled={quantity >= product.stock}
+                    disabled={!inStock || quantity >= (product.stock || 999)}
                   >
                     +
                   </button>
@@ -223,18 +255,12 @@ const ProductDetails = () => {
                 <button
                   className="btn btn-dark btn-lg flex-grow-1"
                   onClick={handleAddToCart}
-                  disabled={!product.inStock}
+                  disabled={!inStock}
                 >
                   <svg className="cart-outline me-2" width="20" height="20">
                     <use xlinkHref="#cart-outline"></use>
                   </svg>
                   {isInCart(product.id) ? 'Update Cart' : 'Add to Cart'}
-                </button>
-                <button
-                  className="btn btn-primary btn-lg"
-                  disabled={!product.inStock}
-                >
-                  Buy Now
                 </button>
               </div>
             </div>
@@ -242,35 +268,32 @@ const ProductDetails = () => {
 
           <div className="row mt-5">
             <div className="col-12">
-              <h3 className="mb-4">Product Information</h3>
+              <h3 className="mb-4 fw-semibold" style={{ fontSize: '1.5rem' }}>Product Information</h3>
               <div className="card">
                 <div className="card-body">
                   <table className="table">
                     <tbody>
                       <tr>
                         <th style={{ width: '200px' }}>Category</th>
-                        <td className="text-capitalize">{product.category}</td>
+                        <td className="text-capitalize">{product.category?.name || 'N/A'}</td>
                       </tr>
-                      <tr>
-                        <th>SKU</th>
-                        <td>PROD-{product.id.toString().padStart(4, '0')}</td>
-                      </tr>
+                      {product.sku && (
+                        <tr>
+                          <th>SKU</th>
+                          <td>{product.sku}</td>
+                        </tr>
+                      )}
                       <tr>
                         <th>Availability</th>
-                        <td>{product.inStock ? 'In Stock' : 'Out of Stock'}</td>
+                        <td>{inStock ? 'In Stock' : 'Out of Stock'}</td>
                       </tr>
                       <tr>
                         <th>Stock Quantity</th>
-                        <td>{product.stock} units</td>
+                        <td>{product.stock || 0} units</td>
                       </tr>
                       <tr>
-                        <th>Rating</th>
-                        <td>
-                          <span className="d-inline-flex align-items-center gap-1">
-                            {renderStars(product.rating, 'small')}
-                            <span className="ms-1">({product.rating}/5)</span>
-                          </span>
-                        </td>
+                        <th>Price</th>
+                        <td>{formatPrice(price)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -280,10 +303,8 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
-      <Footer />
-    </>
+  
   )
 }
 
 export default ProductDetails
-

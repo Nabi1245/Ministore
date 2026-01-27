@@ -20,15 +20,15 @@ const AdminProtectedRoute = ({ children }) => {
   }
   return (
     <>
-      <div className="container-fluid vh-100 overflow-hidden">
-        <div className="row h-100">
+      <div className="container-fluid">
+        <div className="row">
           {/* ===== LEFT SIDEBAR (FIXED, NO SCROLL) ===== */}
           <Sidebar />
 
           {/* ===== RIGHT CONTENT (SCROLLABLE) ===== */}
           <main
-            className="col-12 col-md-9 col-lg-10 bg-light p-4 overflow-auto"
-            style={{ height: "100vh" }}
+            className="col-12 col-md-9 col-lg-10 bg-light p-4"
+            // style={{ height: "100vh" }}
           >
             {/* Cards Section */}
             {children}
