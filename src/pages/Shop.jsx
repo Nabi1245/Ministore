@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
 import fallbackImage from '../assest/images/product-item1.jpg'
 
 const Shop = () => {
   const { addToCart } = useCart()
+  const [searchParams] = useSearchParams()
   
   // State management
   const [products, setProducts] = useState([])
@@ -15,10 +16,12 @@ const Shop = () => {
   const [loadingFilters, setLoadingFilters] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   
-  // Filter states
+  // Filter states (brandId/modelId from URL for brand bar navigation)
   const [filters, setFilters] = useState({
     categoryId: '',
+    brandId: '',
     brandName: '',
+    modelId: '',
     modelName: '',
     minPrice: '',
     maxPrice: '',
@@ -40,6 +43,19 @@ const Shop = () => {
     totalItems: 0,
     totalPages: 1
   })
+
+  // Sync brandId/modelId from URL on mount and when URL changes
+  useEffect(() => {
+    const brandId = searchParams.get('brandId') || ''
+    const modelId = searchParams.get('modelId') || ''
+    setFilters((prev) => ({
+      ...prev,
+      brandId,
+      modelId,
+      ...(brandId ? { brandName: '' } : {}),
+      ...(modelId ? { modelName: '' } : {})
+    }))
+  }, [searchParams])
 
   // Load categories on mount
   useEffect(() => {
@@ -94,9 +110,11 @@ const Shop = () => {
         sortOrder: sortOrder
       }
 
-      // Add filters
+      // Add filters (brandId/modelId from brand bar; brandName/modelName from sidebar)
       if (filters.categoryId) params.categoryId = filters.categoryId
+      if (filters.brandId) params.brandId = filters.brandId
       if (filters.brandName) params.brandName = filters.brandName
+      if (filters.modelId) params.modelId = filters.modelId
       if (filters.modelName) params.modelName = filters.modelName
       if (filters.minPrice) params.minPrice = filters.minPrice
       if (filters.maxPrice) params.maxPrice = filters.maxPrice
@@ -163,7 +181,9 @@ const Shop = () => {
   const clearFilters = () => {
     setFilters({
       categoryId: '',
+      brandId: '',
       brandName: '',
+      modelId: '',
       modelName: '',
       minPrice: '',
       maxPrice: '',

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import mainLogo from '../assest/images/foxicom.webp'
 import dhlLogo from '../assest/images/dhl.png'
 import shippingCard from '../assest/images/shippingcard.png'
@@ -17,8 +18,12 @@ const Footer = () => {
                 <div className="col-lg-3 col-sm-6 pb-3">
                   <div className="footer-menu">
                     <img src={mainLogo} alt="logo" width={100} />
-                    <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
-                    <div className="social-links">
+                    <p>
+                      FOXECOM brings you premium mobile accessories and gadgets with a focus on
+                      quality, durability and everyday style. We ship across India with secure
+                      payments and responsive customer support.
+                    </p>
+                    {/* <div className="social-links">
                       <ul className="d-flex list-unstyled">
                         <li>
                           <a href="#">
@@ -56,7 +61,7 @@ const Footer = () => {
                           </a>
                         </li>
                       </ul>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="col-lg-2 col-sm-6 pb-3">
@@ -64,16 +69,16 @@ const Footer = () => {
                     <h5 className="widget-title pb-2">Quick Links</h5>
                     <ul className="menu-list list-unstyled text-uppercase">
                       <li className="menu-item pb-2">
-                        <a href="/">Home</a>
+                        <Link to="/">Home</Link>
+                      </li>
+                      {/* <li className="menu-item pb-2">
+                        <Link to="/about-us">About</Link>
+                      </li> */}
+                      <li className="menu-item pb-2">
+                        <Link to="/shop">Shop</Link>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="foxecom-frontend/about-us">About</a>
-                      </li>
-                      <li className="menu-item pb-2">
-                        <a href="foxecom-frontend/shop">Shop</a>
-                      </li>
-                      <li className="menu-item pb-2">
-                        <a href="foxecom-frontend/contact-us">Contact</a>
+                        <Link to="/contact-us">Contact</Link>
                       </li>
                     </ul>
                   </div>
@@ -82,30 +87,32 @@ const Footer = () => {
                   <div className="footer-menu text-uppercase">
                     <h5 className="widget-title pb-2">Help & Info Help</h5>
                     <ul className="menu-list list-unstyled">
-                      <li className="menu-item pb-2">
-                        <a href="foxecom-frontend/privacy-policy">Privacy & Policy</a>
+                    <li className="menu-item pb-2">
+                        <Link to="/disclaimer">Disclaimer</Link>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="foxecom-frontend/refund-policy">Returns Policies</a>
+                        <Link to="/privacy-policy">Privacy & Policy</Link>
                       </li>
                       <li className="menu-item pb-2">
-                        <a href="#">Shipping + Delivery</a>
+                        <Link to="/refund-policy">Returns Policies</Link>
                       </li>
+                      {/* <li className="menu-item pb-2">
+                        <Link to="/contact-us">Shipping + Delivery</Link>
+                      </li> */}
                       <li className="menu-item pb-2">
-                        <a href="">Contact Us</a>
+                        <Link to="/terms">Terms of Service</Link>
                       </li>
-                      <li className="menu-item pb-2">
-                        <a href="#">Faqs</a>
-                      </li>
+                     
+                      
                     </ul>
                   </div>
                 </div>
                 <div className="col-lg-3 col-sm-6 pb-3">
                   <div className="footer-menu contact-item">
                     <h5 className="widget-title text-uppercase pb-2">Contact Us</h5>
-                    <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
+                    <p>Do you have any queries or suggestions? <a href="mailto:">foxecom99@gmail.com</a>
                     </p>
-                    <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
+                    <p>If you need support? Just give us a call. <a href="">+91 9289125523</a>
                     </p>
                   </div>
                 </div>
@@ -139,7 +146,7 @@ const Footer = () => {
             </div>
             <div className="col-md-4 col-sm-6">
               <div className="copyright">
-                <p>© Copyright 2023 Foxecom. Design by <a href="https://ideatore./">inIDEATORE INTERACTIVE PVT LTD</a>
+                <p>© Copyright 2023 Foxecom. Design by <a href="https://www.ideatore.in" target='_blank'>IDEATORE INTERACTIVE PVT LTD</a>
                 </p>
               </div>
             </div>

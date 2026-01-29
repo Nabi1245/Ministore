@@ -168,7 +168,7 @@ const Header = () => {
                   to="/login"
                   onClick={closeNavbar}
                 >
-                  Login
+                  Sign in
                 </Link>
               </li>
             ) : (

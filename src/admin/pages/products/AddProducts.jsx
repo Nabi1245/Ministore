@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { categoryAPI } from "../../../utils/api";
+import MDEditor from "@uiw/react-md-editor";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -63,6 +66,9 @@ const AddProduct = () => {
   /* =====================
      SUBMIT PRODUCT
   ====================== */
+  const stripHtml = (html) =>
+    typeof html === "string" ? html.replace(/<[^>]*>/g, "").trim() : "";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -84,7 +90,8 @@ const AddProduct = () => {
       const token = localStorage.getItem("adminToken");
 
       const formData = new FormData();
-      formData.append("title", title);
+      // Store plain text for title to keep it clean
+      formData.append("title", stripHtml(title));
       formData.append("categoryId", categoryId);
       formData.append("price", price);
       formData.append("discountPrice", discountPrice);
@@ -143,13 +150,20 @@ const AddProduct = () => {
 
               <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <div className="row g-3">
-                  <div className="col-md-6">
+                  <div className="col-12 col-md-8">
                     <label className="form-label">Title *</label>
-                    <input
-                      className="form-control"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
+                    <div
+                      data-color-mode="light"
+                      className="border rounded"
+                      style={{ minHeight: 100 }}
+                    >
+                      <MDEditor
+                        value={title}
+                        onChange={(val) => setTitle(val || "")}
+                        preview="edit"
+                        height={140}
+                      />
+                    </div>
                   </div>
 
                   <div className="col-md-6">
@@ -235,12 +249,14 @@ const AddProduct = () => {
 
                   <div className="col-12">
                     <label className="form-label">Description</label>
-                    <textarea
-                      rows="4"
-                      className="form-control"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
+                    <div data-color-mode="light">
+                      <MDEditor
+                        value={description}
+                        onChange={(val) => setDescription(val || "")}
+                        preview="edit"
+                        height={200}
+                      />
+                    </div>
                   </div>
                 </div>
 

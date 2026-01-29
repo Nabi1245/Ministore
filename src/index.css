@@ -38,106 +38,19 @@ button, input, textarea, select {
   --bs-primary-rgb: 137, 187, 86;
 }
 
-/* Minimal use of primary color - only for specific important elements */
-.btn-primary {
-  background-color: var(--primary-color) !important;
-  border-color: var(--primary-color) !important;
-  color: var(--secondary-color) !important;
-}
-
-.btn-primary:hover {
-  background-color: #7aa84a !important;
-  border-color: #7aa84a !important;
-  color: var(--secondary-color) !important;
-}
-
-/* Text primary - use sparingly */
-.text-primary {
-  color: var(--primary-color) !important;
-}
-
-/* Background primary - use sparingly */
-.bg-primary {
-  background-color: var(--primary-color) !important;
-  color: var(--secondary-color) !important;
-}
-
-/* Override Bootstrap success color to use primary (for consistency) */
-.text-success {
-  color: var(--primary-color) !important;
-}
-
-.bg-success {
-  background-color: var(--primary-color) !important;
-}
-
+/* Minimal use of primary color - only for buttons */
+.btn-primary,
 .btn-success {
   background-color: var(--primary-color) !important;
   border-color: var(--primary-color) !important;
   color: var(--secondary-color) !important;
 }
 
+.btn-primary:hover,
 .btn-success:hover {
   background-color: #7aa84a !important;
   border-color: #7aa84a !important;
   color: var(--secondary-color) !important;
-}
-
-/* Override text-dark to use primary color */
-.text-dark {
-  color: var(--primary-color) !important;
-}
-
-/* Navigation links use primary color */
-.nav-link {
-  color: var(--primary-color) !important;
-}
-
-.nav-link:hover {
-  color: var(--primary-color) !important;
-  opacity: 0.8;
-}
-
-/* All links use primary color */
-a {
-  color: var(--primary-color) !important;
-}
-
-a:hover {
-  color: var(--primary-color) !important;
-  opacity: 0.8;
-}
-
-/* Headings use primary color */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--primary-color) !important;
-}
-
-/* Navbar brand uses primary color */
-.navbar-brand {
-  color: var(--primary-color) !important;
-}
-
-/* Dropdown items use primary color */
-.dropdown-item {
-  color: var(--primary-color) !important;
-}
-
-.dropdown-item:hover {
-  color: var(--primary-color) !important;
-  background-color: rgba(137, 187, 86, 0.1) !important;
-}
-
-/* Card titles and headings */
-.card-title {
-  color: var(--primary-color) !important;
-}
-
-/* Display headers */
-.display-header,
-.display-2,
-.display-7 {
-  color: var(--primary-color) !important;
 }
 
 /* Shop Page Styles */
@@ -241,7 +154,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .contact-form .form-label {
   margin-bottom: 0.5rem;
-  color: var(--primary-color);
+  color: #000000;
 }
 
 .contact-form .form-control:focus {

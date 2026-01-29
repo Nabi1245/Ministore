@@ -32,7 +32,14 @@ const AddMobileModel = () => {
         const data = await res.json();
 
         if (res.ok) {
-          setBrands(data);
+          // Backend returns { brands, pagination } or sometimes a raw array
+          let list = [];
+          if (Array.isArray(data)) {
+            list = data;
+          } else if (Array.isArray(data?.brands)) {
+            list = data.brands;
+          }
+          setBrands(list);
         } else {
           throw new Error("Failed to load brands");
         }

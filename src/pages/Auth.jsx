@@ -51,7 +51,7 @@ const Auth = () => {
 
   return (
     <>
-        <h2>Login page</h2>
+        <h2>Sign in page</h2>
         <input
         type="email"
         placeholder="Email"
@@ -62,7 +62,7 @@ const Auth = () => {
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleLogin}>Sign in</button>
     </>
   )
 }

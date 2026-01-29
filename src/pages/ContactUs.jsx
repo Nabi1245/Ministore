@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { contactAPI } from '../utils/api';
 
 const ContactUs = () => {
   const [form, setForm] = useState({
@@ -18,7 +19,7 @@ const ContactUs = () => {
     });
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
      
     // ✅ Basic validation
@@ -40,10 +41,15 @@ const ContactUs = () => {
         // ✅ Clear errors
         setError("")
 
-        // 👉 Here you can call API / Email service
-
-        console.log("Contact Form Data:", form);
-        setSuccess("Thank you! We will contact you soon.");
+        try {
+          const res = await contactAPI.submit(form);
+          setSuccess(res?.message || "Thank you! We will contact you soon.");
+        } catch (err) {
+          setSuccess("");
+          setError(err?.message || "Failed to submit contact form. Please try again.");
+          setTimeout(() => setError(""), 5000);
+          return;
+        }
 
          // ⏱️ Success message hide after 5 seconds
 
