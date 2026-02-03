@@ -4,10 +4,24 @@ import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
 import fallbackImage from '../assest/images/product-item1.jpg'
 
+/** Strip markdown to plain text for filter dropdown labels */
+function stripMarkdownLabel(text) {
+  if (!text || typeof text !== 'string') return text || ''
+  return text
+    .replace(/#{1,6}\s*/g, '')
+    .replace(/\*\*?(.*?)\*\*?/g, '$1')
+    .replace(/__?(.*?)__?/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\n+/g, ' ')
+    .trim()
+    .slice(0, 80) || text
+}
+
 const Shop = () => {
   const { addToCart } = useCart()
-  const [searchParams] = useSearchParams()
-  
+  const [searchParams, setSearchParams] = useSearchParams()
+  const modelIdFromUrl = searchParams.get('modelId') || ''
+
   // State management
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
@@ -15,14 +29,13 @@ const Shop = () => {
   const [loading, setLoading] = useState(true)
   const [loadingFilters, setLoadingFilters] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
-  
-  // Filter states (brandId/modelId from URL for brand bar navigation)
+
+  // Filter states (modelId can come from URL when user clicks a model in navbar)
   const [filters, setFilters] = useState({
     categoryId: '',
-    brandId: '',
     brandName: '',
-    modelId: '',
     modelName: '',
+    modelId: '',
     minPrice: '',
     maxPrice: '',
     inStock: '',
@@ -44,19 +57,6 @@ const Shop = () => {
     totalPages: 1
   })
 
-  // Sync brandId/modelId from URL on mount and when URL changes
-  useEffect(() => {
-    const brandId = searchParams.get('brandId') || ''
-    const modelId = searchParams.get('modelId') || ''
-    setFilters((prev) => ({
-      ...prev,
-      brandId,
-      modelId,
-      ...(brandId ? { brandName: '' } : {}),
-      ...(modelId ? { modelName: '' } : {})
-    }))
-  }, [searchParams])
-
   // Load categories on mount
   useEffect(() => {
     loadCategories()
@@ -70,6 +70,13 @@ const Shop = () => {
       loadFilterOptions()
     }
   }, [filters.categoryId])
+
+  // Sync modelId from URL into filters (e.g. from navbar model click)
+  useEffect(() => {
+    if (modelIdFromUrl) {
+      setFilters(prev => ({ ...prev, modelId: modelIdFromUrl }))
+    }
+  }, [modelIdFromUrl])
 
   // Load products when filters, sort, or pagination changes
   useEffect(() => {
@@ -110,12 +117,11 @@ const Shop = () => {
         sortOrder: sortOrder
       }
 
-      // Add filters (brandId/modelId from brand bar; brandName/modelName from sidebar)
+      // Add filters
       if (filters.categoryId) params.categoryId = filters.categoryId
-      if (filters.brandId) params.brandId = filters.brandId
       if (filters.brandName) params.brandName = filters.brandName
-      if (filters.modelId) params.modelId = filters.modelId
       if (filters.modelName) params.modelName = filters.modelName
+      if (filters.modelId || modelIdFromUrl) params.modelId = filters.modelId || modelIdFromUrl
       if (filters.minPrice) params.minPrice = filters.minPrice
       if (filters.maxPrice) params.maxPrice = filters.maxPrice
       if (filters.inStock) params.inStock = filters.inStock
@@ -179,12 +185,12 @@ const Shop = () => {
   }
 
   const clearFilters = () => {
+    setSearchParams({})
     setFilters({
       categoryId: '',
-      brandId: '',
       brandName: '',
-      modelId: '',
       modelName: '',
+      modelId: '',
       minPrice: '',
       maxPrice: '',
       inStock: '',
@@ -210,7 +216,7 @@ const Shop = () => {
     return `₹${parseFloat(price).toFixed(2)}`
   }
 
-  const hasActiveFilters = Object.values(filters).some(val => val !== '') || sortBy !== 'createdAt'
+  const hasActiveFilters = Object.values(filters).some(val => val !== '' && val != null) || sortBy !== 'createdAt'
 
   return (
     <div className="padding-large">
@@ -441,7 +447,7 @@ const Shop = () => {
                     >
                       <option value="">All Types</option>
                       {filterOptions.caseTypes.map((type, idx) => (
-                        <option key={idx} value={type}>{type}</option>
+                        <option key={idx} value={type}>{stripMarkdownLabel(type)}</option>
                       ))}
                     </select>
                   </div>

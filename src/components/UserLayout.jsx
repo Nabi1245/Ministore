@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
-import BrandNavBar from "./BrandNavBar";
 import Footer from "./Footer";
 import SVGSymbols from "./SVGSymbols";
 import SearchPopup from "./SearchPopup";
@@ -46,10 +45,9 @@ const UserLayout = () => {
       <SVGSymbols />
       <SearchPopup />
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <div style={{ paddingTop: "56px" }}>
-        <BrandNavBar />
-      </div>
-      <Outlet />
+      <main className="page-content">
+        <Outlet />
+      </main>
       <Footer />
     </>
   );

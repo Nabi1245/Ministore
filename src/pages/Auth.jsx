@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
+import { API_BASE_URL } from '../utils/api';
 
 const Auth = () => {
     const [email, setEmail] = useState("")
@@ -11,7 +12,7 @@ const Auth = () => {
   const handleLogin = async () => {
     try {
       const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/auth/user/signin",
+        `${API_BASE_URL}/auth/user/signin`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

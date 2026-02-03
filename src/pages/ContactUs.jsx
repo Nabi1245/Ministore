@@ -76,7 +76,7 @@ const ContactUs = () => {
                 {/* Header */}
                 <div className="text-center mb-4 mb-md-5">
                   <h2 className="h3 h-md-2 fw-bold mb-3" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
-                    Contact Us
+                    CONTACT US
                   </h2>
                  
                 </div>

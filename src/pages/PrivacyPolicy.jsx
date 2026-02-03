@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
           <div className="legal-card card border shadow-sm">
             <div className="card-header py-3 py-md-4">
               <h1 className="h2 mb-1 text-dark">Privacy Policy</h1>
-              <p className="mb-0 small text-muted">Last Updated: {new Date().toLocaleDateString()}</p>
+              {/* <p className="mb-0 small text-muted">Last Updated: {new Date().toLocaleDateString()}</p> */}
             </div>
 
             <div className="card-body p-3 p-md-4">

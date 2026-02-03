@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import { API_BASE_URL } from "../../../utils/api";
 
 const AddMobileCase = () => {
   const navigate = useNavigate();
@@ -53,12 +57,12 @@ const AddMobileCase = () => {
 
       if (trimmed) {
         // Search by name
-        url = `https://artiststation.co.in/foxecom/api/products/search?name=${encodeURIComponent(
+        url = `${API_BASE_URL}/products/search?name=${encodeURIComponent(
           trimmed
         )}`;
       } else {
         // Initial / full load with a large limit so dropdown has enough options
-        url = "https://artiststation.co.in/foxecom/api/products?limit=500";
+        url = `${API_BASE_URL}/products?limit=500`;
       }
 
       const res = await fetch(url);
@@ -116,7 +120,7 @@ const AddMobileCase = () => {
       }
 
       const res = await fetch(
-        `https://artiststation.co.in/foxecom/api/mobile-brands?${params.toString()}`
+        `${API_BASE_URL}/mobile-brands?${params.toString()}`
       );
       const data = await res.json();
 
@@ -172,7 +176,7 @@ const AddMobileCase = () => {
       }
 
       const res = await fetch(
-        `https://artiststation.co.in/foxecom/api/mobile-models?${params.toString()}`
+        `${API_BASE_URL}/mobile-models?${params.toString()}`
       );
       const data = await res.json();
 
@@ -244,7 +248,7 @@ const AddMobileCase = () => {
       const token = localStorage.getItem("adminToken");
 
       const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/case-details",
+        `${API_BASE_URL}/case-details`,
         {
           method: "POST",
           headers: {
@@ -489,15 +493,20 @@ const AddMobileCase = () => {
                       onChange={(e) => setMaterial(e.target.value)}
                     />
                   </div>
+                </div>
 
-                  {/* CASE TYPE */}
-                  <div className="col-md-4">
+                {/* CASE TYPE - Markdown editor */}
+                <div className="row mt-3">
+                  <div className="col-12">
                     <label className="form-label">Case Type</label>
-                    <input
-                      className="form-control"
-                      value={caseType}
-                      onChange={(e) => setCaseType(e.target.value)}
-                    />
+                    <div data-color-mode="light">
+                      <MDEditor
+                        value={caseType}
+                        onChange={(val) => setCaseType(val || "")}
+                        preview="edit"
+                        height={240}
+                      />
+                    </div>
                   </div>
                 </div>
 

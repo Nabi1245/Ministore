@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../../utils/api";
 
 const AddMobileModel = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const AddMobileModel = () => {
         const token = localStorage.getItem("adminToken");
 
         const res = await fetch(
-          "https://artiststation.co.in/foxecom/api/mobile-brands",
+          `${API_BASE_URL}/mobile-brands`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -71,7 +72,7 @@ const AddMobileModel = () => {
       const token = localStorage.getItem("adminToken");
 
       const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/mobile-models",
+        `${API_BASE_URL}/mobile-models`,
         {
           method: "POST",
           headers: {

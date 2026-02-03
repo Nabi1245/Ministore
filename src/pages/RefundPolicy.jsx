@@ -9,7 +9,7 @@ const RefundPolicy = () => {
         <div className="col-12 col-lg-10 col-xl-8">
           <div className="text-center mb-4">
             <h1 className="h2 mb-1 text-dark">Refund and Cancellation Policy</h1>
-            <p className="mb-0 small text-muted">Last Updated: {new Date().toLocaleDateString()}</p>
+            {/* <p className="mb-0 small text-muted">Last Updated: {new Date().toLocaleDateString()}</p> */}
           </div>
 
           <div className="legal-card card border shadow-sm mb-4">

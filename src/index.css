@@ -20,6 +20,30 @@ button, input, textarea, select {
   font-family: 'Poppins', sans-serif !important;
 }
 
+/* MDEditor: Reset to monospace for correct cursor positioning */
+.w-md-editor,
+.w-md-editor *,
+.w-md-editor-text,
+.w-md-editor-text *,
+.w-md-editor-text-pre,
+.w-md-editor-text-pre *,
+.w-md-editor-text-input,
+.w-md-editor-text-input *,
+.w-md-editor textarea,
+.wmde-markdown,
+.wmde-markdown * {
+  /* font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important; */
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: normal !important;
+}
+/* Keep preview area readable with sans-serif */
+.wmde-markdown-color,
+.wmde-markdown-color p,
+.wmde-markdown-color li,
+.wmde-markdown-color span:not(code span) {
+  font-family: 'Poppins', sans-serif !important;
+}
+
 /* ============================================
    COLOR SCHEME
    ============================================
@@ -184,4 +208,46 @@ button, input, textarea, select {
     padding: 2rem !important;
   }
 }
+
+.product-badges .badge-box {
+  height: 100%;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-badges .badge-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.product-badges .badge-icon {
+  font-size: 2.2rem; /* BIG ICON */
+  color: #000;
+}
+
+.product-badges span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Desktop boost */
+@media (min-width: 768px) {
+  .product-badges .badge-icon {
+    font-size: 2.5rem;
+  }
+
+  .product-badges span {
+    font-size: 0.95rem;
+  }
+}
+
 

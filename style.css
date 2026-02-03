@@ -82,7 +82,7 @@ body {
   color: var(--black-color);
 }
 p {
-  font-size: 1.2em;
+  font-size: 1em;
   color: var(--black-color);
 }
 ul.inner-list li {

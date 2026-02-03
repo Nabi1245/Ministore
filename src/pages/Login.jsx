@@ -42,9 +42,9 @@ const Login = () => {
       } else {
         setError(data.message || "Invalid login");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Server error. Please try again.");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err?.message || "Server error. Please try again.");
     } finally {
       setLoading(false);
     }

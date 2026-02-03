@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { categoryAPI } from "../../../utils/api";
+import { categoryAPI, API_BASE_URL } from "../../../utils/api";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
@@ -105,7 +105,7 @@ const AddProduct = () => {
       });
 
       const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/products",
+        `${API_BASE_URL}/products`,
         {
           method: "POST",
           headers: {

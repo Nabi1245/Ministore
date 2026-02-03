@@ -110,9 +110,9 @@ const Footer = () => {
                 <div className="col-lg-3 col-sm-6 pb-3">
                   <div className="footer-menu contact-item">
                     <h5 className="widget-title text-uppercase pb-2">Contact Us</h5>
-                    <p>Do you have any queries or suggestions? <a href="mailto:">foxecom99@gmail.com</a>
+                    <p>Do you have any queries or suggestions? <a href="mailto:foxecom99@gmail.com">foxecom99@gmail.com</a>
                     </p>
-                    <p>If you need support? Just give us a call. <a href="">+91 9289125523</a>
+                    <p>If you need support? Just call us on  <a href="">+91 9289125523</a>
                     </p>
                   </div>
                 </div>
@@ -124,8 +124,8 @@ const Footer = () => {
       </footer>
       <div id="footer-bottom">
         <div className="container">
-          <div className="row d-flex flex-wrap justify-content-between">
-            <div className="col-md-4 col-sm-6">
+          <div className="row d-flex flex-wrap justify-content-center">
+            {/* <div className="col-md-4 col-sm-6">
               <div className="Shipping d-flex">
                 <p>We ship with:</p>
                 <div className="card-wrap ps-2">
@@ -143,8 +143,8 @@ const Footer = () => {
                   <img src={paypalLogo} alt="paypal" />
                 </div>
               </div>
-            </div>
-            <div className="col-md-4 col-sm-6">
+            </div> */}
+            <div className="col-md-6 col-sm-6">
               <div className="copyright">
                 <p>© Copyright 2023 Foxecom. Design by <a href="https://www.ideatore.in" target='_blank'>IDEATORE INTERACTIVE PVT LTD</a>
                 </p>

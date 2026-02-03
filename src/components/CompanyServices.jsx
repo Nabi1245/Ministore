@@ -14,7 +14,7 @@ const CompanyServices = () => {
               </div>
               <div className="icon-box-content">
                 <h3 className="card-title text-uppercase text-dark">Free delivery</h3>
-                <p>Consectetur adipi elit lorem ipsum dolor sit amet.</p>
+                {/* <p>Consectetur adipi elit lorem ipsum dolor sit amet.</p> */}
               </div>
             </div>
           </div>
@@ -27,7 +27,7 @@ const CompanyServices = () => {
               </div>
               <div className="icon-box-content">
                 <h3 className="card-title text-uppercase text-dark">Quality guarantee</h3>
-                <p>Dolor sit amet orem ipsu mcons ectetur adipi elit.</p>
+                {/* <p>Dolor sit amet orem ipsu mcons ectetur adipi elit.</p> */}
               </div>
             </div>
           </div>
@@ -40,7 +40,7 @@ const CompanyServices = () => {
               </div>
               <div className="icon-box-content">
                 <h3 className="card-title text-uppercase text-dark">Daily offers</h3>
-                <p>Amet consectetur adipi elit loreme ipsum dolor sit.</p>
+                {/* <p>Amet consectetur adipi elit loreme ipsum dolor sit.</p> */}
               </div>
             </div>
           </div>
@@ -53,7 +53,7 @@ const CompanyServices = () => {
               </div>
               <div className="icon-box-content">
                 <h3 className="card-title text-uppercase text-dark">100% secure payment</h3>
-                <p>Rem Lopsum dolor sit amet, consectetur adipi elit.</p>
+                {/* <p>Rem Lopsum dolor sit amet, consectetur adipi elit.</p> */}
               </div>
             </div>
           </div>

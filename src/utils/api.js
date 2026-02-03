@@ -1,8 +1,8 @@
 // src/utils/api.js
 // API utility functions for backend communication
 
-const API_BASE_URL = 'https://artiststation.co.in/foxecom/api';
-const BASE_URL = 'https://artiststation.co.in/foxecom';
+export const API_BASE_URL = 'https://artiststation.co.in/foxecom/api';
+export const BASE_URL = 'https://artiststation.co.in/foxecom';
 
 // Helper function to get auth token
 const getAuthToken = () => {
