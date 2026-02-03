@@ -407,6 +407,25 @@ export const checkoutAPI = {
   },
 };
 
+// Review APIs
+export const reviewAPI = {
+  getByProduct: async (productId) => {
+    const { data } = await apiRequest(`/products/${productId}/reviews`);
+    return data;
+  },
+  canReview: async (productId) => {
+    const { data } = await apiRequest(`/products/${productId}/reviews/can-review`);
+    return data;
+  },
+  create: async (productId, rating, reviewText) => {
+    const { data } = await apiRequest('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({ productId, rating, reviewText: reviewText || '' }),
+    });
+    return data;
+  },
+};
+
 // Order APIs
 export const orderAPI = {
   create: async (orderData) => {

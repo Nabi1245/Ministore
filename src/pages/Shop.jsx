@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
+import { reviewAPI, productAPI, categoryAPI, getImageUrl } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
 import fallbackImage from '../assest/images/product-item1.jpg'
+import StarRating from '../components/StarRating'
 
 /** Strip markdown to plain text for filter dropdown labels */
 function stripMarkdownLabel(text) {
@@ -44,11 +45,11 @@ const Shop = () => {
     caseType: '',
     search: ''
   })
-  
+
   // Sort states
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortOrder, setSortOrder] = useState('DESC')
-  
+
   // Pagination states
   const [pagination, setPagination] = useState({
     page: 1,
@@ -56,6 +57,8 @@ const Shop = () => {
     totalItems: 0,
     totalPages: 1
   })
+
+  const [ratingsMap, setRatingsMap] = useState({})
 
   // Load categories on mount
   useEffect(() => {
@@ -92,6 +95,39 @@ const Shop = () => {
     }
   }
 
+
+  useEffect(() => {
+    if (products.length === 0) return
+
+    const fetchRatings = async () => {
+      try {
+        const entries = await Promise.all(
+          products.map(async (product) => {
+            try {
+              const data = await reviewAPI.getByProduct(product.id)
+              return [
+                product.id,
+                {
+                  averageRating: data.averageRating || 0,
+                  reviewCount: data.reviews?.length || 0,
+                },
+              ]
+            } catch {
+              return [product.id, { averageRating: 0, reviewCount: 0 }]
+            }
+          })
+        )
+
+        setRatingsMap(Object.fromEntries(entries))
+      } catch (err) {
+        console.error('Failed to load ratings', err)
+      }
+    }
+
+    fetchRatings()
+  }, [products])
+
+
   const loadFilterOptions = async (categoryId = null) => {
     try {
       setLoadingFilters(true)
@@ -108,7 +144,7 @@ const Shop = () => {
   const loadProducts = async () => {
     try {
       setLoading(true)
-      
+
       // Build query parameters
       const params = {
         page: pagination.page,
@@ -131,7 +167,7 @@ const Shop = () => {
       if (filters.search) params.search = filters.search
 
       const response = await productAPI.filterAndSort(params)
-      
+
       // Handle both new API format and legacy format
       if (response.success && response.data) {
         setProducts(response.data.products || [])
@@ -270,7 +306,7 @@ const Shop = () => {
                   <i className={`bi bi-chevron-${showFilters ? 'up' : 'down'}`}></i>
                 </button>
               </div>
-              
+
               <div className={`card-body ${showFilters ? '' : 'd-none d-lg-block'}`}>
                 {/* Clear Filters Button */}
                 {hasActiveFilters && (
@@ -509,6 +545,7 @@ const Shop = () => {
             {!loading && products.length > 0 && (
               <div className="row">
                 {products.map((product) => {
+                  // console.log("product rating and review count", product.averageRating, product.reviewCount)
                   const imagePath = product.thumbnailImage || product.images?.[0]?.imageUrl
                   const imageUrl = getImageUrl(imagePath)
                   const price = parseFloat(product.discountPrice || product.price)
@@ -564,8 +601,15 @@ const Shop = () => {
                                     {formatPrice(originalPrice)}
                                   </span>
                                 )}
+                                <StarRating
+                                  rating={ratingsMap[product.id]?.averageRating}
+                                  count={ratingsMap[product.id]?.reviewCount}
+                                  size="0.85rem"
+                                />
                               </div>
                             </div>
+
+
 
                             <button
                               className="btn btn-primary w-100"
@@ -612,7 +656,7 @@ const Shop = () => {
                         <i className="bi bi-chevron-left"></i> Previous
                       </button>
                     </li>
-                    
+
                     {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
                       let pageNum
                       if (pagination.totalPages <= 5) {
@@ -624,7 +668,7 @@ const Shop = () => {
                       } else {
                         pageNum = pagination.page - 2 + i
                       }
-                      
+
                       return (
                         <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
                           <button
@@ -636,7 +680,7 @@ const Shop = () => {
                         </li>
                       )
                     })}
-                    
+
                     <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
                       <button
                         className="page-link"

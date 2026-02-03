@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import "@uiw/react-markdown-preview/markdown.css";
-import { productAPI, getImageUrl } from "../utils/api";
+import { productAPI, getImageUrl, reviewAPI } from "../utils/api";
 import { useCart } from "../contexts/CartContext";
 import fallbackImage from "../assest/images/product-item1.jpg";
 
@@ -23,9 +23,27 @@ const ProductDetails = () => {
     bgY: 50,
   });
 
+  // Review state
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [canReview, setCanReview] = useState(false);
+  const [existingReview, setExistingReview] = useState(null);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const isLoggedIn = !!localStorage.getItem("token");
+
   useEffect(() => {
     loadProduct();
   }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      loadReviews();
+      if (isLoggedIn) checkCanReview();
+    }
+  }, [id, isLoggedIn]);
 
   const loadProduct = async () => {
     try {
@@ -72,6 +90,61 @@ const ProductDetails = () => {
 
   const handleMouseLeave = () => {
     setZoomState((prev) => ({ ...prev, isZoomed: false }));
+  };
+
+  const loadReviews = async () => {
+    try {
+      setLoadingReviews(true);
+      const data = await reviewAPI.getByProduct(id);
+      setReviews(data.reviews || []);
+      setAverageRating(data.averageRating || 0);
+    } catch (err) {
+      console.error("Error loading reviews:", err);
+      setReviews([]);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const checkCanReview = async () => {
+    try {
+      const data = await reviewAPI.canReview(id);
+      setCanReview(data.canReview);
+      if (data.existingReview) {
+        setExistingReview(data.existingReview);
+        setRating(data.existingReview.rating);
+        setReviewText(data.existingReview.reviewText || "");
+      }
+    } catch (err) {
+      setCanReview(false);
+    }
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!rating || rating < 1 || rating > 5) return;
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+    try {
+      setSubmittingReview(true);
+      const data = await reviewAPI.create(id, rating, reviewText);
+      setExistingReview({ rating, reviewText });
+      await loadReviews();
+    } catch (err) {
+      alert(err?.message || "Failed to submit review.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const maskEmail = (email) => {
+    if (!email) return "Anonymous";
+    const [local, domain] = email.split("@");
+    if (!domain) return "***";
+    const masked = local?.slice(0, 2) + "***";
+    return `${masked}@${domain}`;
   };
 
   const handleMouseMove = (e) => {
@@ -484,6 +557,143 @@ const ProductDetails = () => {
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Customer Reviews Section */}
+        <div className="row mt-5">
+          <div className="col-12">
+            <h3 className="mb-4 fw-semibold" style={{ fontSize: "1.5rem" }}>
+              CUSTOMER REVIEWS
+            </h3>
+
+            {/* Average rating summary */}
+            {reviews.length > 0 && (
+              <div className="d-flex align-items-center gap-3 mb-4">
+                <div className="d-flex align-items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <i
+                      key={star}
+                      className={`bi bi-star-fill ${
+                        star <= Math.round(averageRating) ? "text-warning" : "text-muted"
+                      }`}
+                      style={{ fontSize: "1.25rem" }}
+                    />
+                  ))}
+                </div>
+                <span className="fw-semibold">
+                  {averageRating.toFixed(1)} out of 5
+                </span>
+                <span className="text-muted">({reviews.length} review{reviews.length !== 1 ? "s" : ""})</span>
+              </div>
+            )}
+
+            {/* Review form - only for logged-in users who purchased */}
+            {canReview && (
+              <div className="card mb-4">
+                <div className="card-body">
+                  <h5 className="card-title mb-3">
+                    {existingReview ? "Update your review" : "Write a review"}
+                  </h5>
+                  <form onSubmit={handleSubmitReview}>
+                    <div className="mb-3">
+                      <label className="form-label">Rating</label>
+                      <div className="d-flex gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            className="btn btn-link p-0 border-0"
+                            onClick={() => setRating(star)}
+                            style={{ fontSize: "1.5rem" }}
+                          >
+                            <i
+                              className={`bi ${
+                                star <= rating ? "bi-star-fill text-warning" : "bi-star"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Your review (optional)</label>
+                      <textarea
+                        className="form-control"
+                        rows={3}
+                        placeholder="Share your experience with this product..."
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={submittingReview || rating < 1}
+                    >
+                      {submittingReview ? "Submitting..." : existingReview ? "Update Review" : "Submit Review"}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {!canReview && isLoggedIn && reviews.length === 0 && !loadingReviews && (
+              <p className="text-muted">
+                Only customers who have purchased this product can leave a review.
+              </p>
+            )}
+
+            {!isLoggedIn && (
+              <p className="text-muted mb-4">
+                <Link to="/login">Sign in</Link> to leave a review. You must have purchased this product to review it.
+              </p>
+            )}
+
+            {/* Reviews list */}
+            {loadingReviews ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : reviews.length > 0 ? (
+              <div className="list-group">
+                {reviews.map((r) => (
+                  <div
+                    key={r.id}
+                    className="list-group-item list-group-item-action"
+                  >
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <div className="d-flex align-items-center gap-2 mb-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <i
+                              key={star}
+                              className={`bi ${star <= r.rating ? "bi-star-fill text-warning" : "bi-star text-muted"}`}
+                              style={{ fontSize: "0.9rem" }}
+                            />
+                          ))}
+                          <span className="text-muted small">
+                            {r.user?.email ? maskEmail(r.user.email) : "Customer"}
+                          </span>
+                        </div>
+                        {r.reviewText && (
+                          <p className="mb-0 mt-1" style={{ fontSize: "0.95rem" }}>
+                            {r.reviewText}
+                          </p>
+                        )}
+                      </div>
+                      {/* <small className="text-muted">
+                        {new Date(r.createdAt).toLocaleDateString()}
+                      </small> */}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : !canReview && (
+              <p className="text-muted">No reviews yet. Be the first to review!</p>
+            )}
           </div>
         </div>
       </div>
