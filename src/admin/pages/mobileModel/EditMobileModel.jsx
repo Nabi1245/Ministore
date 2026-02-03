@@ -27,7 +27,7 @@ const EditMobileModel = () => {
       ]);
       setName(modelData.name || "");
       setBrandId(modelData.brandId || "");
-      setBrands(brandsData || []);
+      setBrands(brandsData.data || []);
     } catch (err) {
       console.error(err);
       setError("Failed to load mobile model");

@@ -79,16 +79,17 @@ body {
   font-weight: 500;
   line-height: 1.6;
   margin: 0;
+  color: var(--black-color);
 }
 p {
-  font-size: 1.2em;
-  color: var(--gray-color-500);
+  font-size: 1em;
+  color: var(--black-color);
 }
 ul.inner-list li {
    font-size: 1.2em;
 }
 a {
-  color: var(--primary-color);
+  color: var(--black-color);
   text-decoration: none;
   transition: 0.3s color ease-out;
 }
@@ -97,7 +98,7 @@ a.light {
 }
 a:hover {
   text-decoration: none;
-  color: var(--primary-color);
+  color: var(--black-color);
   opacity: 0.8;
 }
 
@@ -202,6 +203,9 @@ a:hover {
 
 /* - Section Title
 --------------------------------------------------------------*/
+h1, h2, h3, h4, h5, h6 {
+  color: var(--black-color);
+}
 h3.card-title,
 h3.cart-title {
    font-size: 1.5em;
@@ -385,7 +389,7 @@ h3.cart-title {
 .search-box svg {
     width: 22px;
     height: 22px;
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 .search-box svg.search {
     margin-left: -50px;
@@ -599,12 +603,12 @@ h3.cart-title {
     height: 50px;
 }
 .navbar-nav .nav-item a.nav-link {
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 .navbar-nav .nav-item a.nav-link.active, 
 .navbar-nav .nav-item a.nav-link:focus, 
 .navbar-nav .nav-item a.nav-link:hover {
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 
 /*------------ Offcanvas -------------- */
@@ -656,7 +660,7 @@ h3.cart-title {
 }
 .swiper-icon.swiper-arrow:hover svg,
 .swiper-icon.swiper-arrow:focus svg {
-    fill: var(--primary-color);
+    fill: var(--black-color);
 }
 #billboard .swiper-arrow.swiper-arrow-prev {
     left: 0;
@@ -683,7 +687,7 @@ h3.cart-title {
 .icon-box .icon-box-icon svg {
     width: 26px;
     height: 26px;
-    fill: var(--primary-color);
+    fill: var(--black-color);
 }
 
 @media only screen and (max-width: 991px) {
@@ -743,7 +747,7 @@ h3.cart-title {
 .rating svg.star {
     width: 16px;
     height: 16px;
-    fill: var(--primary-color);
+    fill: var(--black-color);
 }
 #testimonials .swiper-arrow svg {
     width: 45px;
@@ -833,7 +837,7 @@ figure.instagram-item img.insta-image {
     color: var(--light-gray-color);
 }
 .social-links svg:hover {
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 .social-links li {
   padding-right: 30px;
@@ -894,7 +898,7 @@ figure.instagram-item img.insta-image {
     color: var(--dark-30);
 }
 .sidebar .sidebar-list li a:hover {
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 
 @media only screen and (max-width: 991px) {
@@ -909,7 +913,7 @@ figure.instagram-item img.insta-image {
     color: var(--gray-color-500);
 }
 .paging-navigation .pagination .page-numbers:hover {
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 .paging-navigation .pagination svg {
     width: 35px;
@@ -967,7 +971,7 @@ figure.instagram-item img.insta-image {
 }
 .product-info-tabs .nav-tabs .nav-item.show .nav-link, 
 .product-info-tabs .nav-tabs .nav-link.active {
-    color: var(--primary-color);
+    color: var(--black-color);
 }
 
 
@@ -1020,5 +1024,5 @@ figure.instagram-item img.insta-image {
 }
 .post-navigation:hover svg,
 .post-navigation:focus svg {
-    fill: var(--primary-color);
+    fill: var(--black-color);
 }

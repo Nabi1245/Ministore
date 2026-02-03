@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import "@uiw/react-markdown-preview/markdown.css";
 import { caseDetailsAPI, getImageUrl } from "../../../utils/api";
 import fallbackImage from '../../../assest/images/product-item1.jpg';
 
@@ -153,9 +155,17 @@ const MobileCase = () => {
 
                         <div className="mb-2">
                           <strong>Case Type:</strong>{" "}
-                          <span className="badge bg-primary">
-                            {item.caseType || "N/A"}
-                          </span>
+                          <div className="case-type-preview d-inline">
+                            {item.caseType ? (
+                              <MarkdownPreview
+                                source={item.caseType}
+                                wrapperElement={{ 'data-color-mode': 'light' }}
+                                style={{ fontSize: '0.9rem', lineHeight: '1.4', display: 'inline', margin: 0 }}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </div>
                         </div>
                       </div>
 

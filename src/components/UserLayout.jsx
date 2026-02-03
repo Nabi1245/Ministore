@@ -45,7 +45,9 @@ const UserLayout = () => {
       <SVGSymbols />
       <SearchPopup />
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Outlet />
+      <main className="page-content">
+        <Outlet />
+      </main>
       <Footer />
     </>
   );

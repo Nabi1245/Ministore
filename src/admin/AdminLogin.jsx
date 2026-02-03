@@ -103,7 +103,7 @@ const AdminLogin = ({ setIsAdmin }) => {
                     onClick={handleLogin}
                     disabled={loading}
                   >
-                    {loading ? "Signing in..." : "Login"}
+                    {loading ? "Signing in..." : "Sign in"}
                   </button>
                 </div>
 

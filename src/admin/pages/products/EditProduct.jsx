@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
 import { productAPI, categoryAPI, adminAPI, getImageUrl } from "../../../utils/api";
 
 const EditProduct = () => {
@@ -282,13 +285,14 @@ const EditProduct = () => {
               <label htmlFor="description" className="form-label">
                 Description
               </label>
-              <textarea
-                className="form-control"
-                id="description"
-                rows="4"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <div data-color-mode="light">
+                <MDEditor
+                  value={description}
+                  onChange={(val) => setDescription(val || "")}
+                  preview="edit"
+                  height={200}
+                />
+              </div>
             </div>
 
             <div className="mb-3">

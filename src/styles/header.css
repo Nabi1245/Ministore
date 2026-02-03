@@ -1,3 +1,33 @@
+/* Header logo - responsive */
+.header-logo {
+  height: auto;
+  max-height: 48px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+}
+.header-logo-mobile {
+  max-height: 40px;
+  max-width: 130px;
+}
+@media (min-width: 992px) {
+  .header-logo {
+    max-height: 52px;
+    max-width: 180px;
+  }
+}
+@media (max-width: 576px) {
+  .header-logo {
+    max-height: 36px;
+    max-width: 120px;
+  }
+  .header-logo-mobile {
+    max-height: 34px;
+    max-width: 110px;
+  }
+}
+
 /* Header Sticky Styles */
 .site-header {
   position: fixed !important;
@@ -20,21 +50,26 @@ body {
   padding-top: 0;
 }
 
-/* Add padding to main content to prevent header overlap */
+/* Add padding to main content to prevent header overlap (top row + nav bar) */
 main,
 .page-content {
   padding-top: 100px;
 }
 
-/* For pages with margin-top, ensure it accounts for header */
+/* For pages with margin-top, ensure it accounts for header (top row + brand bar) */
 .padding-large {
-  padding-top: 120px !important;
+  padding-top: 40px !important;
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
   .site-header {
     z-index: 1030 !important;
+  }
+
+  main,
+  .page-content {
+    padding-top: 100px;
   }
   
   .padding-large {

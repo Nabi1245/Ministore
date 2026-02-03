@@ -20,6 +20,30 @@ button, input, textarea, select {
   font-family: 'Poppins', sans-serif !important;
 }
 
+/* MDEditor: Reset to monospace for correct cursor positioning */
+.w-md-editor,
+.w-md-editor *,
+.w-md-editor-text,
+.w-md-editor-text *,
+.w-md-editor-text-pre,
+.w-md-editor-text-pre *,
+.w-md-editor-text-input,
+.w-md-editor-text-input *,
+.w-md-editor textarea,
+.wmde-markdown,
+.wmde-markdown * {
+  /* font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important; */
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: normal !important;
+}
+/* Keep preview area readable with sans-serif */
+.wmde-markdown-color,
+.wmde-markdown-color p,
+.wmde-markdown-color li,
+.wmde-markdown-color span:not(code span) {
+  font-family: 'Poppins', sans-serif !important;
+}
+
 /* ============================================
    COLOR SCHEME
    ============================================
@@ -38,106 +62,19 @@ button, input, textarea, select {
   --bs-primary-rgb: 137, 187, 86;
 }
 
-/* Minimal use of primary color - only for specific important elements */
-.btn-primary {
-  background-color: var(--primary-color) !important;
-  border-color: var(--primary-color) !important;
-  color: var(--secondary-color) !important;
-}
-
-.btn-primary:hover {
-  background-color: #7aa84a !important;
-  border-color: #7aa84a !important;
-  color: var(--secondary-color) !important;
-}
-
-/* Text primary - use sparingly */
-.text-primary {
-  color: var(--primary-color) !important;
-}
-
-/* Background primary - use sparingly */
-.bg-primary {
-  background-color: var(--primary-color) !important;
-  color: var(--secondary-color) !important;
-}
-
-/* Override Bootstrap success color to use primary (for consistency) */
-.text-success {
-  color: var(--primary-color) !important;
-}
-
-.bg-success {
-  background-color: var(--primary-color) !important;
-}
-
+/* Minimal use of primary color - only for buttons */
+.btn-primary,
 .btn-success {
   background-color: var(--primary-color) !important;
   border-color: var(--primary-color) !important;
   color: var(--secondary-color) !important;
 }
 
+.btn-primary:hover,
 .btn-success:hover {
   background-color: #7aa84a !important;
   border-color: #7aa84a !important;
   color: var(--secondary-color) !important;
-}
-
-/* Override text-dark to use primary color */
-.text-dark {
-  color: var(--primary-color) !important;
-}
-
-/* Navigation links use primary color */
-.nav-link {
-  color: var(--primary-color) !important;
-}
-
-.nav-link:hover {
-  color: var(--primary-color) !important;
-  opacity: 0.8;
-}
-
-/* All links use primary color */
-a {
-  color: var(--primary-color) !important;
-}
-
-a:hover {
-  color: var(--primary-color) !important;
-  opacity: 0.8;
-}
-
-/* Headings use primary color */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--primary-color) !important;
-}
-
-/* Navbar brand uses primary color */
-.navbar-brand {
-  color: var(--primary-color) !important;
-}
-
-/* Dropdown items use primary color */
-.dropdown-item {
-  color: var(--primary-color) !important;
-}
-
-.dropdown-item:hover {
-  color: var(--primary-color) !important;
-  background-color: rgba(137, 187, 86, 0.1) !important;
-}
-
-/* Card titles and headings */
-.card-title {
-  color: var(--primary-color) !important;
-}
-
-/* Display headers */
-.display-header,
-.display-2,
-.display-7 {
-  color: var(--primary-color) !important;
 }
 
 /* Shop Page Styles */
@@ -241,7 +178,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .contact-form .form-label {
   margin-bottom: 0.5rem;
-  color: var(--primary-color);
+  color: #000000;
 }
 
 .contact-form .form-control:focus {
@@ -271,4 +208,46 @@ h1, h2, h3, h4, h5, h6 {
     padding: 2rem !important;
   }
 }
+
+.product-badges .badge-box {
+  height: 100%;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-badges .badge-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.product-badges .badge-icon {
+  font-size: 2.2rem; /* BIG ICON */
+  color: #000;
+}
+
+.product-badges span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Desktop boost */
+@media (min-width: 768px) {
+  .product-badges .badge-icon {
+    font-size: 2.5rem;
+  }
+
+  .product-badges span {
+    font-size: 0.95rem;
+  }
+}
+
 

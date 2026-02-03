@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../../utils/api";
 
 const AddMobileBrand = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const AddMobileBrand = () => {
       const token = localStorage.getItem("adminToken");
 
       const res = await fetch(
-        "https://artiststation.co.in/foxecom/api/mobile-brands",
+        `${API_BASE_URL}/mobile-brands`,
         {
           method: "POST",
           headers: {

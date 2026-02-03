@@ -49,6 +49,9 @@ import AboutUs from "./pages/AboutUs.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
 import RefundPolicy from "./pages/RefundPolicy.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import DisclaimerPage from "./components/DisclaimerPage.jsx";
 
 
 
@@ -80,6 +83,7 @@ function App() {
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="terms" element={<TermsConditions/>} />
                 <Route path="refund-policy" element={<RefundPolicy/>} />
+                <Route path="disclaimer" element={<DisclaimerPage/>} />
                 <Route path="product/:id" element={<ProductDetails />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />
@@ -87,6 +91,8 @@ function App() {
                 <Route path="my-orders" element={<MyOrders />} />
                 <Route path="order/:id/track" element={<TrackOrder />} />
                 <Route path="login" element={<Login />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="reset-password" element={<ResetPassword />} />
                 <Route path="login-auth" element={<Auth />} />
                 <Route path="sign-up" element={<SignUp />} />
               </Route>

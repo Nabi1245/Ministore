@@ -251,14 +251,14 @@ const MyOrders = () => {
                             Cancel Order
                           </button>
                         )}
-                        {order.status === 'shipped' && order.shipmentId && (
+                        {/* {order.status === 'shipped' && order.shipmentId && (
                           <Link
                             to={`/order/${order.id}/track`}
                             className="btn btn-outline-info btn-sm"
                           >
                             Track Order
                           </Link>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>

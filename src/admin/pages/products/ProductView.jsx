@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { API_BASE_URL, BASE_URL } from "../../../utils/api";
 
 const ProductView = () => {
   const { id } = useParams(); // get product id from URL
@@ -12,7 +13,7 @@ const ProductView = () => {
   const fetchProductById = async () => {
     try {
       const res = await fetch(
-        `https://artiststation.co.in/foxecom/api/products/${id}`,
+        `${API_BASE_URL}/products/${id}`,
       );
       const data = await res.json();
       setProduct(data);
@@ -38,7 +39,7 @@ const ProductView = () => {
             {/* LEFT: Product Image */}
             <div className="col-12 col-md-4 text-center">
               <img
-                src={`https://artiststation.co.in/foxecom${product.thumbnailImage}`}
+                src={`${BASE_URL}${product.thumbnailImage}`}
                 alt={product.title}
                 className="img-fluid rounded border"
                 style={{ maxHeight: "250px", objectFit: "contain" }}

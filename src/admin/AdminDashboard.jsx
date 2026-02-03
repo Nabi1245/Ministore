@@ -20,6 +20,11 @@ const AdminDashboard = () => {
       setStats(dashboardData);
     } catch (err) {
       console.error('Error loading dashboard stats:', err);
+      // If admin token is invalid/expired, force re-login
+      if (err.isAdminTokenError) {
+        navigate('/admin/login', { replace: true });
+        return;
+      }
       setError(err.message || 'Failed to load dashboard statistics');
     } finally {
       setLoading(false);

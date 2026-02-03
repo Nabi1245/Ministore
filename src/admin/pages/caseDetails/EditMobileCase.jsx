@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
 import { caseDetailsAPI, productAPI, mobileBrandAPI, mobileModelAPI, adminAPI } from "../../../utils/api";
 
 const EditMobileCase = () => {
@@ -241,13 +244,14 @@ const EditMobileCase = () => {
               <label htmlFor="caseType" className="form-label">
                 Case Type
               </label>
-              <input
-                type="text"
-                className="form-control"
-                id="caseType"
-                value={caseType}
-                onChange={(e) => setCaseType(e.target.value)}
-              />
+              <div data-color-mode="light">
+                <MDEditor
+                  value={caseType}
+                  onChange={(val) => setCaseType(val || "")}
+                  preview="edit"
+                  height={180}
+                />
+              </div>
             </div>
 
             <div className="d-flex gap-2">

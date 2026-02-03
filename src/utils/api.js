@@ -1,8 +1,8 @@
 // src/utils/api.js
 // API utility functions for backend communication
 
-const API_BASE_URL = 'https://artiststation.co.in/foxecom/api';
-const BASE_URL = 'https://artiststation.co.in/foxecom';
+export const API_BASE_URL = 'https://artiststation.co.in/foxecom/api';
+export const BASE_URL = 'https://artiststation.co.in/foxecom';
 
 // Helper function to get auth token
 const getAuthToken = () => {
@@ -38,6 +38,12 @@ const adminApiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, config);
     
+    // If backend sent a refreshed token, store it
+    const refreshedToken = response.headers.get('x-auth-token');
+    if (refreshedToken) {
+      localStorage.setItem('adminToken', refreshedToken);
+    }
+    
     // Handle 204 No Content and other responses with no body
     if (response.status === 204 || response.status === 201) {
       // Check if response has content before parsing
@@ -60,7 +66,29 @@ const adminApiRequest = async (endpoint, options = {}) => {
     }
     
     if (!response.ok) {
-      throw new Error(data?.message || 'API request failed');
+      const message = (typeof data === 'string' ? data : data?.message) || 'API request failed';
+
+      // Detect invalid/expired admin token and clear it
+      const lowerMsg = String(message).toLowerCase();
+      const isTokenError =
+        response.status === 400 ||
+        response.status === 401 ||
+        response.status === 403
+          ? lowerMsg.includes('invalid token') ||
+            lowerMsg.includes('expired token') ||
+            lowerMsg.includes('invalid or expired token')
+          : false;
+
+      if (isTokenError) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('isAdmin');
+        const err = new Error('Admin session expired. Please log in again.');
+        err.isAdminTokenError = true;
+        err.status = response.status;
+        throw err;
+      }
+
+      throw new Error(message);
     }
     
     return { data, status: response.status };
@@ -379,6 +407,25 @@ export const checkoutAPI = {
   },
 };
 
+// Review APIs
+export const reviewAPI = {
+  getByProduct: async (productId) => {
+    const { data } = await apiRequest(`/products/${productId}/reviews`);
+    return data;
+  },
+  canReview: async (productId) => {
+    const { data } = await apiRequest(`/products/${productId}/reviews/can-review`);
+    return data;
+  },
+  create: async (productId, rating, reviewText) => {
+    const { data } = await apiRequest('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({ productId, rating, reviewText: reviewText || '' }),
+    });
+    return data;
+  },
+};
+
 // Order APIs
 export const orderAPI = {
   create: async (orderData) => {
@@ -428,6 +475,17 @@ export const paymentAPI = {
     const { data } = await apiRequest('/payment/verify-payment', {
       method: 'POST',
       body: JSON.stringify(paymentData),
+    });
+    return data;
+  },
+};
+
+// Contact Form API (public)
+export const contactAPI = {
+  submit: async (payload) => {
+    const { data } = await apiRequest('/contact/send-message', {
+      method: 'POST',
+      body: JSON.stringify(payload),
     });
     return data;
   },
@@ -886,6 +944,7 @@ export default {
   checkoutAPI,
   orderAPI,
   paymentAPI,
+  contactAPI,
   caseDetailsAPI,
   userAuthAPI,
   userAPI,

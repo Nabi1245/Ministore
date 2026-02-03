@@ -3,7 +3,7 @@ import SVGSymbols from '../components/SVGSymbols'
 import Header from '../components/Header'
 import "./auth.css";
 import { useNavigate } from 'react-router-dom';
-import { userAuthAPI } from '../utils/api';
+import { userAuthAPI, API_BASE_URL } from '../utils/api';
 
 const SignUp = () => {
 
@@ -17,8 +17,8 @@ const SignUp = () => {
 
   // const handleSignup = async () => {
   //   try{
-  //     const res = await fetch( 
-  //       "https://artiststation.co.in/foxecom/api/auth/user/signup",
+  //     const res = await fetch(
+  //       `${API_BASE_URL}/auth/user/signup`,
   //       {
   //         method: "POST",
   //         headers:{

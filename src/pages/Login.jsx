@@ -42,9 +42,9 @@ const Login = () => {
       } else {
         setError(data.message || "Invalid login");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Server error. Please try again.");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err?.message || "Server error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ const Login = () => {
                 </div>
 
                 {/* Password */}
-                <div className="mb-4">
+                <div className="mb-2">
                   <label className="form-label">Password</label>
                   <div className="input-group">
                     <input
@@ -108,6 +108,13 @@ const Login = () => {
                   </button>
                   </div>
                 </div>
+                {!isSignup && (
+                  <div className="mb-3 text-end">
+                    <Link to="/forgot-password" className="small text-decoration-none">
+                      Forgot password?
+                    </Link>
+                  </div>
+                )}
 
                 {/* Button */}
                 <div className="d-grid mb-3">
