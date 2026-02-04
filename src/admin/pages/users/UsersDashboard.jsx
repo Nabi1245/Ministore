@@ -13,25 +13,39 @@ const UsersDashboard = () => {
     total: 0,
   });
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPagination(prev => ({ ...prev, page: 1 }));
+    }, 500); // ⏱ 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     fetchUsers();
-  }, [pagination.page, search]);
+  }, [pagination.page, debouncedSearch]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setError("");
+
       const params = {
         page: pagination.page,
         limit: pagination.limit,
       };
-      if (search) {
-        params.search = search;
+
+      if (debouncedSearch) {
+        params.search = debouncedSearch;
       }
+
       const data = await adminAPI.getAllUsers(params);
+
       setUsers(data.users || []);
-      setPagination((prev) => ({
+      setPagination(prev => ({
         ...prev,
         totalPages: data.pagination?.totalPages || 1,
         total: data.pagination?.totalItems || 0,
@@ -43,6 +57,7 @@ const UsersDashboard = () => {
       setLoading(false);
     }
   };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -120,7 +135,7 @@ const UsersDashboard = () => {
                   </small>
                 </div>
               </div>
-              
+
               <div className="table-responsive">
                 <table className="table table-hover">
                   <thead>
