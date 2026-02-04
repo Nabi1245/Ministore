@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { memo } from 'react'
 
-const StarRating = ({ rating = 0, count = 0, size = '0.85rem' }) => {
+const StarRating = memo(({ rating = 0, count = 0, size = '0.85rem' }) => {
   const roundedRating = Math.round(rating)
 
   // No reviews case
@@ -29,6 +29,8 @@ const StarRating = ({ rating = 0, count = 0, size = '0.85rem' }) => {
       <span className="text-muted small ms-1">({count})</span>
     </div>
   )
-}
+});
+
+StarRating.displayName = 'StarRating';
 
 export default StarRating;

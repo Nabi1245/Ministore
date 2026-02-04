@@ -90,7 +90,8 @@ const Billboard = () => {
       <style>{`
         .billboard-section {
           min-height: 0;
-          
+          margin-top: 2rem;
+          margin-bottom: 2rem;
         }
         .billboard-inner {
           position: relative;
@@ -105,8 +106,9 @@ const Billboard = () => {
         .billboard-slide-img-wrap {
           width: 100%;
           aspect-ratio: 3000 / 700;
-          max-height: 95vh;
-          min-height: 400px;
+          height: auto;
+          max-height: 90vh;
+          min-height: 300px;
           background: #111;
           overflow: hidden;
           border-radius: 12px;
@@ -154,18 +156,57 @@ const Billboard = () => {
           border-color: #fff;
           transform: scale(1.15);
         }
+        /* Larger screens - more margin */
+        @media (min-width: 1401px) {
+          .billboard-section {
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+          }
+        }
+        /* Maintain 3000:700 aspect ratio across all screen sizes */
+        @media (max-width: 1400px) {
+          .billboard-section {
+            margin-top: 2.5rem;
+            margin-bottom: 2.5rem;
+          }
+          .billboard-slide-img-wrap {
+            max-height: 85vh;
+            min-height: 280px;
+          }
+        }
+        @media (max-width: 1200px) {
+          .billboard-section {
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+          }
+          .billboard-slide-img-wrap {
+            max-height: 80vh;
+            min-height: 260px;
+          }
+        }
         @media (max-width: 992px) {
+          .billboard-section {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+          }
           .billboard-inner { padding: 20px 32px; }
           .billboard-arrow-prev { left: 44px; }
           .billboard-arrow-next { right: 44px; }
+          .billboard-slide-img-wrap {
+            max-height: 75vh;
+            min-height: 240px;
+          }
         }
         @media (max-width: 768px) {
+          .billboard-section {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+          }
           .billboard-inner { padding: 16px 20px; }
           .billboard-swiper { border-radius: 10px; }
           .billboard-slide-img-wrap {
-            aspect-ratio: 16 / 7;
             max-height: 70vh;
-            min-height: 280px;
+            min-height: 220px;
             border-radius: 10px;
           }
           .billboard-arrow { width: 40px; height: 40px; }
@@ -175,12 +216,32 @@ const Billboard = () => {
           .billboard-swiper .swiper-pagination { bottom: 10px; }
           .billboard-pagination-bullet { width: 8px; height: 8px; border-width: 1.5px; }
         }
+        @media (max-width: 576px) {
+          .billboard-slide-img-wrap {
+            max-height: 65vh;
+            min-height: 200px;
+          }
+        }
         @media (max-width: 480px) {
+          .billboard-section {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+          }
           .billboard-inner { padding: 12px 14px; }
           .billboard-arrow-prev { left: 22px; }
           .billboard-arrow-next { right: 22px; }
           .billboard-arrow { width: 34px; height: 34px; }
           .billboard-arrow .bi { font-size: 1rem; }
+          .billboard-slide-img-wrap {
+            max-height: 60vh;
+            min-height: 180px;
+          }
+        }
+        @media (max-width: 360px) {
+          .billboard-slide-img-wrap {
+            max-height: 55vh;
+            min-height: 160px;
+          }
         }
       `}</style>
     </section>

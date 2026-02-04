@@ -95,10 +95,11 @@ const MyOrders = () => {
     return (
       <div className="padding-large">
         <div className="container">
-          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
-            <div className="spinner-border" role="status">
+          <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+            <div className="spinner-border" role="status" style={{ width: '3rem', height: '3rem' }}>
               <span className="visually-hidden">Loading...</span>
             </div>
+            <p className="mt-3 mb-0 text-muted" style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)' }}>Loading orders...</p>
           </div>
         </div>
       </div>
@@ -108,9 +109,9 @@ const MyOrders = () => {
   return (
     <div className="padding-large">
       <div className="container">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="h2 h-md-3 text-uppercase fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>My Orders</h1>
-          <Link to="/shop" className="btn btn-outline-primary">
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 mb-md-4 gap-2">
+          <h1 className="h2 h-md-3 text-uppercase fw-bold mb-0" style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)' }}>My Orders</h1>
+          <Link to="/shop" className="btn btn-outline-primary btn-sm w-100 w-sm-auto">
             Continue Shopping
           </Link>
         </div>
@@ -122,13 +123,13 @@ const MyOrders = () => {
         )}
 
         {/* Filter */}
-        <div className="card mb-4">
-          <div className="card-body">
-            <div className="row align-items-center">
-              <div className="col-md-6">
-                <label className="form-label">Filter by Status:</label>
+        <div className="card mb-3 mb-md-4">
+          <div className="card-body p-3 p-md-4">
+            <div className="row align-items-center g-3">
+              <div className="col-12 col-md-6">
+                <label className="form-label mb-1 mb-md-2" style={{ fontSize: 'clamp(0.85rem, 2vw, 0.95rem)' }}>Filter by Status:</label>
                 <select
-                  className="form-select"
+                  className="form-select form-select-sm"
                   value={statusFilter}
                   onChange={(e) => {
                     setStatusFilter(e.target.value)
@@ -144,8 +145,8 @@ const MyOrders = () => {
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
-              <div className="col-md-6 text-end">
-                <p className="mb-0 text-muted">
+              <div className="col-12 col-md-6 text-start text-md-end">
+                <p className="mb-0 text-muted" style={{ fontSize: 'clamp(0.85rem, 2vw, 0.95rem)' }}>
                   Total Orders: <strong>{pagination.total}</strong>
                 </p>
               </div>
@@ -155,10 +156,10 @@ const MyOrders = () => {
 
         {orders.length === 0 ? (
             <div className="card">
-              <div className="card-body text-center py-5">
-                <h5 className="text-muted fw-semibold" style={{ fontSize: '1.1rem' }}>No orders found</h5>
-                <p className="text-muted" style={{ fontSize: '0.95rem' }}>You haven't placed any orders yet.</p>
-              <Link to="/shop" className="btn btn-primary">
+              <div className="card-body text-center py-4 py-md-5 px-3">
+                <h5 className="text-muted fw-semibold mb-2 mb-md-3" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1rem)' }}>No orders found</h5>
+                <p className="text-muted mb-3 mb-md-4" style={{ fontSize: 'clamp(0.85rem, 2vw, 0.95rem)' }}>You haven't placed any orders yet.</p>
+              <Link to="/shop" className="btn btn-primary" style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)', padding: 'clamp(0.5rem, 1.5vw, 0.75rem) 1.5rem' }}>
                 Start Shopping
               </Link>
             </div>
@@ -166,87 +167,103 @@ const MyOrders = () => {
         ) : (
           <>
             {orders.map((order) => (
-              <div key={order.id} className="card mb-4">
-                <div className="card-header bg-light">
-                  <div className="row align-items-center">
-                    <div className="col-md-6">
-                      <h5 className="mb-0">
+              <div key={order.id} className="card mb-3 mb-md-4 my-orders-card">
+                <div className="card-header bg-light p-3 p-md-4">
+                  <div className="row align-items-center g-2">
+                    <div className="col-12 col-md-6">
+                      <h5 className="mb-0 mb-md-0" style={{ fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)' }}>
                         Order #{order.id}
-                        <span className={`badge bg-${getStatusBadge(order.status)} ms-2`}>
+                        <span className={`badge bg-${getStatusBadge(order.status)} ms-2`} style={{ fontSize: 'clamp(0.7rem, 1.8vw, 0.85rem)' }}>
                           {order.status?.toUpperCase()}
                         </span>
                       </h5>
                     </div>
-                    <div className="col-md-6 text-end">
-                      <small className="text-muted">
+                    <div className="col-12 col-md-6 text-start text-md-end">
+                      <small className="text-muted" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.85rem)' }}>
                         Placed on {formatDate(order.createdAt)}
                       </small>
                     </div>
                   </div>
                 </div>
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-8">
+                <div className="card-body p-3 p-md-4">
+                  <div className="row g-3">
+                    <div className="col-12 col-md-8">
                       {order.orderItems && order.orderItems.length > 0 && (
-                        <div className="mb-3">
+                        <div className="mb-3 mb-md-3">
                           {order.orderItems.slice(0, 3).map((item) => (
-                            <div key={item.id} className="d-flex align-items-center mb-2">
+                            <div key={item.id} className="d-flex align-items-start mb-3 mb-md-2 order-item">
                               {item.product?.images?.[0] && (
                                 <img
                                   src={getImageUrl(item.product.images[0].imageUrl)}
                                   alt={item.product.title}
                                   style={{
-                                    width: '50px',
-                                    height: '50px',
-                                    objectFit: 'cover',
+                                    width: 'clamp(45px, 12vw, 50px)',
+                                    height: 'clamp(45px, 12vw, 50px)',
+                                    objectFit: 'contain',
                                     marginRight: '10px',
+                                    flexShrink: 0,
                                   }}
                                   className="rounded"
                                 />
                               )}
-                              <div>
-                                <strong>{item.product?.title || 'Product'}</strong>
-                                <br />
-                                <small className="text-muted">
+                              <div className="flex-grow-1 min-w-0">
+                                <strong 
+                                  className="d-block order-item-title" 
+                                  style={{ 
+                                    fontSize: 'clamp(0.85rem, 2.2vw, 0.95rem)',
+                                    lineHeight: '1.4',
+                                    wordBreak: 'break-word',
+                                    overflow: 'hidden',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                  }}
+                                  title={item.product?.title || 'Product'}
+                                >
+                                  {item.product?.title || 'Product'}
+                                </strong>
+                                <small className="text-muted d-block mt-1" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.85rem)' }}>
                                   Qty: {item.quantity} × {formatCurrency(item.priceAtPurchase)}
                                 </small>
                               </div>
                             </div>
                           ))}
                           {order.orderItems.length > 3 && (
-                            <p className="text-muted small mb-0">
+                            <p className="text-muted small mb-0" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.85rem)' }}>
                               +{order.orderItems.length - 3} more item(s)
                             </p>
                           )}
                         </div>
                       )}
-                      <div>
-                        <strong>Shipping Address:</strong>
-                        <p className="mb-0 text-muted small">
+                      <div className="shipping-address">
+                        <strong style={{ fontSize: 'clamp(0.85rem, 2.2vw, 0.95rem)' }}>Shipping Address:</strong>
+                        <p className="mb-0 text-muted small mt-1" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.85rem)', wordBreak: 'break-word' }}>
                           {order.fullAddress}, {order.townOrCity}, {order.state} - {order.pinCode}
                         </p>
                       </div>
                     </div>
-                    <div className="col-md-4 text-end">
-                      <div className="mb-3">
-                        <h4 className="text-primary mb-0">
+                    <div className="col-12 col-md-4">
+                      <div className="mb-3 text-start text-md-end">
+                        <h4 className="text-primary mb-1 mb-md-0" style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>
                           {formatCurrency(order.totalAmount)}
                         </h4>
-                        <small className="text-muted">
+                        <small className="text-muted d-block" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.85rem)' }}>
                           {order.orderItems?.reduce((sum, item) => sum + item.quantity, 0) || 0} item(s)
                         </small>
                       </div>
-                      <div className="d-grid gap-2">
+                      <div className="d-grid gap-2 d-md-block text-md-end">
                         <Link
                           to={`/order-success/${order.id}`}
-                          className="btn btn-outline-primary btn-sm"
+                          className="btn btn-outline-primary btn-sm w-100 w-md-auto"
+                          style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}
                         >
                           View Details
                         </Link>
                         {order.status === 'pending' && (
                           <button
-                            className="btn btn-outline-danger btn-sm"
+                            className="btn btn-outline-danger btn-sm w-100 w-md-auto"
                             onClick={() => handleCancelOrder(order.id)}
+                            style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}
                           >
                             Cancel Order
                           </button>
@@ -254,7 +271,7 @@ const MyOrders = () => {
                         {/* {order.status === 'shipped' && order.shipmentId && (
                           <Link
                             to={`/order/${order.id}/track`}
-                            className="btn btn-outline-info btn-sm"
+                            className="btn btn-outline-info btn-sm w-100 w-md-auto"
                           >
                             Track Order
                           </Link>
@@ -267,14 +284,14 @@ const MyOrders = () => {
             ))}
 
             {pagination.totalPages > 1 && (
-              <div className="d-flex justify-content-between align-items-center mt-4">
-                <div>
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 mt-md-4 gap-3">
+                <div className="text-center text-sm-start" style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}>
                   Showing page {pagination.page} of {pagination.totalPages} (
                   {pagination.total} total orders)
                 </div>
-                <div className="btn-group">
+                <div className="btn-group w-100 w-sm-auto">
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-outline-primary btn-sm"
                     disabled={pagination.page === 1}
                     onClick={() =>
                       setPagination((prev) => ({
@@ -282,11 +299,12 @@ const MyOrders = () => {
                         page: prev.page - 1,
                       }))
                     }
+                    style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}
                   >
                     Previous
                   </button>
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-outline-primary btn-sm"
                     disabled={pagination.page === pagination.totalPages}
                     onClick={() =>
                       setPagination((prev) => ({
@@ -294,6 +312,7 @@ const MyOrders = () => {
                         page: prev.page + 1,
                       }))
                     }
+                    style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}
                   >
                     Next
                   </button>

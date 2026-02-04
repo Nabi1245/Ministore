@@ -8,6 +8,7 @@ const ProductsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [deletingProductId, setDeletingProductId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
@@ -110,6 +111,27 @@ const ProductsDashboard = () => {
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
+  };
+
+  const handleDeleteProduct = async (productId, productTitle) => {
+    if (!window.confirm(`Are you sure you want to delete "${productTitle}"?\n\nThis action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      setDeletingProductId(productId);
+      await adminAPI.deleteProduct(productId);
+      alert("Product deleted successfully");
+      // Remove from selected products if it was selected
+      setSelectedProducts(prev => prev.filter(id => id !== productId));
+      // Refresh the product list
+      fetchProducts();
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Failed to delete product");
+    } finally {
+      setDeletingProductId(null);
+    }
   };
 
   return (
@@ -342,11 +364,27 @@ const ProductsDashboard = () => {
 
                           <Link
                             to={`/admin/products/edit/${product.id}`}
-                            className="btn btn-sm btn-outline-secondary"
+                            className="btn btn-sm btn-outline-secondary me-2"
                             title="Edit Product"
                           >
                             Edit
                           </Link>
+
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDeleteProduct(product.id, product.title)}
+                            title="Delete Product"
+                            disabled={deletingProductId === product.id}
+                          >
+                            {deletingProductId === product.id ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                Deleting...
+                              </>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
                         </td>
                       </tr>
                     ))}

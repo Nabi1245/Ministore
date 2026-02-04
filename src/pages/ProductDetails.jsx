@@ -4,6 +4,7 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import "@uiw/react-markdown-preview/markdown.css";
 import { productAPI, getImageUrl, reviewAPI } from "../utils/api";
 import { useCart } from "../contexts/CartContext";
+import SimilarProducts from "../components/SimilarProducts";
 import fallbackImage from "../assest/images/product-item1.jpg";
 
 const ProductDetails = () => {
@@ -561,15 +562,15 @@ const ProductDetails = () => {
         </div>
 
         {/* Customer Reviews Section */}
-        <div className="row mt-5">
+        <div className="row mt-4 mt-md-5 customer-reviews-section">
           <div className="col-12">
-            <h3 className="mb-4 fw-semibold" style={{ fontSize: "1.5rem" }}>
+            <h3 className="mb-3 mb-md-4 fw-semibold" style={{ fontSize: "clamp(1.25rem, 3vw, 1.5rem)" }}>
               CUSTOMER REVIEWS
             </h3>
 
             {/* Average rating summary */}
             {reviews.length > 0 && (
-              <div className="d-flex align-items-center gap-3 mb-4">
+              <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 gap-sm-3 mb-3 mb-md-4 review-rating-summary">
                 <div className="d-flex align-items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <i
@@ -577,27 +578,31 @@ const ProductDetails = () => {
                       className={`bi bi-star-fill ${
                         star <= Math.round(averageRating) ? "text-warning" : "text-muted"
                       }`}
-                      style={{ fontSize: "1.25rem" }}
+                      style={{ fontSize: "clamp(1rem, 2.5vw, 1.25rem)" }}
                     />
                   ))}
                 </div>
-                <span className="fw-semibold">
-                  {averageRating.toFixed(1)} out of 5
-                </span>
-                <span className="text-muted">({reviews.length} review{reviews.length !== 1 ? "s" : ""})</span>
+                <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-1 gap-sm-2">
+                  <span className="fw-semibold" style={{ fontSize: "clamp(0.95rem, 2vw, 1rem)" }}>
+                    {averageRating.toFixed(1)} out of 5
+                  </span>
+                  <span className="text-muted" style={{ fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)" }}>
+                    ({reviews.length} review{reviews.length !== 1 ? "s" : ""})
+                  </span>
+                </div>
               </div>
             )}
 
             {/* Review form - only for logged-in users who purchased */}
             {canReview && (
-              <div className="card mb-4">
-                <div className="card-body">
-                  <h5 className="card-title mb-3">
+              <div className="card mb-3 mb-md-4 review-form-card">
+                <div className="card-body p-3 p-md-4">
+                  <h5 className="card-title mb-3" style={{ fontSize: "clamp(1rem, 2.5vw, 1.15rem)" }}>
                     {existingReview ? "Update your review" : "Write a review"}
                   </h5>
                   <form onSubmit={handleSubmitReview}>
                     <div className="mb-3">
-                      <label className="form-label">Rating</label>
+                      <label className="form-label" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>Rating</label>
                       <div className="d-flex gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
@@ -605,7 +610,8 @@ const ProductDetails = () => {
                             type="button"
                             className="btn btn-link p-0 border-0"
                             onClick={() => setRating(star)}
-                            style={{ fontSize: "1.5rem" }}
+                            style={{ fontSize: "clamp(1.25rem, 3vw, 1.5rem)" }}
+                            aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
                           >
                             <i
                               className={`bi ${
@@ -617,19 +623,21 @@ const ProductDetails = () => {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">Your review (optional)</label>
+                      <label className="form-label" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>Your review (optional)</label>
                       <textarea
                         className="form-control"
                         rows={3}
                         placeholder="Share your experience with this product..."
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}
+                        style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}
                       />
                     </div>
                     <button
                       type="submit"
-                      className="btn btn-primary"
+                      className="btn btn-primary w-100 w-sm-auto"
                       disabled={submittingReview || rating < 1}
+                      style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}
                     >
                       {submittingReview ? "Submitting..." : existingReview ? "Update Review" : "Submit Review"}
                     </button>
@@ -639,13 +647,13 @@ const ProductDetails = () => {
             )}
 
             {!canReview && isLoggedIn && reviews.length === 0 && !loadingReviews && (
-              <p className="text-muted">
+              <p className="text-muted" style={{ fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)" }}>
                 Only customers who have purchased this product can leave a review.
               </p>
             )}
 
             {!isLoggedIn && (
-              <p className="text-muted mb-4">
+              <p className="text-muted mb-3 mb-md-4" style={{ fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)" }}>
                 <Link to="/login">Sign in</Link> to leave a review. You must have purchased this product to review it.
               </p>
             )}
@@ -662,29 +670,31 @@ const ProductDetails = () => {
                 {reviews.map((r) => (
                   <div
                     key={r.id}
-                    className="list-group-item list-group-item-action"
+                    className="list-group-item list-group-item-action p-3 p-md-4 review-list-item"
                   >
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div>
-                        <div className="d-flex align-items-center gap-2 mb-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <i
-                              key={star}
-                              className={`bi ${star <= r.rating ? "bi-star-fill text-warning" : "bi-star text-muted"}`}
-                              style={{ fontSize: "0.9rem" }}
-                            />
-                          ))}
-                          <span className="text-muted small">
+                    <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2">
+                      <div className="flex-grow-1 w-100">
+                        <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-1 gap-sm-2 mb-2">
+                          <div className="d-flex align-items-center gap-1 review-stars">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <i
+                                key={star}
+                                className={`bi ${star <= r.rating ? "bi-star-fill text-warning" : "bi-star text-muted"}`}
+                                style={{ fontSize: "clamp(0.85rem, 2vw, 0.9rem)" }}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-muted review-customer-name">
                             {r.user?.email ? maskEmail(r.user.email) : "Customer"}
                           </span>
                         </div>
                         {r.reviewText && (
-                          <p className="mb-0 mt-1" style={{ fontSize: "0.95rem" }}>
+                          <p className="mb-0 review-text">
                             {r.reviewText}
                           </p>
                         )}
                       </div>
-                      {/* <small className="text-muted">
+                      {/* <small className="text-muted" style={{ fontSize: "clamp(0.75rem, 1.5vw, 0.85rem)" }}>
                         {new Date(r.createdAt).toLocaleDateString()}
                       </small> */}
                     </div>
@@ -692,10 +702,17 @@ const ProductDetails = () => {
                 ))}
               </div>
             ) : !canReview && (
-              <p className="text-muted">No reviews yet. Be the first to review!</p>
+              <p className="text-muted" style={{ fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)" }}>
+                No reviews yet. Be the first to review!
+              </p>
             )}
           </div>
         </div>
+
+        {/* Similar Products Section */}
+        {product && (
+          <SimilarProducts product={product} limit={8} />
+        )}
       </div>
     </div>
   );

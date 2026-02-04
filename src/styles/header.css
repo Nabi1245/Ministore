@@ -61,6 +61,85 @@ main,
   padding-top: 40px !important;
 }
 
+/* Mobile Sidebar Styles */
+.mobile-sidebar-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  max-width: 85vw;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
+  background: white;
+  z-index: 1055;
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 2px 0 25px rgba(0, 0, 0, 0.2);
+  -webkit-overflow-scrolling: touch;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.navbar-collapse.show .mobile-sidebar-panel {
+  transform: translateX(0);
+}
+
+.mobile-sidebar-backdrop {
+  z-index: 1054 !important;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  will-change: opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.mobile-sidebar-backdrop.show {
+  opacity: 0.5;
+  pointer-events: auto;
+}
+
+.mobile-sidebar-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.mobile-sidebar-body {
+  padding-bottom: 2rem;
+}
+
+.mobile-sidebar-link {
+  transition: background-color 0.2s ease;
+}
+
+.mobile-sidebar-link:hover {
+  background-color: #f8f9fa;
+}
+
+.mobile-sidebar-brand {
+  transition: background-color 0.2s ease;
+}
+
+.mobile-sidebar-model-link {
+  transition: background-color 0.2s ease;
+}
+
+.mobile-sidebar-model-link:hover {
+  background-color: #f8f9fa;
+}
+
+/* Prevent body scroll when mobile sidebar is open */
+body.mobile-sidebar-open {
+  overflow: hidden;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .site-header {
@@ -74,6 +153,62 @@ main,
   
   .padding-large {
     padding-top: 100px !important;
+  }
+
+  /* Ensure navbar collapse works properly */
+  .navbar-collapse {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    background: transparent;
+    z-index: 1055;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .navbar-collapse:not(.show) {
+    display: none !important;
+    opacity: 0;
+  }
+
+  .navbar-collapse.show {
+    display: block !important;
+    opacity: 1;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Fix navbar nav positioning on mobile */
+  .navbar-nav.d-none.d-lg-flex {
+    display: none !important;
+  }
+
+  /* Enhanced smooth animation for mobile sidebar panel on mobile */
+  .mobile-sidebar-panel {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Smooth backdrop fade on mobile */
+  .mobile-sidebar-backdrop {
+    transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Prevent layout shift during animation */
+  .navbar-collapse {
+    will-change: opacity;
   }
 }
 
