@@ -25,7 +25,7 @@ export const products = [
     images: [productItem1, singleImage1, singleImage2],
     description: 'The iPhone 10 features a stunning 5.8-inch Super Retina display, A11 Bionic chip, and dual 12MP cameras. Experience the future of smartphones with Face ID and wireless charging.',
     features: [
-      '5.8-inch Super Retina HD display',
+      '5.8-inch Super no Retina HD display',
       'A11 Bionic chip with Neural Engine',
       'Dual 12MP cameras with OIS',
       'Face ID for secure authentication',
