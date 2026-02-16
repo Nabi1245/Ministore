@@ -281,14 +281,14 @@ const OrderView = () => {
               <p>
                 <strong>Order Date:</strong> {formatDate(order.createdAt)}
               </p>
-              {order.razorpayOrderId && (
+              {order.payuTxnId && (
                 <p>
-                  <strong>Razorpay Order ID:</strong> {order.razorpayOrderId}
+                  <strong>PayU Transaction ID:</strong> {order.payuTxnId}
                 </p>
               )}
-              {order.razorpayPaymentId && (
+              {order.payuPaymentId && (
                 <p>
-                  <strong>Payment ID:</strong> {order.razorpayPaymentId}
+                  <strong>Payment ID:</strong> {order.payuPaymentId}
                 </p>
               )}
               {order.shiprocketOrderId && (

@@ -230,7 +230,7 @@ const ProductDetails = () => {
         </nav>
 
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6 product-images-col">
             <div className="product-images">
               <div
                 ref={mainImageRef}
@@ -277,29 +277,52 @@ const ProductDetails = () => {
                 />
               )}
               {images.length > 1 && (
-                <div className="thumbnail-images d-flex gap-2">
-                  {images.map((img, index) => (
-                    <img
-                      key={index}
-                      src={img}
-                      alt={`${product.title} ${index + 1}`}
-                      className={`product-detail-thumb img-thumbnail ${selectedImage === index ? "border-primary" : ""}`}
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        objectFit: "contain",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setSelectedImage(index)}
-                      onError={(e) => {
-                        e.target.src = fallbackImage;
-                      }}
-                    />
-                  ))}
+                <div className="thumbnail-images-scroll">
+                  <div className="thumbnail-images d-flex gap-2">
+                    {images.map((img, index) => (
+                      <img
+                        key={index}
+                        src={img}
+                        alt={`${product.title} ${index + 1}`}
+                        className={`product-detail-thumb img-thumbnail flex-shrink-0 ${selectedImage === index ? "border-primary" : ""}`}
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          objectFit: "contain",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setSelectedImage(index)}
+                        onError={(e) => {
+                          e.target.src = fallbackImage;
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
             <style>{`
+                .product-images-col {
+                  min-width: 0;
+                }
+                .thumbnail-images-scroll {
+                  overflow-x: auto;
+                  overflow-y: hidden;
+                  -webkit-overflow-scrolling: touch;
+                  scrollbar-width: thin;
+                  max-width: 100%;
+                }
+                .thumbnail-images-scroll::-webkit-scrollbar {
+                  height: 6px;
+                }
+                .thumbnail-images-scroll::-webkit-scrollbar-track {
+                  background: #f1f1f1;
+                  border-radius: 3px;
+                }
+                .thumbnail-images-scroll::-webkit-scrollbar-thumb {
+                  background: #c1c1c1;
+                  border-radius: 3px;
+                }
                 .product-detail-main-image-wrap {
                   overflow: hidden;
                   border-radius: 8px;

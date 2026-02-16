@@ -2,7 +2,7 @@
 export const APP_CONFIG = {
   BASE_URL: 'https://artiststation.co.in/foxecom',
   API_BASE_URL: 'https://artiststation.co.in/foxecom/api',
-  BASENAME: '/foxecom-frontend',
+  BASENAME: '/',
 };
 
 // LocalStorage Keys
@@ -76,6 +76,6 @@ export const ORDER_STATUS = {
 
 // Payment Methods
 export const PAYMENT_METHODS = {
-  RAZORPAY: 'razorpay',
+  PAYU: 'payu',
   COD: 'cod',
 };

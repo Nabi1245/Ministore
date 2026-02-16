@@ -294,9 +294,9 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
                       )}
                     </div>
                   ))}
-                  <Link to="/shop" className="mobile-sidebar-link d-block py-2 px-3 text-uppercase fw-bold text-dark text-decoration-none border-top" onClick={closeNavbar}>
+                  {/* <Link to="/shop" className="mobile-sidebar-link d-block py-2 px-3 text-uppercase fw-bold text-dark text-decoration-none border-top" onClick={closeNavbar}>
                     All Products
-                  </Link>
+                  </Link> */}
                   <Link to="/contact-us" className="mobile-sidebar-link d-block py-2 px-3 text-uppercase fw-bold text-dark text-decoration-none" onClick={closeNavbar}>
                     Contact
                   </Link>
@@ -385,13 +385,13 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
                 )}
               </div>
             ))}
-            <Link
+            {/* <Link
               to="/shop"
               className="brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small"
               onClick={closeNavbar}
             >
               All Products
-            </Link>
+            </Link> */}
             <Link
               to="/contact-us"
               className="brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small"

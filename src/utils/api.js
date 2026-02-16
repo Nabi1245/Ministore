@@ -465,7 +465,7 @@ export const orderAPI = {
 
 // Payment APIs
 export const paymentAPI = {
-  createRazorpayOrder: async (orderId) => {
+  createPayuPayment: async (orderId) => {
     const { data } = await apiRequest('/payment/create-order', {
       method: 'POST',
       body: JSON.stringify({ orderId }),

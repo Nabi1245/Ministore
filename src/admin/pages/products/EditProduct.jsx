@@ -67,7 +67,20 @@ const EditProduct = () => {
   };
 
   const handleImagesChange = (e) => {
-    setImages([...e.target.files]);
+    const files = Array.from(e.target.files || []);
+    // Remove duplicate files by name and size
+    const uniqueFiles = [];
+    const seen = new Set();
+    
+    files.forEach(file => {
+      const key = `${file.name}-${file.size}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueFiles.push(file);
+      }
+    });
+    
+    setImages(uniqueFiles);
   };
 
   const handleDeleteImage = (imageId) => {

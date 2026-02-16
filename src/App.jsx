@@ -28,6 +28,8 @@ const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const PaymentFailure = lazy(() => import("./pages/PaymentFailure"));
 const MyOrders = lazy(() => import("./pages/MyOrders"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const DisclaimerPage = lazy(() => import("./components/DisclaimerPage"));
@@ -96,6 +98,8 @@ function App() {
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />
                 <Route path="order-success/:id" element={<OrderSuccess />} />
+                <Route path="payment/success" element={<PaymentSuccess />} />
+                <Route path="payment/failure" element={<PaymentFailure />} />
                 <Route path="my-orders" element={<MyOrders />} />
                 <Route path="order/:id/track" element={<TrackOrder />} />
                 <Route path="login" element={<Login />} />
