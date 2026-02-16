@@ -64,7 +64,7 @@ const SignUp = () => {
 
                 {/* Header */}
                 <div className="text-center mb-4">
-                  <h4 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>Sign Up</h4>
+                  <h4 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>Sign up</h4>
                   <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
                     Create your account
                   </p>
@@ -127,7 +127,7 @@ const SignUp = () => {
                     onClick={handleSignup}
                     disabled={loading}
                   >
-                    {loading ? "Creating account..." : "Sign Up"}
+                    {loading ? "Creating account..." : "Sign up"}
                   </button>
                 </div>
 
@@ -137,7 +137,7 @@ const SignUp = () => {
                     className="btn btn-link p-0 text-decoration-none"
                     onClick={() => navigate("/login")}
                   >
-                    Already have an account? Sign In
+                    Already have an account? Sign in
                   </button>
                 </div>
 

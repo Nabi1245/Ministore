@@ -108,7 +108,7 @@ const Checkout = () => {
       const orderId = orderResult.order.id
 
       // Initiate payment
-      await initiateRazorpayPayment(orderId)
+      await initiatePayuPayment(orderId)
 
     } catch (error) {
       console.error('Error processing order:', error)
@@ -118,74 +118,38 @@ const Checkout = () => {
     }
   }
 
-  const initiateRazorpayPayment = async (orderId) => {
+  const initiatePayuPayment = async (orderId) => {
     try {
       setProcessingPayment(true)
 
-      // Create Razorpay order
-      const razorpayOrder = await paymentAPI.createRazorpayOrder(orderId)
-
-      // Load Razorpay script
-      const script = document.createElement('script')
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-      script.onload = () => {
-        const options = {
-          key: razorpayOrder.key,
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency,
-          name: 'FOXECOM',
-          description: `Order #${orderId}`,
-          order_id: razorpayOrder.razorpayOrderId,
-          handler: async function (response) {
-            try {
-              // Verify payment
-              const verifyResult = await paymentAPI.verifyPayment({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              })
-
-              if (verifyResult.status === 'success') {
-                alert('Payment successful! Your order has been placed.')
-                clearCart()
-                navigate(`/order-success/${orderId}`)
-              } else {
-                alert('Payment verification failed. Please contact support.')
-              }
-            } catch (error) {
-              console.error('Payment verification error:', error)
-              alert('Payment verification failed. Please contact support.')
-            } finally {
-              setProcessingPayment(false)
-            }
-          },
-          prefill: {
-            name: `${formData.firstName} ${formData.lastName}`,
-            email: formData.emailAddress,
-            contact: formData.mobileNumber
-          },
-          theme: {
-            color: '#000000'
-          },
-          modal: {
-            ondismiss: function() {
-              setProcessingPayment(false)
-            }
-          }
-        }
-
-        const razorpay = new window.Razorpay(options)
-        razorpay.on('payment.failed', function (response) {
-          alert(`Payment failed: ${response.error.description}`)
-          setProcessingPayment(false)
-        })
-        razorpay.open()
+      // Create PayU payment params
+      const payuResponse = await paymentAPI.createPayuPayment(orderId)
+      
+      if (!payuResponse.paymentParams || !payuResponse.paymentUrl) {
+        throw new Error('Failed to initialize payment gateway')
       }
-      script.onerror = () => {
-        alert('Failed to load payment gateway. Please try again.')
-        setProcessingPayment(false)
-      }
-      document.body.appendChild(script)
+
+      // Create a form and submit to PayU
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = payuResponse.paymentUrl
+      form.style.display = 'none'
+
+      // Add all payment parameters as hidden inputs
+      Object.keys(payuResponse.paymentParams).forEach((key) => {
+        const input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = payuResponse.paymentParams[key]
+        form.appendChild(input)
+      })
+
+      // Append form to body and submit
+      document.body.appendChild(form)
+      form.submit()
+
+      // Note: setProcessingPayment will be reset when user returns from PayU
+      // PayU will redirect to success/failure callback URLs handled by backend
 
     } catch (error) {
       console.error('Error initiating payment:', error)

@@ -50,10 +50,10 @@ const Shop = () => {
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortOrder, setSortOrder] = useState('DESC')
 
-  // Pagination states
+  // Pagination states - Initialize from URL params if available
   const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 12,
+    page: parseInt(searchParams.get('page')) || 1,
+    limit: parseInt(searchParams.get('limit')) || 12,
     totalItems: 0,
     totalPages: 1
   })
@@ -84,6 +84,15 @@ const Shop = () => {
   // Load products when filters, sort, or pagination changes
   useEffect(() => {
     loadProducts()
+    // Update URL params when page changes
+    const params = new URLSearchParams(searchParams)
+    if (pagination.page > 1) {
+      params.set('page', pagination.page.toString())
+    } else {
+      params.delete('page')
+    }
+    setSearchParams(params, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sortBy, sortOrder, pagination.page])
 
   const loadCategories = async () => {
@@ -470,24 +479,26 @@ const Shop = () => {
                 )}
 
                 {/* Case Type Filter */}
-                {filterOptions?.caseTypes && filterOptions.caseTypes.length > 0 && (
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">
-                      <i className="bi bi-shield-check me-2"></i>
-                      Case Type
-                    </label>
-                    <select
-                      className="form-select"
-                      value={filters.caseType}
-                      onChange={(e) => handleFilterChange('caseType', e.target.value)}
-                    >
-                      <option value="">All Types</option>
-                      {filterOptions.caseTypes.map((type, idx) => (
-                        <option key={idx} value={type}>{stripMarkdownLabel(type)}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                {/** 
+                  {filterOptions?.caseTypes && filterOptions.caseTypes.length > 0 && (
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
+                        <i className="bi bi-shield-check me-2"></i>
+                        Case Type
+                      </label>
+                      <select
+                        className="form-select"
+                        value={filters.caseType}
+                        onChange={(e) => handleFilterChange('caseType', e.target.value)}
+                      >
+                        <option value="">All Types</option>
+                        {filterOptions.caseTypes.map((type, idx) => (
+                          <option key={idx} value={type}>{stripMarkdownLabel(type)}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  */}
               </div>
             </div>
           </div>
@@ -500,7 +511,14 @@ const Shop = () => {
                 <div className="row align-items-center">
                   <div className="col-md-6 mb-2 mb-md-0">
                     <span className="text-muted" style={{ fontSize: '0.95rem' }}>
-                      Showing {products.length} of {pagination.totalItems} products
+                      {pagination.totalItems > 0 ? (
+                        <>
+                          Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.totalItems)} of {pagination.totalItems} products
+                          {pagination.totalPages > 1 && ` (Page ${pagination.page} of ${pagination.totalPages})`}
+                        </>
+                      ) : (
+                        'No products found'
+                      )}
                     </span>
                   </div>
                   <div className="col-md-6">
@@ -650,7 +668,11 @@ const Shop = () => {
                     <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
                       <button
                         className="page-link"
-                        onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                        onClick={() => {
+                          const newPage = Math.max(1, pagination.page - 1)
+                          setPagination(prev => ({ ...prev, page: newPage }))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
                         disabled={pagination.page === 1}
                       >
                         <i className="bi bi-chevron-left"></i> Previous
@@ -673,7 +695,10 @@ const Shop = () => {
                         <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
                           <button
                             className="page-link"
-                            onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                            onClick={() => {
+                              setPagination(prev => ({ ...prev, page: pageNum }))
+                              window.scrollTo({ top: 0, behavior: 'smooth' })
+                            }}
                           >
                             {pageNum}
                           </button>
@@ -684,7 +709,11 @@ const Shop = () => {
                     <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
                       <button
                         className="page-link"
-                        onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.totalPages, prev.page + 1) }))}
+                        onClick={() => {
+                          const newPage = Math.min(pagination.totalPages, pagination.page + 1)
+                          setPagination(prev => ({ ...prev, page: newPage }))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
                         disabled={pagination.page === pagination.totalPages}
                       >
                         Next <i className="bi bi-chevron-right"></i>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { guestCartAPI, userCartAPI, getImageUrl } from '../utils/api'
+import { STORAGE_KEYS } from '../utils/constants'
 
 const CartContext = createContext()
 
@@ -13,17 +14,17 @@ export const useCart = () => {
 
 // Helper to get or create guest cart ID
 const getGuestCartId = () => {
-  let guestCartId = localStorage.getItem('guestCartId')
+  let guestCartId = localStorage.getItem(STORAGE_KEYS.GUEST_CART_ID)
   if (!guestCartId) {
     guestCartId = Math.floor(100000 + Math.random() * 900000).toString()
-    localStorage.setItem('guestCartId', guestCartId)
+    localStorage.setItem(STORAGE_KEYS.GUEST_CART_ID, guestCartId)
   }
   return guestCartId
 }
 
 // Helper to check if user is logged in
 const isLoggedIn = () => {
-  return !!localStorage.getItem('token')
+  return !!localStorage.getItem(STORAGE_KEYS.TOKEN)
 }
 
 export const CartProvider = ({ children }) => {
@@ -31,21 +32,41 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null)
   const [loading, setLoading] = useState(true)
   const [wasLoggedIn, setWasLoggedIn] = useState(isLoggedIn())
+  const [isMerging, setIsMerging] = useState(false)
+  const [hasMerged, setHasMerged] = useState(false)
 
   const mergeGuestCart = async () => {
     if (!isLoggedIn()) return
     
+    // Prevent duplicate merges
+    if (isMerging || hasMerged) {
+      console.log('Cart merge already in progress or completed')
+      return
+    }
+    
     try {
-      const guestCartId = localStorage.getItem('guestCartId')
+      setIsMerging(true)
+      const guestCartId = localStorage.getItem(STORAGE_KEYS.GUEST_CART_ID)
       if (guestCartId) {
         await userCartAPI.mergeGuestCart(guestCartId)
-        localStorage.removeItem('guestCartId')
+        // Clear guest cart ID immediately after successful merge to prevent re-merging
+        localStorage.removeItem(STORAGE_KEYS.GUEST_CART_ID)
+        setHasMerged(true)
         // Reload cart after merge
+        await loadCart()
+      } else {
+        // No guest cart to merge, just mark as merged and load user cart
+        setHasMerged(true)
         await loadCart()
       }
     } catch (error) {
       console.error('Error merging cart:', error)
+      // Reset merge state on error so it can be retried
+      setIsMerging(false)
+      setHasMerged(false)
       throw error
+    } finally {
+      setIsMerging(false)
     }
   }
 
@@ -57,17 +78,20 @@ export const CartProvider = ({ children }) => {
   // Listen for token changes to reload cart
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'token') {
-        const nowLoggedIn = !!localStorage.getItem('token')
+      if (e.key === STORAGE_KEYS.TOKEN) {
+        const nowLoggedIn = !!localStorage.getItem(STORAGE_KEYS.TOKEN)
         if (nowLoggedIn && !wasLoggedIn) {
-          // User just logged in - merge cart first
-          mergeGuestCart().then(() => {
-            setWasLoggedIn(true)
-            loadCart()
-          }).catch(() => {
-            setWasLoggedIn(true)
+          // User just logged in - merge cart first (it will load cart after merge)
+          setWasLoggedIn(true)
+          mergeGuestCart().catch((error) => {
+            console.error('Merge failed, loading cart anyway:', error)
             loadCart()
           })
+        } else if (!nowLoggedIn && wasLoggedIn) {
+          // User logged out - reset merge state
+          setHasMerged(false)
+          setWasLoggedIn(false)
+          loadCart()
         } else {
           setWasLoggedIn(nowLoggedIn)
           loadCart()
@@ -78,17 +102,20 @@ export const CartProvider = ({ children }) => {
     
     // Also check for token changes in same window
     const checkAuth = setInterval(() => {
-      const hasToken = !!localStorage.getItem('token')
+      const hasToken = !!localStorage.getItem(STORAGE_KEYS.TOKEN)
       if (hasToken !== wasLoggedIn) {
         if (hasToken && !wasLoggedIn) {
-          // User just logged in - merge cart first
-          mergeGuestCart().then(() => {
-            setWasLoggedIn(true)
-            loadCart()
-          }).catch(() => {
-            setWasLoggedIn(true)
+          // User just logged in - merge cart first (it will load cart after merge)
+          setWasLoggedIn(true)
+          mergeGuestCart().catch((error) => {
+            console.error('Merge failed, loading cart anyway:', error)
             loadCart()
           })
+        } else if (!hasToken && wasLoggedIn) {
+          // User logged out - reset merge state
+          setHasMerged(false)
+          setWasLoggedIn(false)
+          loadCart()
         } else {
           setWasLoggedIn(hasToken)
           loadCart()

@@ -145,7 +145,7 @@ const ResetPassword = () => {
 
               <div className="text-center">
                 <Link to="/login" className="text-decoration-none">
-                  Back to Sign In
+                  Back to Sign in
                 </Link>
               </div>
             </div>

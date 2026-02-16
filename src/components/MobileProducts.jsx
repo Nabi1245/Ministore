@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper/modules'
-import { productAPI, categoryAPI, getImageUrl } from '../utils/api'
+import { Navigation, Pagination } from 'swiper/modules'
+import { productAPI, categoryAPI } from '../utils/api'
 import { useCart } from '../contexts/CartContext'
+import ProductCard from './ProductCard'
 import 'swiper/css'
+import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 
 const MobileProducts = () => {
@@ -20,10 +22,16 @@ const MobileProducts = () => {
     try {
       setLoading(true)
       // Get mobile case category products
-      const categories = await categoryAPI.getAll()
+      const data = await categoryAPI.getAll()
+      // Handle both new format (with categories property) and legacy format (direct array)
+      const categories = Array.isArray(data) ? data : (data?.categories || [])
+      
       const mobileCategory = categories.find(cat => 
-        cat.name.toLowerCase().includes('mobile') || 
-        cat.name.toLowerCase().includes('case')
+        cat.name && (
+          cat.name.toLowerCase().includes('mobile') || 
+          cat.name.toLowerCase().includes('case') ||
+          cat.name.toLowerCase().includes('phone')
+        )
       )
       
       if (mobileCategory) {
@@ -33,21 +41,28 @@ const MobileProducts = () => {
           page: 1
         }
         const productsData = await productAPI.getAll(params)
-        setProducts(productsData || [])
+        setProducts(Array.isArray(productsData) ? productsData : [])
+      } else {
+        // If no mobile category found, just load general products
+        const productsData = await productAPI.getAll({ limit: 8, page: 1 })
+        setProducts(Array.isArray(productsData) ? productsData : [])
       }
     } catch (error) {
       console.error('Error loading mobile products:', error)
+      // On error, try to load general products anyway
+      try {
+        const productsData = await productAPI.getAll({ limit: 8, page: 1 })
+        setProducts(Array.isArray(productsData) ? productsData : [])
+      } catch (fallbackError) {
+        console.error('Error loading fallback products:', fallbackError)
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  const handleAddToCart = async (product, e) => {
-    e.preventDefault()
-    const success = await addToCart(product, 1)
-    if (success) {
-      alert(`${product.title || product.name} added to cart!`)
-    }
+  const handleAddToCart = async (product) => {
+    await addToCart(product, 1)
   }
 
   return (
@@ -57,80 +72,106 @@ const MobileProducts = () => {
           <div className="display-header d-flex justify-content-between pb-3">
             <h2 className="display-7 text-dark text-uppercase">Mobile Products</h2>
             <div className="btn-right">
-              <Link to="/shop" className="btn btn-medium btn-normal text-uppercase">Go to Shop</Link>
+              <Link 
+                to="/shop" 
+                className="btn text-uppercase"
+                style={{
+                  borderColor: '#89bb56',
+                  color: '#89bb56',
+                  backgroundColor: 'transparent',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#89bb56';
+                  e.currentTarget.style.color = '#fff';
+                  e.currentTarget.style.borderColor = '#89bb56';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#89bb56';
+                  e.currentTarget.style.borderColor = '#89bb56';
+                }}
+              >
+                 Shop
+              </Link>
             </div>
           </div>
-          <Swiper
-            className="product-swiper"
-            modules={[Pagination]}
-            slidesPerView={4}
-            spaceBetween={10}
-            pagination={{
-              el: '#mobile-products .swiper-pagination',
-              clickable: true,
-            }}
-            breakpoints={{
-              0: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              980: {
-                slidesPerView: 4,
-                spaceBetween: 20,
-              }
-            }}
-          >
-            {loading ? (
-              <SwiperSlide>
-                <div className="text-center p-4">Loading...</div>
-              </SwiperSlide>
-            ) : products.length === 0 ? (
-              <SwiperSlide>
-                <div className="text-center p-4">No products available</div>
-              </SwiperSlide>
-            ) : (
-              products.map((product) => (
-              <SwiperSlide key={product.id}>
-                <div className="product-card position-relative">
-                  <Link to={`/product/${product.id}`}>
-                    <div className="image-holder">
-                      <img 
-                        src={getImageUrl(product.thumbnailImage || product.images?.[0]?.imageUrl)} 
-                        alt={product.title} 
-                        className="img-fluid" 
-                      />
+          {loading ? (
+            <div className="row g-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="col-6 col-md-4 col-lg-3">
+                  <div className="card product-card h-100">
+                    <div className="skeleton-image" style={{ height: '250px', backgroundColor: '#e9ecef' }} />
+                    <div className="card-body">
+                      <div className="skeleton-line mb-2" style={{ height: '20px', backgroundColor: '#e9ecef', borderRadius: '4px', width: '80%' }} />
+                      <div className="skeleton-line mb-3" style={{ height: '24px', backgroundColor: '#e9ecef', borderRadius: '4px', width: '40%' }} />
                     </div>
-                  </Link>
-                  <div className="cart-concern position-absolute">
-                    <div className="cart-button d-flex">
-                      <button
-                        className="btn btn-medium btn-black"
-                        onClick={(e) => handleAddToCart(product, e)}
-                        disabled={!product.inStock}
-                      >
-                        Add to Cart
-                        <svg className="cart-outline">
-                          <use xlinkHref="#cart-outline"></use>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="card-detail d-flex justify-content-between align-items-baseline pt-3">
-                    <h3 className="card-title text-uppercase">
-                      <Link to={`/product/${product.id}`} className="text-decoration-none text-dark">
-                        {product.title || product.name}
-                      </Link>
-                    </h3>
-                    <span className="item-price text-primary">₹{parseFloat(product.price || 0).toFixed(2)}</span>
                   </div>
                 </div>
-              </SwiperSlide>
-              ))
-            )}
-          </Swiper>
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="col-12 text-center py-5">
+              <p className="text-muted">No mobile products available at the moment.</p>
+            </div>
+          ) : (
+            <Swiper
+              className="product-swiper"
+              modules={[Navigation, Pagination]}
+              slidesPerView={4}
+              spaceBetween={20}
+              navigation={true}
+              pagination={{
+                clickable: true,
+                dynamicBullets: true,
+              }}
+              breakpoints={{
+                0: {
+                  slidesPerView: 1,
+                  spaceBetween: 10,
+                },
+                576: {
+                  slidesPerView: 2,
+                  spaceBetween: 15,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 20,
+                },
+                992: {
+                  slidesPerView: 4,
+                  spaceBetween: 20,
+                },
+              }}
+            >
+              {products.map((product) => {
+                const productData = {
+                  id: product.id,
+                  title: product.title || product.name,
+                  price: parseFloat(product.price || 0),
+                  discountPrice: product.discountPrice ? parseFloat(product.discountPrice) : null,
+                  thumbnailImage: product.thumbnailImage,
+                  images: product.images,
+                  rating: product.rating || product.averageRating || 0,
+                  reviewCount: product.reviewCount || product.reviewsCount || 0,
+                  inStock: product.inStock !== false,
+                  category: product.category,
+                };
+
+                return (
+                  <SwiperSlide key={product.id}>
+                    <ProductCard
+                      product={productData}
+                      onAddToCart={handleAddToCart}
+                      showAddToCart={true}
+                    />
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          )}
         </div>
       </div>
-      <div className="swiper-pagination position-absolute text-center"></div>
     </section>
   )
 }

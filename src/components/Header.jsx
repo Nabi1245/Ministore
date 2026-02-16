@@ -20,6 +20,7 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
   const [dropdownPos, setDropdownPos] = useState({ left: 0, top: 0 });
   const [mobileExpandedBrandId, setMobileExpandedBrandId] = useState(null);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [navbarExpanded, setNavbarExpanded] = useState(false);
 
   const setLoginState = (v) => {
     setIsLoggedIn(!!v);
@@ -105,29 +106,47 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
         try {
           collapseInstanceRef.current = window.bootstrap.Collapse.getOrCreateInstance?.(el, { toggle: false })
             || new window.bootstrap.Collapse(el, { toggle: false });
-        } catch (e) {}
+        } catch (e) { }
       }
     };
     init();
     const t = setTimeout(init, 100);
-    const onShow = () => setMobileSidebarOpen(true);
-    const onHide = () => setMobileSidebarOpen(false);
+    const onShow = () => {
+      // Small delay to ensure smooth animation
+      setTimeout(() => {
+        setMobileSidebarOpen(true);
+        setNavbarExpanded(true);
+        document.body.classList.add('mobile-sidebar-open');
+      }, 10);
+    };
+    const onHide = () => {
+      setMobileSidebarOpen(false);
+      setNavbarExpanded(false);
+      setMobileExpandedBrandId(null);
+      document.body.classList.remove('mobile-sidebar-open');
+    };
     el.addEventListener("show.bs.collapse", onShow);
     el.addEventListener("hidden.bs.collapse", onHide);
     return () => {
       clearTimeout(t);
       el.removeEventListener("show.bs.collapse", onShow);
       el.removeEventListener("hidden.bs.collapse", onHide);
-      try { collapseInstanceRef.current?.dispose?.(); } catch (e) {}
+      document.body.classList.remove('mobile-sidebar-open');
+      try { collapseInstanceRef.current?.dispose?.(); } catch (e) { }
     };
   }, []);
 
   const closeNavbar = () => {
     setMobileExpandedBrandId(null);
+    setNavbarExpanded(false);
+    document.body.classList.remove('mobile-sidebar-open');
     try {
-      if (collapseRef.current?.classList.contains("show")) collapseInstanceRef.current?.hide?.();
+      if (collapseRef.current?.classList.contains("show")) {
+        collapseInstanceRef.current?.hide?.();
+      }
     } catch (e) {
       collapseRef.current?.classList.remove("show");
+      setMobileSidebarOpen(false);
     }
   };
 
@@ -137,7 +156,7 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
   };
 
   const handleLogout = async () => {
-    try { await userAuthAPI.signout(); } catch (e) {}
+    try { await userAuthAPI.signout(); } catch (e) { }
     localStorage.removeItem("token");
     setLoginState(false);
     loadCart();
@@ -156,14 +175,12 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
   return (
     <header className="fixed-top bg-white shadow-sm">
       {/* Mobile backdrop when sidebar is open */}
-      {mobileSidebarOpen && (
-        <div
-          className="mobile-sidebar-backdrop d-lg-none position-fixed top-0 start-0 end-0 bottom-0 bg-dark opacity-50"
-          style={{ zIndex: 1054 }}
-          aria-hidden
-          onClick={closeNavbar}
-        />
-      )}
+      <div
+        className={`mobile-sidebar-backdrop d-lg-none position-fixed top-0 start-0 end-0 bottom-0 bg-dark ${mobileSidebarOpen ? 'show' : ''}`}
+        style={{ zIndex: 1054 }}
+        aria-hidden={!mobileSidebarOpen}
+        onClick={closeNavbar}
+      />
       {/* Top row: toggler (mobile) | logo | search (desktop) | cart | account */}
       <div className="border-bottom">
         <div className="container">
@@ -174,8 +191,13 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
               data-bs-toggle="collapse"
               data-bs-target="#mainNavbar"
               aria-controls="mainNavbar"
-              aria-expanded="false"
+              aria-expanded={navbarExpanded}
               aria-label="Toggle menu"
+              onClick={() => {
+                if (!navbarExpanded) {
+                  setNavbarExpanded(true);
+                }
+              }}
             >
               <span className="navbar-toggler-icon" />
             </button>
@@ -272,9 +294,9 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
                       )}
                     </div>
                   ))}
-                  <Link to="/shop" className="mobile-sidebar-link d-block py-2 px-3 text-uppercase fw-bold text-dark text-decoration-none border-top" onClick={closeNavbar}>
+                  {/* <Link to="/shop" className="mobile-sidebar-link d-block py-2 px-3 text-uppercase fw-bold text-dark text-decoration-none border-top" onClick={closeNavbar}>
                     All Products
-                  </Link>
+                  </Link> */}
                   <Link to="/contact-us" className="mobile-sidebar-link d-block py-2 px-3 text-uppercase fw-bold text-dark text-decoration-none" onClick={closeNavbar}>
                     Contact
                   </Link>
@@ -314,7 +336,7 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
       {/* Bottom row: brand bar (desktop only) */}
       <div className="brand-bar border-bottom bg-white d-none d-lg-block">
         <div className="container">
-          <div className="d-flex align-items-center overflow-auto flex-nowrap py-2 gap-1 gap-md-3">
+          <div className="d-flex align-items-center justify-content-center overflow-auto flex-nowrap py-2 gap-1 gap-md-3">
             <Link
               to="/"
               className="brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small"
@@ -330,9 +352,8 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
                 onMouseLeave={handleBrandMouseLeave}
               >
                 <span
-                  className={`brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small d-inline-block ${
-                    hoverBrandId === b.id ? "brand-bar-item-active" : ""
-                  }`}
+                  className={`brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small d-inline-block ${hoverBrandId === b.id ? "brand-bar-item-active" : ""
+                    }`}
                 >
                   {b.name}
                 </span>
@@ -364,13 +385,13 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
                 )}
               </div>
             ))}
-            <Link
+            {/* <Link
               to="/shop"
               className="brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small"
               onClick={closeNavbar}
             >
               All Products
-            </Link>
+            </Link> */}
             <Link
               to="/contact-us"
               className="brand-bar-item text-uppercase text-dark text-decoration-none fw-semibold small"
@@ -390,10 +411,15 @@ const Header = ({ isLoggedIn: isLoggedInProp, setIsLoggedIn: setIsLoggedInProp }
       </div>
 
       <style>{`
-        .brand-bar-item { white-space: nowrap; padding: 0.25rem 0.5rem; border-bottom: 2px solid transparent; }
+        .brand-bar-item { white-space: nowrap; padding: 0.25rem 0.5rem; border-bottom: 2px solid transparent;  }
         .brand-bar-item:hover, .brand-bar-item-active { border-bottom-color: #000; }
         .brand-dropdown { max-height: 70vh; overflow-y: auto; }
         .dropdown-model-btn:hover { background-color: #f5f5f5 !important; }
+        .brand-bar .d-flex { 
+          justify-content: center !important; 
+          width: 100%; 
+          margin: 0 auto;
+        }
         @media (max-width: 991.98px) {
           .brand-bar .d-flex { padding-left: 0.5rem; padding-right: 0.5rem; }
         }

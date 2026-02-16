@@ -28,13 +28,8 @@ const Auth = () => {
         // Dispatch event to sync login state across components
         window.dispatchEvent(new Event("loginStatusChanged"));
         
-        // Merge guest cart into user cart after successful login
-        try {
-          await mergeGuestCart();
-        } catch (mergeError) {
-          console.error('Error merging cart:', mergeError);
-          // Don't block login if merge fails, just log it
-        }
+        // CartContext will automatically handle cart merge when it detects login
+        // No need to call mergeGuestCart here to avoid duplicate merges
         
         // Redirect to intended destination or home
         const redirectTo = localStorage.getItem('redirectAfterLogin') || '/'

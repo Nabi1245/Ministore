@@ -1,17 +1,19 @@
 // src/utils/api.js
 // API utility functions for backend communication
 
-export const API_BASE_URL = 'https://artiststation.co.in/foxecom/api';
-export const BASE_URL = 'https://artiststation.co.in/foxecom';
+import { APP_CONFIG, STORAGE_KEYS } from './constants';
+
+export const API_BASE_URL = APP_CONFIG.API_BASE_URL;
+export const BASE_URL = APP_CONFIG.BASE_URL;
 
 // Helper function to get auth token
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem(STORAGE_KEYS.TOKEN);
 };
 
 // Helper function to get admin auth token
 const getAdminToken = () => {
-  return localStorage.getItem('adminToken');
+  return localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
 };
 
 // Helper function for admin API requests (uses adminToken instead of regular token)
@@ -41,7 +43,7 @@ const adminApiRequest = async (endpoint, options = {}) => {
     // If backend sent a refreshed token, store it
     const refreshedToken = response.headers.get('x-auth-token');
     if (refreshedToken) {
-      localStorage.setItem('adminToken', refreshedToken);
+      localStorage.setItem(STORAGE_KEYS.ADMIN_TOKEN, refreshedToken);
     }
     
     // Handle 204 No Content and other responses with no body
@@ -80,8 +82,8 @@ const adminApiRequest = async (endpoint, options = {}) => {
           : false;
 
       if (isTokenError) {
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('isAdmin');
+        localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
         const err = new Error('Admin session expired. Please log in again.');
         err.isAdminTokenError = true;
         err.status = response.status;
@@ -188,9 +190,9 @@ const apiRequest = async (endpoint, options = {}) => {
       
       if (isTokenError) {
         // Clear invalid token
-        localStorage.removeItem('token');
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
         // Clear user-related data
-        localStorage.removeItem('user');
+        localStorage.removeItem(STORAGE_KEYS.USER);
         // Create a custom error that can be caught and handled
         const error = new Error(data.message || 'Invalid or expired token');
         error.isTokenError = true;
@@ -463,7 +465,7 @@ export const orderAPI = {
 
 // Payment APIs
 export const paymentAPI = {
-  createRazorpayOrder: async (orderId) => {
+  createPayuPayment: async (orderId) => {
     const { data } = await apiRequest('/payment/create-order', {
       method: 'POST',
       body: JSON.stringify({ orderId }),

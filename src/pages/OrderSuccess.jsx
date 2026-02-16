@@ -140,11 +140,16 @@ const OrderSuccess = () => {
                     <strong>Total Amount:</strong> {formatCurrency(order.totalAmount)}
                   </div>
                 </div>
-                {order.razorpayPaymentId && (
-                  <div className="row">
-                    <div className="col-12">
-                      <strong>Payment ID:</strong> {order.razorpayPaymentId}
+                {order.payuPaymentId && (
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <strong>Payment ID:</strong> {order.payuPaymentId}
                     </div>
+                    {order.payuTxnId && (
+                      <div className="col-md-6">
+                        <strong>Transaction ID:</strong> {order.payuTxnId}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
