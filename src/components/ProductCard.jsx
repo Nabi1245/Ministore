@@ -67,7 +67,7 @@ const ProductCard = memo(({ product, onAddToCart, showAddToCart = true }) => {
           {category && (
             <small className="text-muted text-uppercase mb-1 d-block">{category.name || category}</small>
           )}
-          <h5 className="card-title mb-2 fw-semibold" style={{ fontSize: '1rem', minHeight: '48px' }}>
+          <h5 className="card-title mb-2 fw-semibold" style={{ fontSize: '1rem' }}>
             {title}
           </h5>
         </Link>

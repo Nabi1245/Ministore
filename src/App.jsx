@@ -4,6 +4,7 @@ import { SearchPopupProvider } from "./contexts/SearchPopupContext";
 import { CartProvider } from "./contexts/CartContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { FullPageLoader } from "./components/LoadingSkeleton";
+import ScrollToTop from "./components/ScrollToTop";
 import { APP_CONFIG, STORAGE_KEYS } from "./utils/constants";
 
 // Critical components - loaded immediately
@@ -80,6 +81,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router basename={APP_CONFIG.BASENAME}>
+        <ScrollToTop />
         <CartProvider>
           <SearchPopupProvider>
             <Suspense fallback={<FullPageLoader />}>

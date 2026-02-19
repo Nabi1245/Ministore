@@ -114,7 +114,7 @@ const SimilarProducts = ({ product, limit = 8 }) => {
         <div className="container">
           <div className="row">
             <div className="display-header d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-              <h2 className="display-7 text-dark text-uppercase mb-0">Similar Products</h2>
+              <h2 className="display-7 text-dark text-uppercase mb-0">You May Also Like</h2>
             </div>
             <ProductListSkeleton count={limit} />
           </div>

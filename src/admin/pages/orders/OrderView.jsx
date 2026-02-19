@@ -291,6 +291,16 @@ const OrderView = () => {
                   <strong>Payment ID:</strong> {order.payuPaymentId}
                 </p>
               )}
+              {order.paymentMode && (
+                <p>
+                  <strong>Payment Mode:</strong> {order.paymentMode}
+                </p>
+              )}
+              {order.bankRefNo && (
+                <p>
+                  <strong>Bank Ref No:</strong> {order.bankRefNo}
+                </p>
+              )}
               {order.shiprocketOrderId && (
                 <p>
                   <strong>Shiprocket Order ID:</strong> {order.shiprocketOrderId}

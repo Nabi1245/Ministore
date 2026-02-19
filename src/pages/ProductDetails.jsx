@@ -16,6 +16,9 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const mainImageRef = useRef(null);
+  const scrollWrapRef = useRef(null);
+  const accordionRef = useRef(null);
+  const layoutRowRef = useRef(null);
   const [zoomState, setZoomState] = useState({
     isZoomed: false,
     mouseX: 0,
@@ -45,6 +48,112 @@ const ProductDetails = () => {
       if (isLoggedIn) checkCanReview();
     }
   }, [id, isLoggedIn]);
+
+  // Auto-scroll accordion into view when opened
+  useEffect(() => {
+    const accordionElement = accordionRef.current;
+    const scrollContainer = scrollWrapRef.current;
+    
+    if (!accordionElement || !scrollContainer) return;
+
+    const handleAccordionOpen = (e) => {
+      // Check if it's the description accordion (by checking the collapse element)
+      const collapseElement = document.getElementById('collapseDescription');
+      if (!collapseElement) return;
+
+      // Wait for Bootstrap animation to complete
+      setTimeout(() => {
+        if (scrollContainer && accordionElement) {
+          // Get the accordion section position relative to scroll container
+          const accordionRect = accordionElement.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect();
+          
+          // Calculate positions
+          const accordionTop = accordionElement.offsetTop;
+          const scrollTop = scrollContainer.scrollTop;
+          const containerHeight = scrollContainer.clientHeight;
+          
+          // Check if accordion is visible in viewport
+          const accordionVisibleTop = accordionTop - scrollTop;
+          const accordionVisibleBottom = accordionVisibleTop + accordionElement.offsetHeight;
+          
+          // If accordion is not fully visible or partially hidden, scroll it into view
+          if (accordionVisibleTop < 0 || accordionVisibleBottom > containerHeight - 20) {
+            scrollContainer.scrollTo({
+              top: Math.max(0, accordionTop - 30), // 30px padding from top
+              behavior: 'smooth'
+            });
+          }
+        }
+      }, 150); // Delay to allow Bootstrap animation to start
+    };
+
+    // Listen for Bootstrap collapse shown event on the accordion container
+    const collapseElement = document.getElementById('collapseDescription');
+    if (collapseElement) {
+      collapseElement.addEventListener('shown.bs.collapse', handleAccordionOpen);
+      
+      return () => {
+        collapseElement.removeEventListener('shown.bs.collapse', handleAccordionOpen);
+      };
+    }
+  }, [product]);
+
+  // Scroll lock: right column must be fully scrolled before page scrolls below (laptop only)
+  useEffect(() => {
+    const scrollContainer = scrollWrapRef.current;
+    const layoutRow = layoutRowRef.current;
+    if (!scrollContainer || !layoutRow) return;
+
+    // Higher scroll speed for laptop mouse - feels more natural
+    const SCROLL_SPEED = 12;
+
+    const handleWheel = (e) => {
+      if (window.innerWidth < 768) return;
+
+      // Check if product detail row is in viewport
+      const rowRect = layoutRow.getBoundingClientRect();
+      const rowInView = rowRect.top < window.innerHeight && rowRect.bottom > 0;
+      if (!rowInView) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const canScrollDown = scrollTop + clientHeight < scrollHeight - 1;
+      const canScrollUp = scrollTop > 1;
+      const pageScrolledDown = window.scrollY > 5;
+
+      // Calculate scroll delta with speed multiplier
+      const delta = e.deltaY * SCROLL_SPEED;
+
+      if (e.deltaY > 0) {
+        // Scrolling down: scroll right column first (works from anywhere including left side)
+        if (canScrollDown) {
+          e.preventDefault();
+          e.stopPropagation();
+          const newScrollTop = Math.min(scrollTop + delta, scrollHeight - clientHeight);
+          scrollContainer.scrollTop = newScrollTop;
+        }
+      } else if (e.deltaY < 0) {
+        // Scrolling up: if page is scrolled, let page scroll first; else scroll right column
+        if (pageScrolledDown) {
+          // Page is scrolled down, let it scroll up naturally
+          return;
+        }
+        if (canScrollUp) {
+          e.preventDefault();
+          e.stopPropagation();
+          const newScrollTop = Math.max(scrollTop + delta, 0);
+          scrollContainer.scrollTop = newScrollTop;
+        }
+      }
+    };
+
+    // Listen on window to catch scroll events from anywhere (including left side)
+    window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
+    
+    return () => {
+      window.removeEventListener("wheel", handleWheel, { capture: true });
+    };
+  }, [product]);
 
   const loadProduct = async () => {
     try {
@@ -215,7 +324,7 @@ const ProductDetails = () => {
   return (
     <div className="padding-large">
       <div className="container">
-        <nav aria-label="breadcrumb" className="mb-4">
+        <nav aria-label="breadcrumb" className="mb-4 d-none d-md-block">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <Link to="/">Home</Link>
@@ -229,7 +338,7 @@ const ProductDetails = () => {
           </ol>
         </nav>
 
-        <div className="row">
+        <div className="row product-detail-layout-row" ref={layoutRowRef}>
           <div className="col-md-6 product-images-col">
             <div className="product-images">
               <div
@@ -245,7 +354,6 @@ const ProductDetails = () => {
                   className="product-detail-main-image img-fluid w-100"
                   style={{
                     borderRadius: "8px",
-                    maxHeight: "500px",
                     objectFit: "contain",
                     pointerEvents: "none",
                   }}
@@ -305,12 +413,37 @@ const ProductDetails = () => {
                 .product-images-col {
                   min-width: 0;
                 }
+                .product-images {
+                  display: flex;
+                  flex-direction: column;
+                  height: 100%;
+                  max-height: calc(100vh - 120px);
+                }
+                .product-detail-main-image-wrap {
+                  overflow: hidden;
+                  border-radius: 8px;
+                  cursor: crosshair;
+                  flex: 1;
+                  min-height: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin-bottom: 1rem;
+                }
+                .product-detail-main-image {
+                  display: block;
+                  max-height: calc(100vh - 250px);
+                  width: 100%;
+                  object-fit: contain;
+                }
                 .thumbnail-images-scroll {
                   overflow-x: auto;
                   overflow-y: hidden;
                   -webkit-overflow-scrolling: touch;
                   scrollbar-width: thin;
                   max-width: 100%;
+                  flex-shrink: 0;
+                  padding-bottom: 0.5rem;
                 }
                 .thumbnail-images-scroll::-webkit-scrollbar {
                   height: 6px;
@@ -323,14 +456,6 @@ const ProductDetails = () => {
                   background: #c1c1c1;
                   border-radius: 3px;
                 }
-                .product-detail-main-image-wrap {
-                  overflow: hidden;
-                  border-radius: 8px;
-                  cursor: crosshair;
-                }
-                .product-detail-main-image {
-                  display: block;
-                }
                 .product-detail-thumb {
                   transition: transform 0.25s ease, box-shadow 0.25s ease;
                 }
@@ -338,13 +463,22 @@ const ProductDetails = () => {
                   transform: scale(1.1);
                   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 }
+                @media (max-width: 767px) {
+                  .product-images {
+                    max-height: none;
+                  }
+                  .product-detail-main-image {
+                    max-height: 500px;
+                  }
+                }
               `}</style>
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 product-details-col">
+            <div className="product-details-scroll-wrap" ref={scrollWrapRef}>
             <h1
-              className="h2 h-md-3 text-uppercase mb-3 fw-bold"
-              style={{ fontSize: "clamp(1.5rem, 4vw, 1.25rem)" }}
+              className="h2 h-md-3 text-uppercase mb-3 fw-bold product-detail-title"
+              style={{ fontSize: "clamp(1.1rem, 3.5vw + 0.5rem, 1.5rem)" }}
             >
               {product.title}
             </h1>
@@ -372,7 +506,7 @@ const ProductDetails = () => {
               )}
             </div>
 
-            <div className="product-badges mb-4">
+            {/* <div className="product-badges mb-4">
               <div className="row g-3">
                 <div className="col-6 col-md-3">
                   <div className="badge-box">
@@ -402,7 +536,7 @@ const ProductDetails = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Display Case Details for Mobile Cases */}
             {product.caseDetails && (
@@ -414,6 +548,10 @@ const ProductDetails = () => {
                   <div className="card-body">
                     <table className="table table-sm">
                       <tbody>
+                      <tr>
+                          <th style={{ width: "150px" }}>Case Brand</th>
+                          <td> FOXECOM</td>
+                        </tr>
                         <tr>
                           <th style={{ width: "150px" }}>Brand</th>
                           <td>{product.caseDetails.brand?.name || "N/A"}</td>
@@ -438,7 +576,7 @@ const ProductDetails = () => {
                             </td>
                           </tr>
                         )}
-                        {product.caseDetails.caseType && (
+                        {/* {product.caseDetails.caseType && (
                           <tr>
                             <th>Case Type</th>
                             <td>
@@ -458,7 +596,7 @@ const ProductDetails = () => {
                               </div>
                             </td>
                           </tr>
-                        )}
+                        )} */}
                       </tbody>
                     </table>
                   </div>
@@ -466,15 +604,7 @@ const ProductDetails = () => {
               </div>
             )}
 
-            {/* <div className="stock-info mb-4">
-                {inStock ? (
-                  <p className="text-success">
-                    <strong>In Stock</strong> ({product.stock} available)
-                  </p>
-                ) : (
-                  <p className="text-danger"><strong>Out of Stock</strong></p>
-                )}
-              </div> */}
+          
 
             <div className="quantity-section mb-4">
               <label className="form-label">Quantity:</label>
@@ -510,9 +640,48 @@ const ProductDetails = () => {
               </div>
             </div>
 
+            {/* Selling Points */}
+            <div className="selling-points mb-4">
+              <ul className="selling-points-list list-unstyled mb-0">
+                <li className="selling-point-item">
+                  <span className="selling-point-icon">
+                    <i className="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span className="selling-point-text">Free delivery across India</span>
+                </li>
+                <li className="selling-point-item">
+                  <span className="selling-point-icon">
+                    <i className="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span className="selling-point-text">We deliver within 4-7 business days</span>
+                </li>
+                <li className="selling-point-item">
+                  <span className="selling-point-icon">
+                    <i className="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span className="selling-point-text">
+                    Rated <span className="stars">★★★★★</span> by 3M+ happy customers
+                  </span>
+                </li>
+                <li className="selling-point-item">
+                  <span className="selling-point-icon">
+                    <i className="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span className="selling-point-text">100% satisfaction guarantee</span>
+                </li>
+               
+                <li className="selling-point-item">
+                  <span className="selling-point-icon">
+                    <i className="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span className="selling-point-text">Pan-India delivery to 25,000+ pincodes</span>
+                </li>
+              </ul>
+            </div>
+
             <div className="action-buttons d-flex gap-3">
               <button
-                className="btn btn-dark btn-lg flex-grow-1"
+                className="btn btn-lg flex-grow-1 btn-add-to-cart btn-add-to-cart-product-detail"
                 onClick={handleAddToCart}
                 disabled={!inStock}
               >
@@ -522,69 +691,55 @@ const ProductDetails = () => {
                 {isInCart(product.id) ? "Update Cart" : "Add to Cart"}
               </button>
             </div>
-          </div>
-        </div>
 
-        <div className="row mt-5">
-          <div className="col-12">
-            <h3 className="mb-4 fw-semibold" style={{ fontSize: "1.5rem" }}>
-              PRODUCT DESCRIPTION:
-            </h3>
-
-            {product.description && (
-              <div className="description mb-4 product-description-markdown">
-                <MarkdownPreview
-                  source={product.description}
-                  className="product-details-markdown"
-                  style={{ fontSize: "0.9rem", lineHeight: "1" }}
-                  wrapperElement={{ "data-color-mode": "light" }}
-                />
+            {/* Product Description Accordion - inside right column for laptop layout */}
+            <div className="product-description-accordion-section mt-4 mt-md-5" ref={accordionRef}>
+              <div className="accordion product-details-accordion" id="productDetailsAccordion">
+                <div className="accordion-item product-accordion-item">
+                  <h2 className="accordion-header">
+                    <button
+                      className="accordion-button product-accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseDescription"
+                      aria-expanded="false"
+                      aria-controls="collapseDescription"
+                    >
+                      <span className="accordion-icon-wrapper me-3">
+                        <i className="bi bi-file-text" aria-hidden="true" />
+                      </span>
+                      <span className="accordion-title-text">Product Description</span>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseDescription"
+                    className="accordion-collapse collapse"
+                    aria-labelledby="headingDescription"
+                    data-bs-parent="#productDetailsAccordion"
+                  >
+                    <div className="accordion-body product-accordion-body">
+                      {product.description ? (
+                        <div className="description product-description-markdown">
+                          <MarkdownPreview
+                            source={product.description}
+                            className="product-details-markdown"
+                            style={{ fontSize: "clamp(0.875rem, 2vw, 1rem)", lineHeight: "1.6" }}
+                            wrapperElement={{ "data-color-mode": "light" }}
+                          />
+                        </div>
+                      ) : (
+                        <p className="text-muted mb-0">No description available.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        <div className="row mt-5">
-          <div className="col-12">
-            <h3 className="mb-4 fw-semibold" style={{ fontSize: "1.5rem" }}>
-              PRODUCT INFORMATION:
-            </h3>
-            <div className="card">
-              <div className="card-body">
-                <table className="table">
-                  <tbody>
-                    <tr>
-                      <th style={{ width: "200px" }}>Category</th>
-                      <td className="text-capitalize">
-                        {product.category?.name || "N/A"}
-                      </td>
-                    </tr>
-                    {product.sku && (
-                      <tr>
-                        <th>SKU</th>
-                        <td>{product.sku}</td>
-                      </tr>
-                    )}
-                    <tr>
-                      <th>Availability</th>
-                      <td>{inStock ? "In Stock" : "Out of Stock"}</td>
-                    </tr>
-                    <tr>
-                      <th>Stock Quantity</th>
-                      <td>{product.stock || 0} units</td>
-                    </tr>
-                    <tr>
-                      <th>Price</th>
-                      <td>{formatPrice(price)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            </div>
             </div>
           </div>
         </div>
 
-        {/* Customer Reviews Section */}
+        {/* Customer Reviews Section - below product details */}
         <div className="row mt-4 mt-md-5 customer-reviews-section">
           <div className="col-12">
             <h3 className="mb-3 mb-md-4 fw-semibold" style={{ fontSize: "clamp(1.25rem, 3vw, 1.5rem)" }}>
@@ -669,11 +824,11 @@ const ProductDetails = () => {
               </div>
             )}
 
-            {!canReview && isLoggedIn && reviews.length === 0 && !loadingReviews && (
+            {/* {!canReview && isLoggedIn && reviews.length === 0 && !loadingReviews && (
               <p className="text-muted" style={{ fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)" }}>
                 Only customers who have purchased this product can leave a review.
               </p>
-            )}
+            )} */}
 
             {!isLoggedIn && (
               <p className="text-muted mb-3 mb-md-4" style={{ fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)" }}>

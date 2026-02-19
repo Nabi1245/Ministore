@@ -140,14 +140,26 @@ const OrderSuccess = () => {
                     <strong>Total Amount:</strong> {formatCurrency(order.totalAmount)}
                   </div>
                 </div>
-                {order.payuPaymentId && (
+                {(order.payuPaymentId || order.payuTxnId) && (
                   <div className="row mb-3">
-                    <div className="col-md-6">
-                      <strong>Payment ID:</strong> {order.payuPaymentId}
-                    </div>
+                    {order.payuPaymentId && (
+                      <div className="col-md-6">
+                        <strong>Payment ID:</strong> {order.payuPaymentId}
+                      </div>
+                    )}
                     {order.payuTxnId && (
                       <div className="col-md-6">
                         <strong>Transaction ID:</strong> {order.payuTxnId}
+                      </div>
+                    )}
+                    {order.paymentMode && (
+                      <div className="col-md-6">
+                        <strong>Payment Mode:</strong> {order.paymentMode}
+                      </div>
+                    )}
+                    {order.bankRefNo && (
+                      <div className="col-md-6">
+                        <strong>Bank Ref:</strong> {order.bankRefNo}
                       </div>
                     )}
                   </div>

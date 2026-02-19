@@ -88,13 +88,13 @@ const Cart = () => {
                           <div className="d-flex mb-3">
                             <Link to={`/product/${item.id}`} className="text-decoration-none me-3">
                               <img
-                                src={getImageUrl(item.image || item.thumbnailImage)}
+                                src={getImageUrl(item.thumbnailImage || item.image)}
                                 alt={item.title}
                                 className="img-fluid"
                                 style={{ 
                                   width: '100px', 
                                   height: '100px', 
-                                  objectFit: 'cover', 
+                                  objectFit: 'contain', 
                                   borderRadius: '8px',
                                   flexShrink: 0
                                 }}
@@ -168,10 +168,10 @@ const Cart = () => {
                         <div className="d-none d-md-flex align-items-center">
                           <Link to={`/product/${item.id}`} className="text-decoration-none">
                             <img
-                              src={getImageUrl(item.image || item.thumbnailImage)}
+                              src={getImageUrl(item.thumbnailImage || item.image)}
                               alt={item.title}
                               className="img-fluid"
-                              style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }}
+                              style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '8px', flexShrink: 0 }}
                               onError={(e) => {
                                 e.target.src = fallbackImage
                               }}
@@ -275,7 +275,7 @@ const Cart = () => {
                   </div>
 
                   <button
-                    className="btn btn-dark w-100 mb-3"
+                    className="btn btn-dark w-100 mb-3 btn-checkout"
                     style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)', padding: 'clamp(0.5rem, 1.5vw, 0.75rem)' }}
                     onClick={handleCheckout}
                   >

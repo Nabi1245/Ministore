@@ -630,7 +630,7 @@ const Shop = () => {
 
 
                             <button
-                              className="btn btn-primary w-100"
+                              className="btn btn-primary w-100 btn-add-to-cart"
                               onClick={(e) => handleAddToCart(product, e)}
                               disabled={!inStock}
                             >

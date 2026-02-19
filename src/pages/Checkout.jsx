@@ -74,7 +74,12 @@ const Checkout = () => {
 
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required'
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required'
-    if (!/^\d{10}$/.test(formData.mobileNumber)) newErrors.mobileNumber = 'Mobile number must be 10 digits'
+    const phone = formData.mobileNumber.trim()
+    if (!phone || phone.length < 10) {
+      newErrors.mobileNumber = 'Invalid mobile number for PayU'
+    } else if (!/^\d{10}$/.test(phone)) {
+      newErrors.mobileNumber = 'Mobile number must be exactly 10 digits'
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailAddress)) newErrors.emailAddress = 'Valid email is required'
     if (!formData.fullAddress.trim()) newErrors.fullAddress = 'Address is required'
     if (!formData.townOrCity.trim()) newErrors.townOrCity = 'City is required'
@@ -122,35 +127,23 @@ const Checkout = () => {
     try {
       setProcessingPayment(true)
 
-      // Create PayU payment params
+      // Validate phone number before PayU payment
+      const phone = formData.mobileNumber.trim()
+      if (!phone || phone.length < 10) {
+        throw new Error("Invalid mobile number for PayU")
+      }
+
+      // Create PayU payment via SDK (returns auto-submit HTML form)
       const payuResponse = await paymentAPI.createPayuPayment(orderId)
-      
-      if (!payuResponse.paymentParams || !payuResponse.paymentUrl) {
+
+      if (!payuResponse.paymentFormHtml) {
         throw new Error('Failed to initialize payment gateway')
       }
 
-      // Create a form and submit to PayU
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = payuResponse.paymentUrl
-      form.style.display = 'none'
-
-      // Add all payment parameters as hidden inputs
-      Object.keys(payuResponse.paymentParams).forEach((key) => {
-        const input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = key
-        input.value = payuResponse.paymentParams[key]
-        form.appendChild(input)
-      })
-
-      // Append form to body and submit
-      document.body.appendChild(form)
-      form.submit()
-
-      // Note: setProcessingPayment will be reset when user returns from PayU
-      // PayU will redirect to success/failure callback URLs handled by backend
-
+      // Render the SDK-generated form and auto-submit (same window goes to PayU, then back to our success/failure URL)
+      document.open()
+      document.write(payuResponse.paymentFormHtml)
+      document.close()
     } catch (error) {
       console.error('Error initiating payment:', error)
       alert(error.message || 'Failed to initiate payment. Please try again.')
@@ -329,7 +322,7 @@ const Checkout = () => {
 
                     <button 
                       type="submit" 
-                      className="btn btn-dark btn-lg w-100"
+                      className="btn btn-dark btn-lg w-100 btn-proceed-payment"
                       disabled={loading || processingPayment}
                     >
                       {processingPayment ? 'Processing Payment...' : loading ? 'Processing...' : 'Proceed to Payment'}
