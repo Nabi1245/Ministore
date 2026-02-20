@@ -4,10 +4,11 @@ import { useCart } from '../contexts/CartContext'
 import { checkoutAPI, orderAPI, paymentAPI } from '../utils/api'
 
 const Checkout = () => {
-  const { cartItems, getCartTotal, clearCart, isLoggedIn } = useCart()
+  const { cartItems, getCartTotal, clearCart, isLoggedIn, updateQuantity } = useCart()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [checkoutSummary, setCheckoutSummary] = useState(null)
+  const [isBuyNowMode, setIsBuyNowMode] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -34,6 +35,12 @@ const Checkout = () => {
     if (cartItems.length === 0) {
       navigate('/cart')
       return
+    }
+
+    // Check for buy-now mode
+    const buyNowFlag = localStorage.getItem('buyNowMode')
+    if (buyNowFlag === 'true') {
+      setIsBuyNowMode(true)
     }
 
     loadCheckoutSummary()
@@ -111,6 +118,13 @@ const Checkout = () => {
       // Create order
       const orderResult = await orderAPI.create(formData)
       const orderId = orderResult.order.id
+
+      // Clear buy-now mode flag after order creation
+      if (isBuyNowMode) {
+        localStorage.removeItem('buyNowMode')
+        localStorage.removeItem('buyNowProductId')
+        setIsBuyNowMode(false)
+      }
 
       // Initiate payment
       await initiatePayuPayment(orderId)
@@ -335,17 +349,68 @@ const Checkout = () => {
             <div className="col-lg-4">
               <div className="card">
                 <div className="card-header">
-                  <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Order Summary</h5>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>Order Summary</h5>
+                    {isBuyNowMode && (
+                      <span className="badge bg-warning text-dark">
+                        <i className="bi bi-lightning-fill me-1"></i>
+                        Buy Now
+                      </span>
+                    )}
+                  </div>
+                  {isBuyNowMode && (
+                    <small className="text-muted mt-1 d-block">
+                      You can adjust quantity before checkout
+                    </small>
+                  )}
                 </div>
                 <div className="card-body">
                   {cartItems.map((item) => (
-                    <div key={item.id} className="d-flex justify-content-between mb-3">
-                      <div>
-                        <strong>{item.title}</strong>
-                        <br />
-                        <small className="text-muted">Qty: {item.quantity}</small>
+                    <div key={item.id} className="mb-3 pb-3 border-bottom">
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <div className="flex-grow-1">
+                          <strong>{item.title}</strong>
+                          {isBuyNowMode && (
+                            <div className="mt-2">
+                              <div className="d-flex align-items-center gap-2">
+                                <label className="small text-muted mb-0">Quantity:</label>
+                                <div className="d-flex align-items-center border rounded">
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => {
+                                      const newQty = Math.max(1, item.quantity - 1)
+                                      updateQuantity(item.id, newQty)
+                                    }}
+                                    style={{ border: 'none', borderRadius: 0 }}
+                                  >
+                                    <i className="bi bi-dash"></i>
+                                  </button>
+                                  <span className="px-3" style={{ minWidth: '40px', textAlign: 'center' }}>
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => {
+                                      const maxStock = item.stock || 999
+                                      const newQty = Math.min(maxStock, item.quantity + 1)
+                                      updateQuantity(item.id, newQty)
+                                    }}
+                                    style={{ border: 'none', borderRadius: 0 }}
+                                  >
+                                    <i className="bi bi-plus"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {!isBuyNowMode && (
+                            <small className="text-muted">Qty: {item.quantity}</small>
+                          )}
+                        </div>
+                        <strong className="ms-2">{formatPrice((item.discountPrice || item.price) * item.quantity)}</strong>
                       </div>
-                      <strong>{formatPrice((item.discountPrice || item.price) * item.quantity)}</strong>
                     </div>
                   ))}
                   <hr />

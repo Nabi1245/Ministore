@@ -279,6 +279,88 @@ button, input, textarea, select {
   box-shadow: none !important;
 }
 
+/* Buy Now Button - Same styling as Add to Cart but with darker green */
+.btn-buy-now:not(:disabled) {
+  background: linear-gradient(135deg, #6b9538 0%, #5a7e2f 50%, #6b9538 100%) !important;
+  background-size: 200% 200% !important;
+  color: var(--secondary-color) !important;
+  border: 2px solid #6b9538 !important;
+  border-radius: var(--radius-md) !important;
+  position: relative;
+  overflow: hidden;
+  animation: buyNowGradientShift 3s ease infinite, buyNowGlow 2s ease-in-out infinite;
+  /* box-shadow: 0 4px 20px rgba(107, 149, 56, 0.4), 0 0 20px rgba(107, 149, 56, 0.3); */
+  transition: all var(--transition-smooth);
+}
+
+.btn-buy-now:not(:disabled)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-buy-now:not(:disabled):hover::before {
+  left: 100%;
+}
+
+.btn-buy-now:not(:disabled):hover {
+  background: linear-gradient(135deg, #5a7e2f 0%, #4a6a26 50%, #5a7e2f 100%) !important;
+  background-size: 200% 200% !important;
+  color: var(--secondary-color) !important;
+  border-color: #5a7e2f !important;
+  /* box-shadow: 0 6px 30px rgba(107, 149, 56, 0.6), 0 0 30px rgba(107, 149, 56, 0.5); */
+  transform: translateY(-2px);
+  animation: buyNowGradientShift 2s ease infinite, buyNowGlowHover 1.5s ease-in-out infinite;
+}
+
+.btn-buy-now:not(:disabled):active {
+  transform: translateY(0);
+  /* box-shadow: 0 2px 15px rgba(107, 149, 56, 0.5), 0 0 15px rgba(107, 149, 56, 0.4); */
+}
+
+.btn-buy-now:disabled {
+  background: var(--secondary-color) !important;
+  border: 2px solid var(--gray-color-300, #dee2e6) !important;
+  color: #6c757d !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+@keyframes buyNowGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* @keyframes buyNowGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(107, 149, 56, 0.4), 0 0 20px rgba(107, 149, 56, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 30px rgba(107, 149, 56, 0.6), 0 0 30px rgba(107, 149, 56, 0.5);
+  }
+}
+
+@keyframes buyNowGlowHover {
+  0%, 100% {
+    box-shadow: 0 6px 30px rgba(107, 149, 56, 0.6), 0 0 30px rgba(107, 149, 56, 0.5);
+  }
+  50% {
+    box-shadow: 0 8px 40px rgba(107, 149, 56, 0.8), 0 0 40px rgba(107, 149, 56, 0.7);
+  }
+} */
+
 @keyframes productDetailGradientShift {
   0% {
     background-position: 0% 50%;
@@ -291,7 +373,7 @@ button, input, textarea, select {
   }
 }
 
-@keyframes productDetailGlow {
+/* @keyframes productDetailGlow {
   0%, 100% {
     box-shadow: 0 4px 20px rgba(137, 187, 86, 0.4), 0 0 20px rgba(137, 187, 86, 0.3);
   }
@@ -307,7 +389,7 @@ button, input, textarea, select {
   50% {
     box-shadow: 0 8px 40px rgba(137, 187, 86, 0.8), 0 0 40px rgba(137, 187, 86, 0.7);
   }
-}
+} */
 
 /* ============================================
    PREMIUM UI
@@ -1931,9 +2013,63 @@ section + section {
     transition: all 0.3s ease;
   }
 
-  .my-orders-card .btn-outline-primary:hover {
+  /* Smaller buttons on laptop and big screens */
+  @media (min-width: 992px) {
+    .my-orders-action-btn,
+    .my-orders-pagination-btn {
+      padding: 0.375rem 0.75rem !important;
+      font-size: 0.875rem !important;
+      max-width: 140px !important;
+      white-space: nowrap;
+    }
+    
+    .my-orders-continue-btn {
+      max-width: 160px !important;
+      padding: 0.375rem 1rem !important;
+    }
+    
+    /* Shorter dropdown on laptop */
+    .my-orders-dropdown {
+      max-width: 200px !important;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .my-orders-action-btn,
+    .my-orders-pagination-btn {
+      padding: 0.35rem 0.65rem !important;
+      font-size: 0.85rem !important;
+      max-width: 130px !important;
+    }
+    
+    .my-orders-continue-btn {
+      max-width: 150px !important;
+      padding: 0.35rem 0.8rem !important;
+    }
+    
+    /* Even shorter dropdown on big screens */
+    .my-orders-dropdown {
+      max-width: 180px !important;
+    }
+  }
+
+  /* Ensure primary color for my-orders buttons */
+  .my-orders-action-btn.btn-primary,
+  .my-orders-pagination-btn.btn-primary {
+    background-color: var(--primary-color, #89bb56) !important;
+    border-color: var(--primary-color, #89bb56) !important;
+    color: #fff !important;
+  }
+
+  .my-orders-action-btn.btn-primary:hover,
+  .my-orders-pagination-btn.btn-primary:hover {
+    background-color: #7aa84a !important;
+    border-color: #7aa84a !important;
+  }
+
+  .my-orders-card .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.25);
+    box-shadow: 0 2px 8px rgba(137, 187, 86, 0.3);
   }
 
   .my-orders-card .btn-outline-danger:hover {

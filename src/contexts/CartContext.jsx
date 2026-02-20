@@ -331,6 +331,32 @@ export const CartProvider = ({ children }) => {
     }
   }
 
+  /**
+   * Buy Now: Clear cart, add product, and mark for buy-now checkout
+   * Returns true if successful, allowing caller to navigate to checkout
+   */
+  const buyNow = async (product, quantity = 1) => {
+    try {
+      // Clear existing cart first
+      await clearCart()
+      
+      // Add the product
+      const success = await addToCart(product, quantity)
+      
+      if (success) {
+        // Mark as buy-now mode (checkout will detect this)
+        localStorage.setItem('buyNowMode', 'true')
+        localStorage.setItem('buyNowProductId', product.id.toString())
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Error in buy now:', error)
+      alert(error.message || 'Failed to process buy now')
+      return false
+    }
+  }
+
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
@@ -355,6 +381,7 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     updateQuantity,
     clearCart,
+    buyNow,
     mergeGuestCart,
     getCartTotal,
     getCartItemsCount,

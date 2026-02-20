@@ -1,13 +1,16 @@
 import React, { memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../utils/api';
+import { useCart } from '../contexts/CartContext';
 import StarRating from './StarRating';
 
 /**
  * Memoized Product Card Component
  * Prevents unnecessary re-renders when parent component updates
  */
-const ProductCard = memo(({ product, onAddToCart, showAddToCart = true }) => {
+const ProductCard = memo(({ product, onAddToCart, showAddToCart = true, showBuyNow = true }) => {
+  const navigate = useNavigate();
+  const { buyNow } = useCart();
   const {
     id,
     title,
@@ -35,6 +38,27 @@ const ProductCard = memo(({ product, onAddToCart, showAddToCart = true }) => {
     e.stopPropagation();
     if (onAddToCart) {
       onAddToCart(product);
+    }
+  };
+
+  const handleBuyNow = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!inStock) return;
+    
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to proceed with Buy Now');
+      localStorage.setItem('redirectAfterLogin', `/product/${product.id}`);
+      navigate('/login');
+      return;
+    }
+
+    const success = await buyNow(product, 1);
+    if (success) {
+      navigate('/checkout');
     }
   };
 
@@ -95,14 +119,25 @@ const ProductCard = memo(({ product, onAddToCart, showAddToCart = true }) => {
           </div>
 
           {showAddToCart && (
-            <button
-              className="btn btn-primary w-100"
-              onClick={handleAddToCart}
-              disabled={!inStock}
-            >
-              <i className="bi bi-cart-plus me-2"></i>
-              {inStock ? 'Add to Cart' : 'Out of Stock'}
-            </button>
+            <div className="d-flex flex-column gap-2">
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleAddToCart}
+                disabled={!inStock}
+              >
+                
+                {inStock ? 'Add to Cart' : 'Out of Stock'}
+              </button>
+              {showBuyNow && inStock && (
+                <button
+                  className="btn btn-primary w-100 btn-buy-now"
+                  onClick={handleBuyNow}
+                >
+                  {/* <i className="bi bi-lightning-fill me-2"></i> */}
+                  Buy Now
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>

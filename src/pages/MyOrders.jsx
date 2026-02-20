@@ -111,7 +111,7 @@ const MyOrders = () => {
       <div className="container">
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 mb-md-4 gap-2">
           <h1 className="h2 h-md-3 text-uppercase fw-bold mb-0" style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)' }}>My Orders</h1>
-          <Link to="/shop" className="btn btn-outline-primary btn-sm w-100 w-sm-auto">
+          <Link to="/shop" className="btn btn-primary btn-sm my-orders-action-btn my-orders-continue-btn w-100 w-sm-auto p-2">
             Continue Shopping
           </Link>
         </div>
@@ -129,7 +129,7 @@ const MyOrders = () => {
               <div className="col-12 col-md-6">
                 <label className="form-label mb-1 mb-md-2" style={{ fontSize: 'clamp(0.85rem, 2vw, 0.95rem)' }}>Filter by Status:</label>
                 <select
-                  className="form-select form-select-sm"
+                  className="form-select form-select-sm my-orders-dropdown"
                   value={statusFilter}
                   onChange={(e) => {
                     setStatusFilter(e.target.value)
@@ -254,14 +254,14 @@ const MyOrders = () => {
                       <div className="d-grid gap-2 d-md-block text-md-end">
                         <Link
                           to={`/order-success/${order.id}`}
-                          className="btn btn-outline-primary btn-sm w-100 w-md-auto"
+                          className="btn btn-primary btn-sm my-orders-action-btn w-100 w-md-auto"
                           style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}
                         >
                           View Details
                         </Link>
                         {order.status === 'pending' && (
                           <button
-                            className="btn btn-outline-danger btn-sm w-100 w-md-auto"
+                            className="btn btn-outline-danger btn-sm my-orders-action-btn w-100 w-md-auto"
                             onClick={() => handleCancelOrder(order.id)}
                             style={{ fontSize: 'clamp(0.8rem, 2vw, 0.9rem)' }}
                           >
@@ -291,7 +291,7 @@ const MyOrders = () => {
                 </div>
                 <div className="btn-group w-100 w-sm-auto">
                   <button
-                    className="btn btn-outline-primary btn-sm"
+                    className="btn btn-primary btn-sm my-orders-pagination-btn"
                     disabled={pagination.page === 1}
                     onClick={() =>
                       setPagination((prev) => ({
@@ -304,7 +304,7 @@ const MyOrders = () => {
                     Previous
                   </button>
                   <button
-                    className="btn btn-outline-primary btn-sm"
+                    className="btn btn-primary btn-sm my-orders-pagination-btn"
                     disabled={pagination.page === pagination.totalPages}
                     onClick={() =>
                       setPagination((prev) => ({

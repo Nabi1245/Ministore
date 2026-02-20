@@ -2,6 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import "@uiw/react-markdown-preview/markdown.css";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Thumbs, Zoom } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/thumbs';
+import 'swiper/css/zoom';
 import { productAPI, getImageUrl, reviewAPI } from "../utils/api";
 import { useCart } from "../contexts/CartContext";
 import SimilarProducts from "../components/SimilarProducts";
@@ -10,7 +17,7 @@ import fallbackImage from "../assest/images/product-item1.jpg";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, isInCart } = useCart();
+  const { addToCart, isInCart, buyNow } = useCart();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -26,6 +33,8 @@ const ProductDetails = () => {
     bgX: 50,
     bgY: 50,
   });
+  const [isMobile, setIsMobile] = useState(false);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   // Review state
   const [reviews, setReviews] = useState([]);
@@ -48,6 +57,16 @@ const ProductDetails = () => {
       if (isLoggedIn) checkCanReview();
     }
   }, [id, isLoggedIn]);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Auto-scroll accordion into view when opened
   useEffect(() => {
@@ -178,6 +197,24 @@ const ProductDetails = () => {
     }
   };
 
+  const handleBuyNow = async () => {
+    if (!product || !inStock) return;
+    
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to proceed with Buy Now');
+      localStorage.setItem('redirectAfterLogin', `/product/${product.id}`);
+      navigate('/login');
+      return;
+    }
+
+    const success = await buyNow(product, quantity);
+    if (success) {
+      navigate('/checkout');
+    }
+  };
+
   const increaseQuantity = () => {
     if (product && quantity < (product.stock || 999)) {
       setQuantity((prev) => prev + 1);
@@ -195,11 +232,16 @@ const ProductDetails = () => {
   };
 
   const handleMouseEnter = () => {
-    setZoomState((prev) => ({ ...prev, isZoomed: true }));
+    // Only enable zoom on desktop
+    if (!isMobile) {
+      setZoomState((prev) => ({ ...prev, isZoomed: true }));
+    }
   };
 
   const handleMouseLeave = () => {
-    setZoomState((prev) => ({ ...prev, isZoomed: false }));
+    if (!isMobile) {
+      setZoomState((prev) => ({ ...prev, isZoomed: false }));
+    }
   };
 
   const loadReviews = async () => {
@@ -258,6 +300,8 @@ const ProductDetails = () => {
   };
 
   const handleMouseMove = (e) => {
+    // Only enable zoom on desktop
+    if (isMobile) return;
     const el = mainImageRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -341,72 +385,117 @@ const ProductDetails = () => {
         <div className="row product-detail-layout-row" ref={layoutRowRef}>
           <div className="col-md-6 product-images-col">
             <div className="product-images">
-              <div
-                ref={mainImageRef}
-                className="product-detail-main-image-wrap main-image mb-3 position-relative"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onMouseMove={handleMouseMove}
-              >
-                <img
-                  src={images[selectedImage] || images[0]}
-                  alt={product.title}
-                  className="product-detail-main-image img-fluid w-100"
-                  style={{
-                    borderRadius: "8px",
-                    objectFit: "contain",
-                    pointerEvents: "none",
-                  }}
-                  onError={(e) => {
-                    e.target.src = fallbackImage;
-                  }}
-                />
-              </div>
-              {zoomState.isZoomed && (
-                <div
-                  className="magnifying-glass"
-                  style={{
-                    position: "fixed",
-                    top: zoomState.mouseY,
-                    left: zoomState.mouseX,
-                    width: "240px",
-                    height: "240px",
-                    borderRadius: "50%",
-                    border: "3px solid rgba(0,0,0,0.15)",
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-                    backgroundImage: `url(${images[selectedImage] || images[0]})`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "250%",
-                    backgroundPosition: `${zoomState.bgX}% ${zoomState.bgY}%`,
-                    pointerEvents: "none",
-                    zIndex: 1050,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                />
-              )}
-              {images.length > 1 && (
-                <div className="thumbnail-images-scroll">
-                  <div className="thumbnail-images d-flex gap-2">
+              {/* Mobile: Swiper Gallery with Touch/Swipe */}
+              {isMobile ? (
+                <div className="product-swiper-mobile">
+                  <Swiper
+                    key={`swiper-${product?.id}-${images.length}`}
+                    modules={[Navigation, Pagination, Zoom]}
+                    spaceBetween={10}
+                    slidesPerView={1}
+                    navigation={images.length > 1}
+                    pagination={{ clickable: true }}
+                    zoom={{
+                      maxRatio: 3,
+                      minRatio: 1,
+                    }}
+                    className="product-detail-swiper"
+                    onSlideChange={(swiper) => setSelectedImage(swiper.activeIndex)}
+                    initialSlide={selectedImage}
+                  >
                     {images.map((img, index) => (
-                      <img
-                        key={index}
-                        src={img}
-                        alt={`${product.title} ${index + 1}`}
-                        className={`product-detail-thumb img-thumbnail flex-shrink-0 ${selectedImage === index ? "border-primary" : ""}`}
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          objectFit: "contain",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => setSelectedImage(index)}
-                        onError={(e) => {
-                          e.target.src = fallbackImage;
-                        }}
-                      />
+                      <SwiperSlide key={index}>
+                        <div className="swiper-zoom-container">
+                          <img
+                            src={img}
+                            alt={`${product.title} ${index + 1}`}
+                            className="img-fluid w-100"
+                            style={{
+                              borderRadius: "8px",
+                              objectFit: "contain",
+                              maxHeight: "500px",
+                            }}
+                            onError={(e) => {
+                              e.target.src = fallbackImage;
+                            }}
+                          />
+                        </div>
+                      </SwiperSlide>
                     ))}
-                  </div>
+                  </Swiper>
                 </div>
+              ) : (
+                <>
+                  {/* Desktop: Main Image with Zoom */}
+                  <div
+                    ref={mainImageRef}
+                    className="product-detail-main-image-wrap main-image mb-3 position-relative"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseMove={handleMouseMove}
+                  >
+                    <img
+                      src={images[selectedImage] || images[0]}
+                      alt={product.title}
+                      className="product-detail-main-image img-fluid w-100"
+                      style={{
+                        borderRadius: "8px",
+                        objectFit: "contain",
+                        pointerEvents: "none",
+                      }}
+                      onError={(e) => {
+                        e.target.src = fallbackImage;
+                      }}
+                    />
+                  </div>
+                  {zoomState.isZoomed && (
+                    <div
+                      className="magnifying-glass"
+                      style={{
+                        position: "fixed",
+                        top: zoomState.mouseY,
+                        left: zoomState.mouseX,
+                        width: "240px",
+                        height: "240px",
+                        borderRadius: "50%",
+                        border: "3px solid rgba(0,0,0,0.15)",
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                        backgroundImage: `url(${images[selectedImage] || images[0]})`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundSize: "250%",
+                        backgroundPosition: `${zoomState.bgX}% ${zoomState.bgY}%`,
+                        pointerEvents: "none",
+                        zIndex: 1050,
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    />
+                  )}
+                  {/* Desktop: Thumbnails */}
+                  {images.length > 1 && (
+                    <div className="thumbnail-images-scroll">
+                      <div className="thumbnail-images d-flex gap-2">
+                        {images.map((img, index) => (
+                          <img
+                            key={index}
+                            src={img}
+                            alt={`${product.title} ${index + 1}`}
+                            className={`product-detail-thumb img-thumbnail flex-shrink-0 ${selectedImage === index ? "border-primary" : ""}`}
+                            style={{
+                              width: "80px",
+                              height: "80px",
+                              objectFit: "contain",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => setSelectedImage(index)}
+                            onError={(e) => {
+                              e.target.src = fallbackImage;
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
             <style>{`
@@ -463,9 +552,54 @@ const ProductDetails = () => {
                   transform: scale(1.1);
                   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 }
+                .product-swiper-mobile {
+                  width: 100%;
+                  margin-bottom: 1rem;
+                }
+                .product-detail-swiper {
+                  width: 100%;
+                  height: auto;
+                }
+                .product-detail-swiper .swiper-slide {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  background: #f8f9fa;
+                  border-radius: 8px;
+                }
+                .product-detail-swiper .swiper-zoom-container {
+                  width: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                }
+                .product-detail-swiper .swiper-button-next,
+                .product-detail-swiper .swiper-button-prev {
+                  color: var(--primary-color, #89bb56);
+                  background: rgba(255, 255, 255, 0.9);
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                }
+                .product-detail-swiper .swiper-button-next:after,
+                .product-detail-swiper .swiper-button-prev:after {
+                  font-size: 18px;
+                  font-weight: bold;
+                }
+                .product-detail-swiper .swiper-pagination-bullet {
+                  background: var(--primary-color, #89bb56);
+                  opacity: 0.5;
+                }
+                .product-detail-swiper .swiper-pagination-bullet-active {
+                  opacity: 1;
+                }
                 @media (max-width: 767px) {
                   .product-images {
                     max-height: none;
+                  }
+                  .product-detail-main-image-wrap {
+                    cursor: default !important;
                   }
                   .product-detail-main-image {
                     max-height: 500px;
@@ -679,16 +813,24 @@ const ProductDetails = () => {
               </ul>
             </div>
 
-            <div className="action-buttons d-flex gap-3">
+            <div className="action-buttons d-flex flex-column gap-3">
               <button
-                className="btn btn-lg flex-grow-1 btn-add-to-cart btn-add-to-cart-product-detail"
+                className="btn btn-lg w-100 btn-primary btn-add-to-cart btn-add-to-cart-product-detail"
                 onClick={handleAddToCart}
                 disabled={!inStock}
               >
                 <svg className="cart-outline me-2" width="20" height="20">
                   <use xlinkHref="#cart-outline"></use>
                 </svg>
-                {isInCart(product.id) ? "Update Cart" : "Add to Cart"}
+                {isInCart(product.id) ? "Add to Cart" : "Add to Cart"}
+              </button>
+              <button
+                className="btn btn-lg w-100 btn-buy-now"
+                onClick={handleBuyNow}
+                disabled={!inStock}
+              >
+                {/* <i className="bi bi-lightning-fill me-2"></i> */}
+                Buy Now
               </button>
             </div>
 
@@ -813,7 +955,7 @@ const ProductDetails = () => {
                     </div>
                     <button
                       type="submit"
-                      className="btn btn-primary w-100 w-sm-auto"
+                      className="btn btn-primary w-10 w-sm-auto"
                       disabled={submittingReview || rating < 1}
                       style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}
                     >
